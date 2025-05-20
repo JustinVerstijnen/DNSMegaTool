@@ -8,41 +8,44 @@ def get_txt_record(domain):
     try:
         records = dns.resolver.resolve(domain, 'TXT')
         return [r.to_text().strip('"') for r in records]
-    except:
+    except Exception:
         return ["Not found"]
 
 def get_ns_servers(domain):
     try:
         records = dns.resolver.resolve(domain, 'NS')
         return [str(r.target).strip('.') for r in records]
-    except:
+    except Exception:
         return ["Not found"]
 
 def get_mx_record(domain):
     try:
         records = dns.resolver.resolve(domain, 'MX')
         return [str(r.exchange).strip('.') for r in records]
-    except:
+    except Exception:
         return ["Not found"]
 
 def get_ds_record(domain):
     try:
         records = dns.resolver.resolve(domain, 'DS')
         return [r.to_text() for r in records]
-    except:
+    except Exception:
         return ["Not found"]
 
 def check_dnskey_exists(domain):
     try:
         dns.resolver.resolve(domain, 'DNSKEY')
         return True
-    except:
+    except Exception:
         return False
 
-@app.route(route="DNSMegaTool", methods=["GET"])
+@app.route(
+    route="/",
+    methods=["GET"],
+    auth_level=func.AuthLevel.ANONYMOUS
+)
 def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get('domain')
-
     if not domain:
         html = """
         <!DOCTYPE html>
