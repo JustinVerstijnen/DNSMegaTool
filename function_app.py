@@ -133,24 +133,31 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
             <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
             <div style="text-align:center;">
                 <form id="SubmitButton">
-                    <input type="text" id="domainInput" placeholder="example.com" />
-                    <button type="submit" id="submitButton" class="btn-icon check-btn" onclick="lookup()">
-                    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
-                    Check
-                </button>
-                </form>
-                <script>
-  const form = document.getElementById('SubmitButton');
-  const submitButton = document.getElementById('submitButton');
+  <input type="text" id="domainInput" placeholder="example.com" />
+  <button type="submit" id="submitButton" class="btn-icon check-btn">
+    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+      <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/>
+    </svg>
+    Check
+  </button>
+</form>
 
-  form.addEventListener('keypress', function(event) {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-      submitButton.click();
-    }
+<script>
+  const form = document.getElementById('SubmitButton');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // Voorkom herladen
+    lookup(); // Roep je zoekfunctie aan
   });
+
+  function lookup() {
+    const domain = document.getElementById('domainInput').value;
+    // Doe hier je zoekactie
+    console.log("Zoeken op:", domain);
+  }
 </script>
-                <button id="exportBtn" class="btn-icon export-btn" onclick="download()" style="background-color: #92DBA5; display: none;">
+
+                <button id="exportBtn" type="button" class="btn-icon export-btn" onclick="download()" style="background-color: #92DBA5; display: none;">
                     <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 16.5l6-6-1.41-1.42L13 12.67V4h-2v8.67l-3.59-3.59L6 10.5l6 6z"/></svg>
                     Export
                 </button>
