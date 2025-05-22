@@ -140,6 +140,10 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     </svg>
     Check
   </button>
+  <button id="exportBtn" type="button" class="btn-icon export-btn" onclick="download()" style="background-color: #92DBA5; display: none;">
+                    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 16.5l6-6-1.41-1.42L13 12.67V4h-2v8.67l-3.59-3.59L6 10.5l6 6z"/></svg>
+                    Export
+                </button>
 </form>
 
 <script>
@@ -147,20 +151,14 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 
   form.addEventListener('submit', function(event) {
     event.preventDefault(); // Voorkom herladen
-    lookup(); // Roep je zoekfunctie aan
+    lookup();
   });
 
   function lookup() {
     const domain = document.getElementById('domainInput').value;
-    // Doe hier je zoekactie
     console.log("Zoeken op:", domain);
   }
 </script>
-
-                <button id="exportBtn" type="button" class="btn-icon export-btn" onclick="download()" style="background-color: #92DBA5; display: none;">
-                    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 16.5l6-6-1.41-1.42L13 12.67V4h-2v8.67l-3.59-3.59L6 10.5l6 6z"/></svg>
-                    Export
-                </button>
             </div>
 
             <div id="result"></div>
