@@ -150,13 +150,13 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
   const form = document.getElementById('SubmitButton');
 
   form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Voorkom herladen
+    event.preventDefault();
     lookup();
   });
 
   function lookup() {
     const domain = document.getElementById('domainInput').value;
-    console.log("Zoeken op:", domain);
+    console.log("Search for:", domain);
   }
 </script>
             </div>
@@ -184,14 +184,14 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                         </tr>`;
                     };
 
-                    const spf = data.SPF.find(r => r.includes("v=spf1")) || "Not found";
-                    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "Not found";
-                    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "Not found";
-                    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "Not found";
+                    const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
+                    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
+                    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
+                    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
                     const hasDKIM = data.DKIM.valid_selector !== null;
                     const dnssec = data.DNSSEC;
-                    const ds = data.DS[0] || "Not found";
-                    const mx = data.MX.join(", ") || "Not found";
+                    const ds = data.DS[0] || "No DS record found or DNS host does not support DNSSEC.";
+                    const mx = data.MX.join(", ") || "No MX record found";
 
                     resultEl.innerHTML = `
                         <table>
