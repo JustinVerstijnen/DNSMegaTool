@@ -35,12 +35,12 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install --target=".python_packages/lib/site-packages" -r requirements.txt
 
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip release.zip .python_packages ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -74,6 +74,8 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2E1D62508DE947459EC273FC90666B84 }}
 
       - name: 'Deploy to Azure Functions'
+        scm-do-build-during-deployment: false
+        enable-oryx-build: false
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
