@@ -184,14 +184,14 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                         </tr>`;
                     };
 
-                    const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
-                    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
-                    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
-                    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
+                    const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found for ${data.domain}";
+                    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found for ${data.domain}";
+                    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found for ${data.domain}";
+                    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found for ${data.domain}";
                     const hasDKIM = data.DKIM.valid_selector !== null;
                     const dnssec = data.DNSSEC;
-                    const ds = data.DS[0] || "No DS record found or DNS host does not support DNSSEC.";
-                    const mx = data.MX.join(", ") || "No MX record found";
+                    const ds = data.DS[0] || "No DS record found for ${data.domain} or does not support DNSSEC.";
+                    const mx = data.MX.join(", ") || "No MX record found ${data.domain}";
 
                     resultEl.innerHTML = `
                         <table>
