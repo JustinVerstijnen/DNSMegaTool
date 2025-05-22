@@ -134,7 +134,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
             <div style="text-align:center;">
                 <input type="text" id="domainInput" placeholder="example.com" />
                 
-                <button class="btn-icon check-btn" onclick="lookup()">
+                <button type="submit" class="btn-icon check-btn" onclick="lookup()">
                     <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
                     Check
                 </button>
