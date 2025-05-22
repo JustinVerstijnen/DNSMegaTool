@@ -192,13 +192,13 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
                     const hasDKIM = data.DKIM.valid_selector !== null;
                     const dnssec = data.DNSSEC;
-                    const ds = data.DS[0] || "No DS record found or DNS host does not support DNSSEC.";
+                    const ds = data.DS[0] || "Not found";
                     const mx = data.MX.join(", ") || "No MX record found";
 
                     resultEl.innerHTML = `
                         <table>
                             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
-                            ${formatRow("MX", mx !== "Not found", mx)}
+                            ${formatRow("MX", mx !== "No MX record found", mx)}
                             ${formatRow("SPF", spf.includes("v=spf1"), spf)}
                             ${formatRow("DKIM", hasDKIM, dkim)}
                             ${formatRow("DMARC", dmarc.includes("p=reject"), dmarc)}
@@ -249,7 +249,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     ns = get_ns_servers(domain)
     ds = get_ds_record(domain)
     dnskey_exists = check_dnskey_exists(domain)
-    dnssec = dnskey_exists and ds != ["Not found"]
+    dnssec = dnskey_exists and ds != ["No DS record found or DNS host does not support DNSSEC."]
     mx = get_mx_record(domain)
 
     dkim_selectors = ["selector1", "selector2", "default"]
