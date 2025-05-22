@@ -39,11 +39,7 @@ def check_dnskey_exists(domain):
     except Exception:
         return False
 
-@app.route(
-    route="/",
-    methods=["GET"],
-    auth_level=func.AuthLevel.ANONYMOUS
-)
+@app.route(route="/", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get('domain')
     if not domain:
@@ -123,17 +119,20 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 }
                 .more { color: blue; cursor: pointer; text-decoration: underline; }
             </style>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
         </head>
         <body>
             <div style="text-align:center; margin-bottom: 1em;">
-                <a href="https://justinverstijnen.nl" target="_blank"> <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" /></a>
+                <a href="https://justinverstijnen.nl" target="_blank"> 
+                    <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" />
+                </a>
             </div>
 
             <h2>DNS MEGAtool</h2>
             <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
             <div style="text-align:center;">
                 <input type="text" id="domainInput" placeholder="example.com" />
-                
                 <button class="btn-icon check-btn" onclick="lookup()">
                     <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
                     Check
@@ -148,6 +147,13 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
             <div id="result"></div>
 
             <script>
+                document.getElementById("domainInput").addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        lookup();
+                    }
+                });
+
                 async function lookup() {
                     const domain = document.getElementById('domainInput').value.trim();
                     if (!domain) return;
@@ -158,9 +164,15 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     const resultEl = document.getElementById('result');
                     resultEl.innerHTML = "";
 
+                    const escapeHTML = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                                                   .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+                                                   .replace(/'/g, "&#039;");
+
                     const formatRow = (label, enabled, value) => {
-                        let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
-                        let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${value.replace(/</g,'&lt;')}'">View more</span>` : '';
+                        let shortValue = value.length > 100 ? escapeHTML(value.slice(0, 100)) + '...' : escapeHTML(value);
+                        let moreLink = value.length > 100
+                            ? `<span class="more" onclick="this.parentElement.innerHTML='${escapeHTML(value)}'">View more</span>` 
+                            : '';
                         return `<tr>
                             <td><strong>${label}</strong></td>
                             <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
@@ -208,16 +220,40 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     `;
                 }
 
-                function download() {
+                async function download() {
                     const data = window.latestResult;
                     if (!data) return alert("Please run a check first.");
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "dns-check-result.json";
-                    a.click();
-                    URL.revokeObjectURL(url);
+
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    const img = new Image();
+                    img.src = "https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png";
+                    await new Promise(resolve => { img.onload = resolve; });
+                    doc.addImage(img, 'PNG', 80, 10, 50, 15);
+                    doc.setFontSize(16);
+                    doc.text("DNS MEGAtool Report", 105, 30, { align: "center" });
+
+                    const tableBody = [
+                        ["MX", data.MX.join(", "), data.MX.length > 0],
+                        ["SPF", data.SPF.join("\n"), data.SPF.some(r => r.includes("v=spf1"))],
+                        ["DKIM", data.DKIM.record.join("\n"), data.DKIM.valid_selector !== null],
+                        ["DMARC", data.DMARC.join("\n"), data.DMARC.some(r => r.includes("p=reject"))],
+                        ["MTA-STS", data.MTA_STS.join("\n"), data.MTA_STS.some(r => r.includes("v=STSv1"))],
+                        ["DNSSEC", data.DS.join("\n"), data.DNSSEC]
+                    ];
+
+                    doc.autoTable({
+                        startY: 40,
+                        head: [["Technology", "DNS Record", "Status"]],
+                        body: tableBody.map(([tech, value, status]) => [
+                            tech, value, status ? "✅" : "❌"
+                        ]),
+                        styles: { fontSize: 10 },
+                        headStyles: { fillColor: [136, 176, 220] }
+                    });
+
+                    doc.save("dns-megatool-report.pdf");
                 }
             </script>
         </body>
@@ -225,6 +261,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
         """
         return func.HttpResponse(html, mimetype="text/html")
 
+    # BACKEND: Domain data ophalen
     spf = get_txt_record(domain)
     dmarc = get_txt_record(f"_dmarc.{domain}")
     mta_sts = get_txt_record(f"_mta-sts.{domain}")
