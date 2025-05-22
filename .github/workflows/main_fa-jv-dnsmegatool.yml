@@ -74,8 +74,6 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2E1D62508DE947459EC273FC90666B84 }}
 
       - name: 'Deploy to Azure Functions'
-        scm-do-build-during-deployment: false
-        enable-oryx-build: false
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
