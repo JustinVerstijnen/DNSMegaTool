@@ -192,7 +192,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
                     const hasDKIM = data.DKIM.valid_selector !== null;
                     const dnssec = data.DNSSEC;
-                    const ds = data.DS[0] || "Not found";
+                    const ds = data.DS[0] || "No DS record found or DNS host does not support DNSSEC.";
                     const mx = data.MX.join(", ") || "No MX record found";
 
                     resultEl.innerHTML = `
