@@ -1,6 +1,8 @@
 import azure.functions as func
 import dns.resolver
 import json
+from fpdf import FPDF
+import io
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -39,191 +41,56 @@ def check_dnskey_exists(domain):
     except Exception:
         return False
 
-@app.route(
-    route="/",
-    methods=["GET"],
-    auth_level=func.AuthLevel.ANONYMOUS
-)
+class PDF(FPDF):
+    def header(self):
+        if hasattr(self, "logo_path"):
+            self.image(self.logo_path, x=80, w=50)
+            self.ln(25)
+        self.set_font("Arial", "B", 14)
+        self.cell(0, 10, f"DNS MEGAtool Report – {self.domain}", ln=True, align="C")
+        self.ln(5)
+
+    def dns_table(self, data):
+        self.set_font("Arial", "B", 12)
+        self.set_fill_color(240, 240, 240)
+        self.cell(60, 10, "Technology", 1, 0, 'C', True)
+        self.cell(120, 10, "DNS Record", 1, 1, 'C', True)
+        self.set_font("Arial", "", 11)
+        for key in ["MX", "SPF", "DKIM", "DMARC", "MTA-STS", "DNSSEC"]:
+            value = data.get(key, "Not found")
+            self.multi_cell(180, 10, f"{key}: {value}", border=1)
+
+    def ns_info(self, ns_list):
+        self.ln(5)
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "Authoritative Name Servers", ln=True)
+        self.set_font("Arial", "", 11)
+        for ns in ns_list:
+            self.cell(0, 8, f"• {ns}", ln=True)
+
+def generate_pdf(domain, data):
+    pdf = PDF()
+    pdf.domain = domain
+    pdf.logo_path = "logo.png"  # pas dit pad aan indien anders
+    pdf.add_page()
+    pdf.dns_table(data)
+    pdf.ns_info(data["NS"])
+
+    pdf_stream = io.BytesIO()
+    pdf.output(pdf_stream)
+    pdf_stream.seek(0)
+    return pdf_stream
+
+@app.route(route="/", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get('domain')
+    export = req.params.get('export', "false").lower() == "true"
+
     if not domain:
-        html = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>DNS MEGAtool - justinverstijnen.nl</title>
-            <style>
-                body {
-                    font-family: 'Segoe UI', sans-serif;
-                    background: #f4f6f8;
-                    padding: 2em;
-                    max-width: 1000px;
-                    margin: auto;
-                }
-                h2 {
-                    color: #333;
-                    text-align: center;
-                }
-                input, button {
-                    padding: 0.6em;
-                    font-size: 1em;
-                    margin: 0.5em 0;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                }
-                button {
-                    background-color: #88B0DC;
-                    color: white;
-                    cursor: pointer;
-                }
-                button:hover {
-                    background-color: #005A9E;
-                }
-                .btn-icon::before {
-                    margin-right: 0.5em;
-                }
-                table {
-                    margin: 2em auto;
-                    width: 90%;
-                    border-collapse: collapse;
-                    background: white;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                }
-                th, td {
-                    padding: 1em;
-                    border-bottom: 1px solid #eee;
-                    text-align: left;
-                    vertical-align: top;
-                }
-                th {
-                    background: #f0f2f5;
-                }
-                .enabled { color: green; font-weight: bold; }
-                .disabled { color: red; font-weight: bold; }
-                .small { font-size: 0.9em; color: #444; }
-                .dnsinfo {
-                    margin-top: 2em;
-                    padding: 1em;
-                    background-color: #eaf4ff;
-                    border-left: 4px solid #0078D4;
-                    font-size: 0.95em;
-                    max-width: 90%;
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-                .criteria {
-                    margin-top: 1em;
-                    padding: 1em;
-                    background-color: #e6f7e6;
-                    border-left: 4px solid #4CAF50;
-                    font-size: 0.95em;
-                    max-width: 90%;
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-                .more { color: blue; cursor: pointer; text-decoration: underline; }
-            </style>
-        </head>
-        <body>
-            <div style="text-align:center; margin-bottom: 1em;">
-                <a href="https://justinverstijnen.nl" target="_blank"> <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" /></a>
-            </div>
-
-            <h2>DNS MEGAtool</h2>
-            <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
-            <div style="text-align:center;">
-                <input type="text" id="domainInput" placeholder="example.com" />
-                
-                <button class="btn-icon check-btn" onclick="lookup()">
-                    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
-                    Check
-                </button>
-
-                <button id="exportBtn" class="btn-icon export-btn" onclick="download()" style="background-color: #92DBA5; display: none;">
-                    <svg style="height:1em;vertical-align:middle;margin-right:0.5em;" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 16.5l6-6-1.41-1.42L13 12.67V4h-2v8.67l-3.59-3.59L6 10.5l6 6z"/></svg>
-                    Export
-                </button>
-            </div>
-
-            <div id="result"></div>
-
-            <script>
-                async function lookup() {
-                    const domain = document.getElementById('domainInput').value.trim();
-                    if (!domain) return;
-                    const res = await fetch(`?domain=${domain}`);
-                    const data = await res.json();
-                    window.latestResult = data;
-                    document.getElementById("exportBtn").style.display = "inline-block";
-                    const resultEl = document.getElementById('result');
-                    resultEl.innerHTML = "";
-
-                    const formatRow = (label, enabled, value) => {
-                        let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
-                        let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${value.replace(/</g,'&lt;')}'">View more</span>` : '';
-                        return `<tr>
-                            <td><strong>${label}</strong></td>
-                            <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
-                            <td><div class="small">${shortValue} ${moreLink}</div></td>
-                        </tr>`;
-                    };
-
-                    const spf = data.SPF.find(r => r.includes("v=spf1")) || "Not found";
-                    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "Not found";
-                    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "Not found";
-                    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "Not found";
-                    const hasDKIM = data.DKIM.valid_selector !== null;
-                    const dnssec = data.DNSSEC;
-                    const ds = data.DS[0] || "Not found";
-                    const mx = data.MX.join(", ") || "Not found";
-
-                    resultEl.innerHTML = `
-                        <table>
-                            <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
-                            ${formatRow("MX", mx !== "Not found", mx)}
-                            ${formatRow("SPF", spf.includes("v=spf1"), spf)}
-                            ${formatRow("DKIM", hasDKIM, dkim)}
-                            ${formatRow("DMARC", dmarc.includes("p=reject"), dmarc)}
-                            ${formatRow("MTA-STS", mta.includes("v=STSv1"), mta)}
-                            ${formatRow("DNSSEC", dnssec, ds)}
-                        </table>
-                        <div class="dnsinfo">
-                            <strong>Authoritative DNS servers for ${data.domain}:</strong><br/>
-                            ${data.NS.join("<br/>")}
-                            <br/><br/>
-                            <strong>WHOIS:</strong> <a href="https://who.is/whois/${data.domain}" target="_blank">View WHOIS info</a>
-                        </div>
-                        <div class="criteria">
-                            <strong>Extra information</strong><br/><br/>
-                            Thank you for using DNS MEGAtool. The checks are performed have the following criteria:<br/><br/>
-                            - <strong>MX record</strong>: Checks if there is a MX record for the domain and shows the value.<br/>
-                            - <strong>SPF record</strong>: Checks if there is a SPF record for the domain and shows the value.<br/>
-                            - <strong>DKIM record</strong>: Checks if there are DKIM records for the domain and shows the values.<br/>
-                            - <strong>DMARC record</strong>: Checks if "Reject" is configured as DMARC policy to make it the most effective.<br/>
-                            - <strong>MTA-STS record</strong>: Checks if there is a MTA-STS record for the domain and shows the value.<br/>
-                            - <strong>DNSSEC</strong>: Shows ✅ only if DNSKEY exists AND DS record is present.<br><br>
-                            Issues? Report them at <a href="mailto:info@justinverstijnen.nl">info@justinverstijnen.nl</a><br><br>
-                            Thank you for using this tool.
-                        </div>
-                    `;
-                }
-
-                function download() {
-                    const data = window.latestResult;
-                    if (!data) return alert("Please run a check first.");
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "dns-check-result.json";
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }
-            </script>
-        </body>
-        </html>
-        """
-        return func.HttpResponse(html, mimetype="text/html")
+        return func.HttpResponse(
+            "Use /?domain=example.com to query DNS records or /?domain=example.com&export=true to get PDF.",
+            mimetype="text/plain"
+        )
 
     spf = get_txt_record(domain)
     dmarc = get_txt_record(f"_dmarc.{domain}")
@@ -231,33 +98,35 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     ns = get_ns_servers(domain)
     ds = get_ds_record(domain)
     dnskey_exists = check_dnskey_exists(domain)
-    dnssec = dnskey_exists and ds != ["Not found"]
+    dnssec = "✅" if dnskey_exists and ds != ["Not found"] else "❌"
     mx = get_mx_record(domain)
 
     dkim_selectors = ["selector1", "selector2", "default"]
-    dkim_records = {}
+    dkim_records = {"valid_selector": None, "record": ["Not found"]}
     for sel in dkim_selectors:
         full_name = f"{sel}._domainkey.{domain}"
         result = get_txt_record(full_name)
         if any("v=DKIM1" in r for r in result):
-            dkim_records["valid_selector"] = sel
-            dkim_records["record"] = result
+            dkim_records = {"valid_selector": sel, "record": result}
             break
-    else:
-        dkim_records["valid_selector"] = None
-        dkim_records["record"] = ["Not found"]
 
     result = {
         "domain": domain,
-        "SPF": spf,
-        "DMARC": dmarc,
-        "DKIM": dkim_records,
-        "MTA_STS": mta_sts,
-        "NS": ns,
+        "SPF": next((r for r in spf if "v=spf1" in r), "Not found"),
+        "DMARC": next((r for r in dmarc if "v=DMARC1" in r), "Not found"),
+        "MTA-STS": next((r for r in mta_sts if "v=STSv1" in r), "Not found"),
+        "DKIM": next((r for r in dkim_records["record"] if "v=DKIM1" in r), "Not found"),
         "DNSSEC": dnssec,
-        "DS": ds,
-        "MX": mx
+        "MX": ", ".join(mx) if mx else "Not found",
+        "NS": ns
     }
+
+    if export:
+        pdf_stream = generate_pdf(domain, result)
+        headers = {
+            "Content-Disposition": f"attachment; filename=dns_megatool_{domain}.pdf"
+        }
+        return func.HttpResponse(pdf_stream.read(), mimetype="application/pdf", headers=headers)
 
     return func.HttpResponse(
         json.dumps(result, indent=2),
