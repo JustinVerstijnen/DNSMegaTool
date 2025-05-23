@@ -225,16 +225,111 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 }
 
                 function download() {
-                    const data = window.latestResult;
-                    if (!data) return alert("Please run a check first.");
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "dns-check-result.json";
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }
+    const data = window.latestResult;
+    if (!data) return alert("Please run a check first.");
+
+    const renderRow = (label, records, isActive = true) => {
+        const statusClass = isActive ? "enabled" : "disabled";
+        const statusIcon = isActive ? "✅" : "❌";
+        const value = Array.isArray(records) ? records.join("<br>") : records;
+        return `
+            <tr>
+                <td><strong>${label}</strong></td>
+                <td class="${statusClass}">${statusIcon}</td>
+                <td class="small">${value}</td>
+            </tr>
+        `;
+    };
+
+    const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
+    const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
+    const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
+    const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
+    const hasDKIM = data.DKIM.valid_selector !== null;
+    const dnssec = data.DNSSEC;
+    const ds = data.DS[0] || "No DS record found or domain does not support DNSSEC.";
+    const mx = data.MX.join("<br>") || "No MX record found";
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DNS MEGAtool Rapport - ${data.domain}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f8;
+            padding: 2em;
+            max-width: 1000px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            margin: 2em auto;
+            width: 90%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 1em;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        th {
+            background: #f0f2f5;
+        }
+        .enabled { color: green; font-weight: bold; }
+        .disabled { color: red; font-weight: bold; }
+        .small { font-size: 0.9em; color: #444; }
+        .logo { text-align: center; margin-bottom: 2em; }
+        .logo img { height: 50px; }
+        .footer {
+            text-align: center;
+            margin-top: 3em;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <a href="https://justinverstijnen.nl" target="_blank">
+            <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
+        </a>
+    </div>
+    <h2>DNS MEGAtool Rapport</h2>
+    <p style="text-align:center;">Rapport voor: <strong>${data.domain}</strong></p>
+    <table>
+        <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
+        ${renderRow("MX", data.MX, mx !== "No MX record found")}
+        ${renderRow("SPF", spf, spf.includes("v=spf1"))}
+        ${renderRow("DKIM", dkim, hasDKIM)}
+        ${renderRow("DMARC", dmarc, dmarc.includes("p=reject"))}
+        ${renderRow("MTA-STS", mta, mta.includes("v=STSv1"))}
+        ${renderRow("DNSSEC", ds, dnssec)}
+    </table>
+    <div class="footer">
+        Rapport gegenereerd met de <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a><br/>
+        &copy; ${new Date().getFullYear()} justinverstijnen.nl
+    </div>
+</body>
+</html>
+`;
+
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dns-report-${data.domain}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
             </script>
         </body>
         </html>
