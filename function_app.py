@@ -129,7 +129,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 <a href="https://justinverstijnen.nl" target="_blank"> <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" /></a>
             </div>
 
-            <h2>DNS MEGAtool</h2>
+            <h2>DNS MEGAtool v1.1</h2>
             <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
             <div style="text-align:center;">
                 <form id="SubmitButton">
@@ -247,7 +247,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     ns = get_ns_servers(domain)
     ds = get_ds_record(domain)
     dnskey_exists = check_dnskey_exists(domain)
-    dnssec = dnskey_exists and ds != ["Not found"]
+    dnssec = dnskey_exists and ds and not ds[0].startswith("No ")
     mx = get_mx_record(domain)
 
     dkim_selectors = ["selector1", "selector2", "default"]
