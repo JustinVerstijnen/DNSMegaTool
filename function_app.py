@@ -23,14 +23,14 @@ def get_mx_record(domain):
         records = dns.resolver.resolve(domain, 'MX')
         return [str(r.exchange).strip('.') for r in records]
     except Exception:
-        return ["Not found"]
+        return ["No MX record found"]
 
 def get_ds_record(domain):
     try:
         records = dns.resolver.resolve(domain, 'DS')
         return [r.to_text() for r in records]
     except Exception:
-        return ["Not found"]
+        return ["No DS record found or domain does not support DNSSEC."]
 
 def check_dnskey_exists(domain):
     try:
