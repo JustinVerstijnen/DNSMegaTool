@@ -224,7 +224,9 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     `;
                 }
 
-                function download() {
+                const toolVersion = "v1.1";
+
+function download() {
     const data = window.latestResult;
     if (!data) return alert("Please run a check first.");
 
@@ -255,25 +257,40 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>DNS MEGAtool Rapport - ${data.domain}</title>
+    <title>DNS MEGAtool Rapport - ${data.domain} - ${toolVersion}</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             background: #f4f6f8;
             padding: 2em;
-            max-width: 1000px;
-            margin: auto;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+        .logo img {
+            height: 50px;
         }
         h2 {
             text-align: center;
             color: #333;
         }
+        p {
+            text-align: center;
+        }
         table {
-            margin: 2em auto;
-            width: 90%;
+            width: 100%;
             border-collapse: collapse;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 2em;
         }
         th, td {
             padding: 1em;
@@ -286,8 +303,6 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
         .enabled { color: green; font-weight: bold; }
         .disabled { color: red; font-weight: bold; }
         .small { font-size: 0.9em; color: #444; }
-        .logo { text-align: center; margin-bottom: 2em; }
-        .logo img { height: 50px; }
         .footer {
             text-align: center;
             margin-top: 3em;
@@ -297,25 +312,27 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     </style>
 </head>
 <body>
-    <div class="logo">
-        <a href="https://justinverstijnen.nl" target="_blank">
-            <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
-        </a>
-    </div>
-    <h2>DNS MEGAtool Rapport</h2>
-    <p style="text-align:center;">Rapport voor: <strong>${data.domain}</strong></p>
-    <table>
-        <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
-        ${renderRow("MX", data.MX, mx !== "No MX record found")}
-        ${renderRow("SPF", spf, spf.includes("v=spf1"))}
-        ${renderRow("DKIM", dkim, hasDKIM)}
-        ${renderRow("DMARC", dmarc, dmarc.includes("p=reject"))}
-        ${renderRow("MTA-STS", mta, mta.includes("v=STSv1"))}
-        ${renderRow("DNSSEC", ds, dnssec)}
-    </table>
-    <div class="footer">
-        Rapport gegenereerd met de <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a><br/>
-        &copy; ${new Date().getFullYear()} justinverstijnen.nl
+    <div class="container">
+        <div class="logo">
+            <a href="https://justinverstijnen.nl" target="_blank">
+                <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
+            </a>
+        </div>
+        <h2>DNS MEGAtool Rapport ${toolVersion}</h2>
+        <p>Rapport voor: <strong>${data.domain}</strong></p>
+        <table>
+            <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
+            ${renderRow("MX", data.MX, mx !== "No MX record found")}
+            ${renderRow("SPF", spf, spf.includes("v=spf1"))}
+            ${renderRow("DKIM", dkim, hasDKIM)}
+            ${renderRow("DMARC", dmarc, dmarc.includes("p=reject"))}
+            ${renderRow("MTA-STS", mta, mta.includes("v=STSv1"))}
+            ${renderRow("DNSSEC", ds, dnssec)}
+        </table>
+        <div class="footer">
+            Rapport gegenereerd met de <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a> ${toolVersion}<br/>
+            &copy; ${new Date().getFullYear()} justinverstijnen.nl
+        </div>
     </div>
 </body>
 </html>
@@ -329,7 +346,6 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     a.click();
     URL.revokeObjectURL(url);
 }
-
             </script>
         </body>
         </html>
