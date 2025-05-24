@@ -122,6 +122,33 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     margin-right: auto;
                 }
                 .more { color: blue; cursor: pointer; text-decoration: underline; }
+                .tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 0.8em;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.85em;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
             </style>
         </head>
         <body>
