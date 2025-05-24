@@ -175,20 +175,50 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     resultEl.innerHTML = "";
 
                     const formatRow = (label, enabled, value) => {
-                        let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
-                        let escaped = value
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#39;");
-                    let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${escaped}'">View more</span>` : '';
-                        return `<tr>
-                            <td><strong>${label}</strong></td>
-                            <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
-                            <td><div class="small">${shortValue} ${moreLink}</div></td>
-                        </tr>`;
-                    };
+    const descriptions = {
+        "MX": "Controleert of er geldige MX-records zijn ingesteld voor het domein.",
+        "SPF": "Controleert of een geldig SPF-record aanwezig is met v=spf1.",
+        "DKIM": "Zoekt naar geldige DKIM-records en actieve selectors.",
+        "DMARC": "Controleert of er een DMARC-record is met minimaal beleid p=reject.",
+        "MTA-STS": "Controleert of er een geldig MTA-STS TXT-record bestaat.",
+        "DNSSEC": "Toont ✅ als zowel een DNSKEY als een DS-record aanwezig zijn."
+    };
+    const links = {
+        "MX": "https://dnsmegatool.justinverstijnen.nl/info#mx",
+        "SPF": "https://dnsmegatool.justinverstijnen.nl/info#spf",
+        "DKIM": "https://dnsmegatool.justinverstijnen.nl/info#dkim",
+        "DMARC": "https://dnsmegatool.justinverstijnen.nl/info#dmarc",
+        "MTA-STS": "https://dnsmegatool.justinverstijnen.nl/info#mta-sts",
+        "DNSSEC": "https://dnsmegatool.justinverstijnen.nl/info#dnssec"
+    };
+
+    let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
+
+    let escaped = value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${escaped}'">View more</span>` : '';
+
+    const tooltip = `
+        <div class="tooltip">
+            <strong>${label}</strong>
+            <div class="tooltiptext">
+                ${descriptions[label]}<br/>
+                <a href="${links[label]}" target="_blank" style="color:#aad;">Meer info</a>
+            </div>
+        </div>
+    `;
+
+    return `<tr>
+        <td>${tooltip}</td>
+        <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
+        <td><div class="small">${shortValue} ${moreLink}</div></td>
+    </tr>`;
+};
+
 
                     const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
                     const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
