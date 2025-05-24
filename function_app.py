@@ -266,7 +266,7 @@ function download() {
             margin: 0;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 2em;
