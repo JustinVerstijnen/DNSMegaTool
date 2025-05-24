@@ -297,6 +297,12 @@ function download() {
             border-bottom: 1px solid #eee;
             text-align: left;
         }
+        td.small {
+    font-size: 0.9em;
+    color: #444;
+    word-break: break-all;
+    white-space: normal;
+}
         th {
             background: #f0f2f5;
         }
