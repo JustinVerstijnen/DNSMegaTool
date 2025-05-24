@@ -176,7 +176,13 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 
                     const formatRow = (label, enabled, value) => {
                         let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
-                        let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${value.replace(/</g,'&lt;')}'">View more</span>` : '';
+                        let escaped = value
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+                    let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${escaped}'">View more</span>` : '';
                         return `<tr>
                             <td><strong>${label}</strong></td>
                             <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
