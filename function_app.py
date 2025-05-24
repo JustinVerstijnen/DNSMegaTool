@@ -156,7 +156,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 <a href="https://justinverstijnen.nl" target="_blank"> <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" /></a>
             </div>
 
-            <h2>DNS MEGAtool v1.1</h2>
+            <h2>DNS MEGAtool</h2>
             <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
             <div style="text-align:center;">
                 <form id="SubmitButton">
@@ -203,20 +203,20 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 
                     const formatRow = (label, enabled, value) => {
     const descriptions = {
-        "MX": "Controleert of er geldige MX-records zijn ingesteld voor het domein.",
-        "SPF": "Controleert of een geldig SPF-record aanwezig is met v=spf1.",
-        "DKIM": "Zoekt naar geldige DKIM-records en actieve selectors.",
-        "DMARC": "Controleert of er een DMARC-record is met minimaal beleid p=reject.",
-        "MTA-STS": "Controleert of er een geldig MTA-STS TXT-record bestaat.",
-        "DNSSEC": "Toont ✅ als zowel een DNSKEY als een DS-record aanwezig zijn."
+        "MX": "Checks if there is a MX record for the domain and shows the value.",
+        "SPF": "Checks if there is a SPF record for the domain and shows the value.",
+        "DKIM": "Checks if there are DKIM records for the domain and shows the values.",
+        "DMARC": "Checks if "Reject" is configured as DMARC policy to make it the most effective.",
+        "MTA-STS": "Checks if there is a MTA-STS record for the domain and shows the value.",
+        "DNSSEC": "Checks if DNSSEC is enabled for the domain and a DS record exists, which are prerequisites for DNSSEC to work."
     };
     const links = {
-        "MX": "https://dnsmegatool.justinverstijnen.nl/info#mx",
-        "SPF": "https://dnsmegatool.justinverstijnen.nl/info#spf",
-        "DKIM": "https://dnsmegatool.justinverstijnen.nl/info#dkim",
-        "DMARC": "https://dnsmegatool.justinverstijnen.nl/info#dmarc",
-        "MTA-STS": "https://dnsmegatool.justinverstijnen.nl/info#mta-sts",
-        "DNSSEC": "https://dnsmegatool.justinverstijnen.nl/info#dnssec"
+        "MX": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/",
+        "SPF": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/",
+        "DKIM": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/",
+        "DMARC": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/",
+        "MTA-STS": "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow/",
+        "DNSSEC": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/"
     };
 
     let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
@@ -280,7 +280,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                             - <strong>DKIM record</strong>: Checks if there are DKIM records for the domain and shows the values.<br/>
                             - <strong>DMARC record</strong>: Checks if "Reject" is configured as DMARC policy to make it the most effective.<br/>
                             - <strong>MTA-STS record</strong>: Checks if there is a MTA-STS record for the domain and shows the value.<br/>
-                            - <strong>DNSSEC</strong>: Shows ✅ only if DNSKEY exists AND DS record is present.<br><br>
+                            - <strong>DNSSEC</strong>: Checks if DNSSEC is enabled for the domain and a DS record exists, which are prerequisites for DNSSEC to work.<br><br>
                             Issues? Report them at <a href="mailto:info@justinverstijnen.nl">info@justinverstijnen.nl</a><br><br>
                             Thank you for using this tool.
                         </div>
@@ -320,7 +320,7 @@ function download() {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>DNS MEGAtool Rapport - ${data.domain} - ${toolVersion}</title>
+    <title>DNS MEGAtool Rapport - ${data.domain}</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -387,8 +387,8 @@ function download() {
                 <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
             </a>
         </div>
-        <h2>DNS MEGAtool Rapport ${toolVersion}</h2>
-        <p>Rapport voor: <strong>${data.domain}</strong></p>
+        <h2>DNS MEGAtool Report</h2>
+        <p>Report of: <strong>${data.domain}</strong></p>
         <table>
             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
             ${renderRow("MX", data.MX, mx !== "No MX record found")}
@@ -399,7 +399,7 @@ function download() {
             ${renderRow("DNSSEC", ds, dnssec)}
         </table>
         <div class="footer">
-            Rapport gegenereerd met de <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a> ${toolVersion}<br/>
+            Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">DNS MEGAtool</a><br/>
             &copy; ${new Date().getFullYear()} justinverstijnen.nl
         </div>
     </div>
