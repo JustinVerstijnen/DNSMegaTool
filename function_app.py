@@ -156,7 +156,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 <a href="https://justinverstijnen.nl" target="_blank"> <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" /></a>
             </div>
 
-            <h2>DNS MEGAtool v1.1</h2>
+            <h2>DNS MEGAtool</h2>
             <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
             <div style="text-align:center;">
                 <form id="SubmitButton">
@@ -204,19 +204,19 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     const formatRow = (label, enabled, value) => {
     const descriptions = {
         "MX": "Checks if valid MX records are configured for the domain.",
-        "SPF": "Checks if a valid SPF record with v=spf1 is present.",
+        "SPF": "Checks if a valid SPF record with v=spf1 and a Hardfail is present.",
         "DKIM": "Looks for valid DKIM records and active selectors.",
-        "DMARC": "Checks if a DMARC record exists with at least policy p=reject.",
+        "DMARC": "Checks if a DMARC record exists with policy p=reject.",
         "MTA-STS": "Checks if a valid MTA-STS TXT record exists.",
-        "DNSSEC": "Shows ✅ if both DNSKEY and DS records are present."
+        "DNSSEC": "Checks if both DNSKEY and DS records are present."
     };
     const links = {
-        "MX": "https://dnsmegatool.justinverstijnen.nl/info#mx",
-        "SPF": "https://dnsmegatool.justinverstijnen.nl/info#spf",
-        "DKIM": "https://dnsmegatool.justinverstijnen.nl/info#dkim",
-        "DMARC": "https://dnsmegatool.justinverstijnen.nl/info#dmarc",
-        "MTA-STS": "https://dnsmegatool.justinverstijnen.nl/info#mta-sts",
-        "DNSSEC": "https://dnsmegatool.justinverstijnen.nl/info#dnssec"
+        "MX": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc#mx",
+        "SPF": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc#spf",
+        "DKIM": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc#dkim",
+        "DMARC": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc#dmarc",
+        "MTA-STS": "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow#mta-sts",
+        "DNSSEC": "https://justinverstijnen.nl/configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365#dnssec"
     };
 
     const shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
@@ -241,6 +241,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     return `<tr><td>${tooltip}</td><td class='${enabled ? 'enabled' : 'disabled'}'>${enabled ? '✅' : '❌'}</td><td><div class='small'>${valueToShow} ${moreLink}</div></td></tr>`;
 };
                     const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
+                    const spfIsStrict = spf.includes("-all");
                     const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
                     const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
                     const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
@@ -253,7 +254,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                         <table>
                             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
                             ${formatRow("MX", mx !== "Not found", mx)}
-                            ${formatRow("SPF", spf.includes("v=spf1"), spf)}
+                            ${formatRow("SPF", spfIsStrict, spf)}
                             ${formatRow("DKIM", hasDKIM, dkim)}
                             ${formatRow("DMARC", dmarc.includes("p=reject"), dmarc)}
                             ${formatRow("MTA-STS", mta.includes("v=STSv1"), mta)}
