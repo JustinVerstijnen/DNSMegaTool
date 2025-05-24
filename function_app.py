@@ -223,10 +223,12 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     const escaped = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
 
     let moreLink = '';
+    let valueToShow = shortValue;
+
     if (value.length > 100) {
         const id = `detail-${label.toLowerCase()}`;
-        moreLink = `<span class='more' onclick="document.getElementById('${id}').style.display='inline'; this.style.display='none';">View more</span>
-                     <div id='${id}' style='display:none; word-break: break-word;'>${escaped}</div>`;
+        moreLink = `<span class='more' onclick="document.getElementById('${id}').style.display='block'; this.parentElement.querySelector('.short').style.display='none'; this.style.display='none';">View more</span>`;
+        valueToShow = `<span class='short'>${shortValue}</span><div id='${id}' style='display:none; word-break: break-word;'>${escaped}</div>`;
     }
 
     const tooltip = `
@@ -236,7 +238,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
             </div>
         </div>`;
 
-    return `<tr><td>${tooltip}</td><td class='${enabled ? 'enabled' : 'disabled'}'>${enabled ? '✅' : '❌'}</td><td><div class='small'>${shortValue} ${moreLink}</div></td></tr>`;
+    return `<tr><td>${tooltip}</td><td class='${enabled ? 'enabled' : 'disabled'}'>${enabled ? '✅' : '❌'}</td><td><div class='small'>${valueToShow} ${moreLink}</div></td></tr>`;
 };
                     const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
                     const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
