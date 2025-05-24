@@ -203,12 +203,12 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 
                     const formatRow = (label, enabled, value) => {
     const descriptions = {
-        "MX": "Controleert of er geldige MX-records zijn ingesteld voor het domein.",
-        "SPF": "Controleert of een geldig SPF-record aanwezig is met v=spf1.",
-        "DKIM": "Zoekt naar geldige DKIM-records en actieve selectors.",
-        "DMARC": "Controleert of er een DMARC-record is met minimaal beleid p=reject.",
-        "MTA-STS": "Controleert of er een geldig MTA-STS TXT-record bestaat.",
-        "DNSSEC": "Toont ✅ als zowel een DNSKEY als een DS-record aanwezig zijn."
+        "MX": "Checks if valid MX records are configured for the domain.",
+        "SPF": "Checks if a valid SPF record with v=spf1 is present.",
+        "DKIM": "Looks for valid DKIM records and active selectors.",
+        "DMARC": "Checks if a DMARC record exists with at least policy p=reject.",
+        "MTA-STS": "Checks if a valid MTA-STS TXT record exists.",
+        "DNSSEC": "Shows ✅ if both DNSKEY and DS records are present."
     };
     const links = {
         "MX": "https://dnsmegatool.justinverstijnen.nl/info#mx",
@@ -219,34 +219,25 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
         "DNSSEC": "https://dnsmegatool.justinverstijnen.nl/info#dnssec"
     };
 
-    let shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
+    const shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
+    const escaped = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+    let moreLink = '';
 
-    let escaped = value
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    let moreLink = value.length > 100 ? `<span class="more" onclick="this.parentElement.innerHTML='${escaped}'">View more</span>` : '';
+    if (value.length > 100) {
+        const id = `detail-${label.toLowerCase()}`;
+        moreLink = `<span class='more' onclick="document.getElementById('${id}').innerText='${escaped}'; this.style.display='none';">View more</span>
+                    <div id='${id}'></div>`;
+    }
 
     const tooltip = `
-        <div class="tooltip">
-            <strong>${label}</strong>
-            <div class="tooltiptext">
-                ${descriptions[label]}<br/>
-                <a href="${links[label]}" target="_blank" style="color:#aad;">Meer info</a>
+        <div class='tooltip'><strong>${label}</strong>
+            <div class='tooltiptext'>${descriptions[label]}<br/>
+                <a href='${links[label]}' target='_blank' style='color:#aad;'>More info</a>
             </div>
-        </div>
-    `;
+        </div>`;
 
-    return `<tr>
-        <td>${tooltip}</td>
-        <td class="${enabled ? 'enabled' : 'disabled'}">${enabled ? "✅" : "❌"}</td>
-        <td><div class="small">${shortValue} ${moreLink}</div></td>
-    </tr>`;
+    return `<tr><td>${tooltip}</td><td class='${enabled ? 'enabled' : 'disabled'}'>${enabled ? '✅' : '❌'}</td><td><div class='small'>${shortValue} ${moreLink}</div></td></tr>`;
 };
-
-
                     const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
                     const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
                     const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
