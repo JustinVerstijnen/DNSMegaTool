@@ -204,7 +204,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                     const formatRow = (label, enabled, value) => {
     const descriptions = {
         "MX": "Checks if valid MX records are configured for the domain.",
-        "SPF": "Checks if a valid SPF record with v=spf1 and a Hardfail is present.",
+        "SPF": "Checks if a valid SPF record with v=spf1 and a Hardfail (-all) is present.",
         "DKIM": "Looks for valid DKIM records and active selectors.",
         "DMARC": "Checks if a DMARC record exists with policy p=reject.",
         "MTA-STS": "Checks if a valid MTA-STS TXT record exists.",
@@ -270,12 +270,13 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                             <strong>Extra information</strong><br/><br/>
                             Thank you for using DNS MEGAtool. The checks are performed have the following criteria:<br/><br/>
                             - <strong>MX record</strong>: Checks if there is a MX record for the domain and shows the value.<br/>
-                            - <strong>SPF record</strong>: Checks if there is a SPF record for the domain and shows the value.<br/>
+                            - <strong>SPF record</strong>: Checks if a valid SPF record and a hardfail (-all) is present.<br/>
                             - <strong>DKIM record</strong>: Checks if there are DKIM records for the domain and shows the values.<br/>
                             - <strong>DMARC record</strong>: Checks if "Reject" is configured as DMARC policy to make it the most effective.<br/>
                             - <strong>MTA-STS record</strong>: Checks if there is a MTA-STS record for the domain and shows the value.<br/>
-                            - <strong>DNSSEC</strong>: Shows ✅ only if DNSKEY exists AND DS record is present.<br><br>
-                            Issues? Report them at <a href="mailto:info@justinverstijnen.nl">info@justinverstijnen.nl</a><br><br>
+                            - <strong>DNSSEC</strong>: Checks if both DNSKEY and DS records are present.<br><br>
+                            Hover on the technology names to get more information and links to the articles and get the information to know and configure them.<br><br>
+                            Issues with this tool? Report them at <a href="mailto:info@justinverstijnen.nl">info@justinverstijnen.nl</a><br><br>
                             Thank you for using this tool.
                         </div>
                     `;
@@ -314,7 +315,7 @@ function download() {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>DNS MEGAtool Rapport - ${data.domain} - ${toolVersion}</title>
+    <title>DNS MEGAtool Report - justinverstijnen.nl</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -381,8 +382,8 @@ function download() {
                 <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
             </a>
         </div>
-        <h2>DNS MEGAtool Rapport ${toolVersion}</h2>
-        <p>Rapport voor: <strong>${data.domain}</strong></p>
+        <h2>DNS MEGAtool Report ${toolVersion}</h2>
+        <p>Report of domain: <strong>${data.domain}</strong></p>
         <table>
             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
             ${renderRow("MX", data.MX, mx !== "No MX record found")}
@@ -393,7 +394,7 @@ function download() {
             ${renderRow("DNSSEC", ds, dnssec)}
         </table>
         <div class="footer">
-            Rapport gegenereerd met de <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a> ${toolVersion}<br/>
+            Report generated with <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a><br/>
             &copy; ${new Date().getFullYear()} justinverstijnen.nl
         </div>
     </div>
