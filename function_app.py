@@ -394,7 +394,7 @@ function download() {
             ${renderRow("DNSSEC", ds, dnssec)}
         </table>
         <div class="footer">
-            Report generated with <a href="https://justinverstijnen.nl/dnsmegatool" target="_blank">DNS MEGAtool</a><br/>
+            Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">DNS MEGAtool</a><br/>
             &copy; ${new Date().getFullYear()} justinverstijnen.nl
         </div>
     </div>
