@@ -221,12 +221,12 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
 
     const shortValue = value.length > 100 ? value.slice(0, 100) + '...' : value;
     const escaped = value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
-    let moreLink = '';
 
+    let moreLink = '';
     if (value.length > 100) {
         const id = `detail-${label.toLowerCase()}`;
-        moreLink = `<span class='more' onclick="document.getElementById('${id}').innerText='${escaped}'; this.style.display='none';">View more</span>
-                    <div id='${id}'></div>`;
+        moreLink = `<span class='more' onclick="document.getElementById('${id}').style.display='inline'; this.style.display='none';">View more</span>
+                     <div id='${id}' style='display:none; word-break: break-word;'>${escaped}</div>`;
     }
 
     const tooltip = `
