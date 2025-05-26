@@ -283,7 +283,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 }
 
                 const toolVersion = "v1.1";
-
+                
 function download() {
     const data = window.latestResult;
     if (!data) return alert("Please run a check first.");
@@ -302,6 +302,7 @@ function download() {
     };
 
     const spf = data.SPF.find(r => r.includes("v=spf1")) || "No SPF record found";
+    const spfIsStrict = spf.includes("-all");
     const dmarc = data.DMARC.find(r => r.includes("v=DMARC1")) || "No DMARC record found";
     const mta = data.MTA_STS.find(r => r.includes("v=STSv1")) || "No MTA-STS record found";
     const dkim = data.DKIM.record.find(r => r.includes("v=DKIM1")) || "No DKIM record(s) found";
@@ -356,17 +357,16 @@ function download() {
             text-align: left;
         }
         td.small {
-    font-size: 0.9em;
-    color: #444;
-    word-break: break-all;
-    white-space: normal;
-}
+            font-size: 0.9em;
+            color: #444;
+            word-break: break-all;
+            white-space: normal;
+        }
         th {
             background: #f0f2f5;
         }
         .enabled { color: green; font-weight: bold; }
         .disabled { color: red; font-weight: bold; }
-        .small { font-size: 0.9em; color: #444; }
         .footer {
             text-align: center;
             margin-top: 3em;
@@ -387,7 +387,7 @@ function download() {
         <table>
             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
             ${renderRow("MX", data.MX, mx !== "No MX record found")}
-            ${renderRow("SPF", spf, spf.includes("v=spf1"))}
+            ${renderRow("SPF", spf, spfIsStrict)}
             ${renderRow("DKIM", dkim, hasDKIM)}
             ${renderRow("DMARC", dmarc, dmarc.includes("p=reject"))}
             ${renderRow("MTA-STS", mta, mta.includes("v=STSv1"))}
