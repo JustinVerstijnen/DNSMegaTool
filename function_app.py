@@ -1,11 +1,9 @@
-#Section: Import dependencies
 import azure.functions as func
 import dns.resolver
 import json
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-# Section: Lookups
 def get_txt_record(domain):
     try:
         records = dns.resolver.resolve(domain, 'TXT')
@@ -46,7 +44,6 @@ def check_dnskey_exists(domain):
     methods=["GET"],
     auth_level=func.AuthLevel.ANONYMOUS
 )
-# Section: Interactive check
 def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get('domain')
     if not domain:
@@ -286,7 +283,7 @@ def dns_mega_tool(req: func.HttpRequest) -> func.HttpResponse:
                 }
 
                 const toolVersion = "v1.1";
-# Section: Download and file    
+                
 function download() {
     const data = window.latestResult;
     if (!data) return alert("Please run a check first.");
@@ -385,7 +382,7 @@ function download() {
                 <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
             </a>
         </div>
-        <h2>DNS MEGAtool report</h2>
+        <h2>DNS MEGAtool Report v1.1</h2>
         <p>Report of domain: <strong>${data.domain}</strong></p>
         <table>
             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
@@ -425,8 +422,7 @@ function download() {
         </html>
         """
         return func.HttpResponse(html, mimetype="text/html")
-        
-# Section: Formatting and results
+
     spf = get_txt_record(domain)
     dmarc = get_txt_record(f"_dmarc.{domain}")
     mta_sts = get_txt_record(f"_mta-sts.{domain}")
