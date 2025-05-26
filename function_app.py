@@ -397,6 +397,7 @@ function download() {
         <div style="margin-top: 2em; padding: 1em; background-color: #eaf4ff; border-left: 4px solid #0078D4; font-size: 0.95em;">
             <strong>Authoritative DNS servers for ${data.domain}:</strong><br/>
             ${data.NS.join("<br/>")}
+            <strong>WHOIS:</strong> <a href="https://who.is/whois/${data.domain}" target="_blank">View WHOIS info</a>
         </div>
 
         <div class="footer">
