@@ -359,7 +359,7 @@ function download() {
         td.small {
             font-size: 0.9em;
             color: #444;
-            word-break: break-all;
+            word-break: break-word;
             white-space: normal;
         }
         th {
@@ -382,7 +382,7 @@ function download() {
                 <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" />
             </a>
         </div>
-        <h2>DNS MEGAtool Report ${toolVersion}</h2>
+        <h2>DNS MEGAtool Report v1.1</h2>
         <p>Report of domain: <strong>${data.domain}</strong></p>
         <table>
             <tr><th>Technology</th><th>Status</th><th>DNS Record</th></tr>
@@ -393,6 +393,12 @@ function download() {
             ${renderRow("MTA-STS", mta, mta.includes("v=STSv1"))}
             ${renderRow("DNSSEC", ds, dnssec)}
         </table>
+
+        <div style="margin-top: 2em; padding: 1em; background-color: #eaf4ff; border-left: 4px solid #0078D4; font-size: 0.95em;">
+            <strong>Authoritative DNS servers for ${data.domain}:</strong><br/>
+            ${data.NS.join("<br/>")}
+        </div>
+
         <div class="footer">
             Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">DNS MEGAtool</a><br/>
             &copy; ${new Date().getFullYear()} justinverstijnen.nl
