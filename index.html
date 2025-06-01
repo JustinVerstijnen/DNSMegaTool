@@ -1,43 +1,58 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>DNS MEGAtool - justinverstijnen.nl</title>
     <meta charset="UTF-8">
+    <title>DNS MEGAtool - justinverstijnen.nl</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Jouw complete HTML zoals eerder, versimpeld hier -->
-    <h1>DNS MEGAtool</h1>
-    <p>Gebruik het formulier om een domein te checken.</p>
-    <form id="SubmitButton">
-        <input type="text" id="domainInput" placeholder="example.com">
-        <button type="submit">Check</button>
-        <button id="exportBtn" type="button" style="display: none;">Export</button>
-    </form>
+    <div style="text-align:center; margin-bottom: 1em;">
+        <a href="https://justinverstijnen.nl" target="_blank">
+            <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" />
+        </a>
+    </div>
+
+    <h2>DNS MEGAtool</h2>
+    <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
+
+    <div style="text-align:center;">
+        <form id="SubmitButton">
+            <input type="text" id="domainInput" placeholder="example.com" />
+            <button type="submit" id="submitButton" class="btn-icon check-btn">
+                Check
+            </button>
+            <button id="exportBtn" type="button" class="btn-icon export-btn" style="display: none;">
+                Export
+            </button>
+        </form>
+    </div>
+
     <div id="result"></div>
 
     <script>
-    const form = document.getElementById('SubmitButton');
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        lookup();
-    });
+        const form = document.getElementById('SubmitButton');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            lookup();
+        });
 
-    async function lookup() {
-        const domain = document.getElementById('domainInput').value.trim();
-        if (!domain) return;
-        const res = await fetch(`?domain=${domain}`);
-        const data = await res.json();
-        window.latestResult = data;
-        document.getElementById("exportBtn").style.display = "inline-block";
-        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
-    }
+        async function lookup() {
+            const domain = document.getElementById('domainInput').value.trim();
+            if (!domain) return;
+            
+            // HIER staat nu het correcte API-pad:
+            const res = await fetch(`/api/function_app?domain=${domain}`);
+            const data = await res.json();
 
-    document.getElementById('exportBtn').addEventListener('click', function() {
-        const domain = window.latestResult.domain;
-        window.location.href = `?domain=${domain}&export=true`;
-    });
+            window.latestResult = data;
+            document.getElementById("exportBtn").style.display = "inline-block";
+            document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const domain = window.latestResult.domain;
+            window.location.href = `/api/function_app?domain=${domain}&export=true`;
+        });
     </script>
 </body>
 </html>
