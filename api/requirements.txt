@@ -7,5 +7,4 @@ dnspython
 fpdf
 weasyprint
 requests
-
 jinja2
