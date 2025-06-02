@@ -8,7 +8,10 @@ import datetime
 template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "templates"))
 template_env = jinja2.Environment(loader=template_loader)
 
-# Simuleer je DNS lookup logica (hier komt normaal jouw echte logica)
+# Registreer de Function App (v2 programming model)
+app = func.FunctionApp()
+
+# Simuleer je DNS lookup logica
 def perform_dns_lookup(domain):
     return {
         "domain": domain,
@@ -61,23 +64,22 @@ def render_export(data):
     )
     return html
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+# Hier komt de nieuwe v2 decorator-based function route
+@app.route(route="function_app")
+def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get("domain")
     export = req.params.get("export")
 
     if not domain:
-        # Render startpagina
+        # Render startpagina (optioneel, als je deze echt via API wilt doen)
         template = template_env.get_template("index.html")
         html = template.render()
         return func.HttpResponse(html, mimetype="text/html")
 
-    # Voer DNS lookup uit
     data = perform_dns_lookup(domain)
 
     if export:
-        # Render export template
         export_html = render_export(data)
         return func.HttpResponse(export_html, mimetype="text/html")
 
-    # Standaard API response als JSON
     return func.HttpResponse(json.dumps(data), mimetype="application/json")
