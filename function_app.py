@@ -4,10 +4,8 @@ import os
 import jinja2
 import datetime
 
-# Initialiseer de FunctionApp (decorator model v2)
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-# DNS lookup logica
 def perform_dns_lookup(domain):
     return {
         "domain": domain,
@@ -21,7 +19,6 @@ def perform_dns_lookup(domain):
         "NS": ["ns1.example.com", "ns2.example.com"]
     }
 
-# Route handler
 @app.route(route="function_app")
 def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get("domain")
@@ -34,7 +31,6 @@ def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
 
     if export:
         try:
-            # Jinja2 initialisatie pas tijdens request (veilig bij cold starts)
             template_loader = jinja2.FileSystemLoader(
                 searchpath=os.path.join(os.path.dirname(__file__), "website")
             )
