@@ -22,7 +22,7 @@
             }
 
             try {
-                const response = await fetch(`/api/function_app?domain=${encodeURIComponent(domain)}`);
+                const response = await fetch(`https://fa-jv-dnsmegatoolapi.azurewebsites.net/api/function_app?domain=${encodeURIComponent(domain)}`);
                 const data = await response.json();
                 renderDnsTable(data);
             } catch (err) {
