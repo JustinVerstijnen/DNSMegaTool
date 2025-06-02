@@ -80,4 +80,3 @@ jobs:
           app-name: 'fa-jv-dnsmegatoolapi'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
