@@ -41,7 +41,7 @@
             if (!domain) return;
             
             // HIER staat nu het correcte API-pad:
-            const res = await fetch(`/api/function_app?domain=${domain}`);
+            const res = await fetch(`https://fa-jv-dnsmegatoolapi.azurewebsites.net/api/function_app?domain=${domain}`);
             const data = await res.json();
 
             window.latestResult = data;
@@ -51,7 +51,7 @@
 
         document.getElementById('exportBtn').addEventListener('click', function() {
             const domain = window.latestResult.domain;
-            window.location.href = `/api/function_app?domain=${domain}&export=true`;
+            window.location.href = `https://fa-jv-dnsmegatool.azurewebsites.net/api/function_app?domain=${domain}&export=true`;
         });
     </script>
 </body>
