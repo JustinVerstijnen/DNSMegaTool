@@ -2,57 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DNS MEGAtool - justinverstijnen.nl</title>
-    <link rel="stylesheet" href="style.css">
+    <title>DNSMegaTool</title>
 </head>
 <body>
-    <div style="text-align:center; margin-bottom: 1em;">
-        <a href="https://justinverstijnen.nl" target="_blank">
-            <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" style="height:50px;" />
-        </a>
-    </div>
+    <h1>DNSMegaTool</h1>
 
-    <h2>DNS MEGAtool</h2>
-    <p style="text-align:center;">This tool checks multiple DNS records and their configuration for your domain.</p>
+    <input type="text" id="domainInput" placeholder="Enter domain">
+    <button onclick="fetchDnsData()">Check DNS</button>
 
-    <div style="text-align:center;">
-        <form id="SubmitButton">
-            <input type="text" id="domainInput" placeholder="example.com" />
-            <button type="submit" id="submitButton" class="btn-icon check-btn">
-                Check
-            </button>
-            <button id="exportBtn" type="button" class="btn-icon export-btn" style="display: none;">
-                Export
-            </button>
-        </form>
-    </div>
-
-    <div id="result"></div>
+    <h2>Result:</h2>
+    <table border="1" id="dnsTable"></table>
 
     <script>
-        const form = document.getElementById('SubmitButton');
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            lookup();
-        });
+        async function fetchDnsData() {
+            const domain = document.getElementById("domainInput").value;
+            if (!domain) {
+                alert("Please enter a domain");
+                return;
+            }
 
-        async function lookup() {
-            const domain = document.getElementById('domainInput').value.trim();
-            if (!domain) return;
-            
-            // HIER staat nu het correcte API-pad:
-            const res = await fetch(`https://fa-jv-dnsmegatoolapi.azurewebsites.net/api/function_app?domain=${domain}`);
-            const data = await res.json();
-
-            window.latestResult = data;
-            document.getElementById("exportBtn").style.display = "inline-block";
-            document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+            try {
+                const response = await fetch(`/api/function_app?domain=${encodeURIComponent(domain)}`);
+                const data = await response.json();
+                renderDnsTable(data);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to fetch DNS data.");
+            }
         }
 
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            const domain = window.latestResult.domain;
-            window.location.href = `https://fa-jv-dnsmegatool.azurewebsites.net/api/function_app?domain=${domain}&export=true`;
-        });
+        function renderDnsTable(data) {
+            const table = document.getElementById("dnsTable");
+            table.innerHTML = "";
+
+            const rows = [
+                { label: "MX", value: data.MX.join("<br>") },
+                { label: "SPF", value: data.SPF.join("<br>") },
+                { label: "DKIM", value: data.DKIM.record.join("<br>") },
+                { label: "DMARC", value: data.DMARC.join("<br>") },
+                { label: "MTA-STS", value: data.MTA_STS.join("<br>") },
+                { label: "DNSSEC", value: data.DNSSEC ? "Enabled" : "Disabled" },
+                { label: "DS", value: data.DS.join("<br>") }
+            ];
+
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td><b>${row.label}</b></td><td>${row.value}</td>`;
+                table.appendChild(tr);
+            });
+        }
     </script>
 </body>
 </html>
