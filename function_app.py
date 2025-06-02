@@ -4,14 +4,11 @@ import os
 import jinja2
 import datetime
 
-# Setup Jinja2 environment
 template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "templates"))
 template_env = jinja2.Environment(loader=template_loader)
 
-# Registreer de Function App (v2 programming model)
 app = func.FunctionApp()
 
-# Simuleer je DNS lookup logica
 def perform_dns_lookup(domain):
     return {
         "domain": domain,
@@ -64,14 +61,12 @@ def render_export(data):
     )
     return html
 
-# Hier komt de nieuwe v2 decorator-based function route
 @app.route(route="function_app")
 def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get("domain")
     export = req.params.get("export")
 
     if not domain:
-        # Render startpagina (optioneel, als je deze echt via API wilt doen)
         template = template_env.get_template("index.html")
         html = template.render()
         return func.HttpResponse(html, mimetype="text/html")
