@@ -5,7 +5,7 @@ import jinja2
 import datetime
 
 # Initialiseer de FunctionApp (decorator model v2)
-app = func.FunctionApp()
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 # DNS lookup logica
 def perform_dns_lookup(domain):
