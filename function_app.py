@@ -1,14 +1,17 @@
 import azure.functions as func
 import json
-import os
 import jinja2
+import os
 import datetime
 
+# Initialiseer de Function App (v2 programming model)
+app = func.FunctionApp()
+
+# Setup Jinja2 environment (optioneel: zorg dat deze templates-folder bestaat als je export gebruikt)
 template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "templates"))
 template_env = jinja2.Environment(loader=template_loader)
 
-app = func.FunctionApp()
-
+# Simpele dummy DNS lookup functie
 def perform_dns_lookup(domain):
     return {
         "domain": domain,
@@ -22,6 +25,7 @@ def perform_dns_lookup(domain):
         "NS": ["ns1.example.com", "ns2.example.com"]
     }
 
+# HTML export renderer (optioneel)
 def render_export(data):
     rows = []
 
@@ -61,15 +65,17 @@ def render_export(data):
     )
     return html
 
+# De daadwerkelijke HTTP trigger
 @app.route(route="function_app")
 def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
     domain = req.params.get("domain")
     export = req.params.get("export")
 
     if not domain:
-        template = template_env.get_template("index.html")
-        html = template.render()
-        return func.HttpResponse(html, mimetype="text/html")
+        return func.HttpResponse(
+            "Please pass a domain parameter in the query string.",
+            status_code=400
+        )
 
     data = perform_dns_lookup(domain)
 
