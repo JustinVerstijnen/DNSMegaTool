@@ -1,5 +1,8 @@
 import azure.functions as func
 import json
+import dns.resolver
+import dns.dnssec
+import dns.name
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
