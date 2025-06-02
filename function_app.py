@@ -8,7 +8,7 @@ import datetime
 app = func.FunctionApp()
 
 # Setup Jinja2 environment (optioneel: zorg dat deze templates-folder bestaat als je export gebruikt)
-template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "templates"))
+template_loader = jinja2.FileSystemLoader(searchpath=os.path.join(os.path.dirname(__file__), "website"))
 template_env = jinja2.Environment(loader=template_loader)
 
 # Simpele dummy DNS lookup functie
