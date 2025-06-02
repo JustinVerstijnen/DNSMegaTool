@@ -5,3 +5,4 @@
 azure-functions
 dnspython
 requests
+jinja2
