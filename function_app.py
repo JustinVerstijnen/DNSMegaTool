@@ -31,7 +31,7 @@ def dns_megatool(req: func.HttpRequest) -> func.HttpResponse:
 
     if export:
         try:
-            # Jinja2 pas initialiseren tijdens request
+            # Jinja2 pas initialiseren tijdens request (hier zat je echte probleem!)
             template_loader = jinja2.FileSystemLoader(
                 searchpath=os.path.join(os.path.dirname(__file__), "website")
             )
