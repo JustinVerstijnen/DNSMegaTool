@@ -4,6 +4,5 @@
 
 azure-functions
 dnspython
-fpdf
-weasyprint
+python-whois
 requests
