@@ -1,0 +1,96 @@
+body {
+                    font-family: 'Segoe UI', sans-serif;
+                    background: #f4f6f8;
+                    padding: 2em;
+                    max-width: 1000px;
+                    margin: auto;
+                }
+                h2 {
+                    color: #333;
+                    text-align: center;
+                }
+                input, button {
+                    padding: 0.6em;
+                    font-size: 1em;
+                    margin: 0.5em 0;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+                button {
+                    background-color: #88B0DC;
+                    color: white;
+                    cursor: pointer;
+                }
+                button:hover {
+                    background-color: #005A9E;
+                }
+                .btn-icon::before {
+                    margin-right: 0.5em;
+                }
+                table {
+                    margin: 2em auto;
+                    width: 90%;
+                    border-collapse: collapse;
+                    background: white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                }
+                th, td {
+                    padding: 1em;
+                    border-bottom: 1px solid #eee;
+                    text-align: left;
+                    vertical-align: top;
+                }
+                th {
+                    background: #f0f2f5;
+                }
+                .enabled { color: green; font-weight: bold; }
+                .disabled { color: red; font-weight: bold; }
+                .small { font-size: 0.9em; color: #444; }
+                .dnsinfo {
+                    margin-top: 2em;
+                    padding: 1em;
+                    background-color: #eaf4ff;
+                    border-left: 4px solid #0078D4;
+                    font-size: 0.95em;
+                    max-width: 90%;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .criteria {
+                    margin-top: 1em;
+                    padding: 1em;
+                    background-color: #e6f7e6;
+                    border-left: 4px solid #4CAF50;
+                    font-size: 0.95em;
+                    max-width: 90%;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .more { color: blue; cursor: pointer; text-decoration: underline; }
+                .tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 0.8em;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.85em;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
