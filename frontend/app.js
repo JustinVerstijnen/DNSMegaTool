@@ -89,24 +89,16 @@ async function checkDomain() {
     }
 }
 
-function exportHTML() {
+async function exportHTML() {
+    const domain = document.getElementById("domainInput").value;
     const reportSection = document.getElementById("resultsSection").innerHTML;
-    const exportCSS = `
-body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }
-.container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-h1 { text-align:center; margin-top:10px; }
-h3 { margin-top:20px; }
-table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; margin-top:20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-thead { background-color:#f9f9f9; }
-th, td { padding:15px; text-align:left; vertical-align:top; word-break:break-word; max-width:600px; border: 1px solid #ddd; }
-tbody tr:nth-child(even) { background-color: #f6f6f6; }
-.infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; }`;
 
-    const htmlContent = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>DNS MEGAtool Export</title><style>${exportCSS}</style></head><body><div class="container">
-<h1>DNS MEGAtool Export</h1>${reportSection}</div></body></html>`;
+    const templateResponse = await fetch("export-template.html");
+    let template = await templateResponse.text();
+    template = template.replace("{{domain}}", domain);
+    template = template.replace("{{report_content}}", reportSection);
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const blob = new Blob([template], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
