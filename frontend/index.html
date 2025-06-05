@@ -3,24 +3,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DNS Checker Pro</title>
+    <title>DNS MEGAtool</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>DNS Lookup Tool Pro</h1>
-    <input type="text" id="domainInput" placeholder="example.com">
-    <button onclick="checkDomain()">Check</button>
+    <div class="container">
+        <div class="header">
+            <a href="https://justinverstijnen.nl" target="_blank">
+                <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" width="50" height="50">
+            </a>
+            <h1>DNS MEGAtool</h1>
+        </div>
 
-    <div id="loader" style="display:none;">Loading...</div>
+        <div class="searchbox">
+            <input type="text" id="domainInput" placeholder="example.com">
+            <button onclick="checkDomain()" id="checkBtn">Check</button>
+        </div>
 
-    <table id="resultTable">
-        <thead>
-            <tr><th>Type</th><th>Status</th><th>Value</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+        <div id="loader" class="spinner-container" style="display:none;">
+            <div class="spinner"></div>
+        </div>
 
-    <div id="extraInfo" style="margin-top: 20px;"></div>
+        <table id="resultTable">
+            <thead>
+                <tr><th>Type</th><th>Status</th><th>Value</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="extraInfo" style="margin-top: 20px;"></div>
+    </div>
 
     <script src="app.js"></script>
 </body>

@@ -41,7 +41,6 @@ async function checkDomain() {
             tbody.appendChild(row);
         }
 
-        // NS records
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
@@ -50,7 +49,6 @@ async function checkDomain() {
             extraInfo.appendChild(nsBox);
         }
 
-        // WHOIS records
         if (data.WHOIS) {
             const whoisBox = document.createElement("div");
             whoisBox.className = "infobox";
@@ -76,3 +74,10 @@ async function checkDomain() {
         loader.style.display = "none";
     }
 }
+
+// Enter key activeert check
+document.getElementById("domainInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        document.getElementById("checkBtn").click();
+    }
+});
