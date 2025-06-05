@@ -29,7 +29,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['MX'] = {"status": False, "value": str(e)}
 
-    # SPF lookup
+    # SPF lookup (samengevoegd TXT record)
     try:
         txt_records = dns.resolver.resolve(domain, 'TXT')
         spf_records = []
@@ -68,19 +68,20 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DKIM'] = {"status": False, "value": str(e)}
 
-    # DMARC lookup
+    # DMARC lookup (oude validatie)
     try:
         dmarc_domain = "_dmarc." + domain
         dmarc_records = dns.resolver.resolve(dmarc_domain, 'TXT')
-        dmarc_txt = [b.decode('utf-8') for r in dmarc_records for b in r.strings]
-        valid_dmarc = any("p=reject" in r for r in dmarc_txt)
+        dmarc_txt = ["".join(r.strings.decode('utf-8') if isinstance(r, bytes) else r for r in rr.strings) for rr in dmarc_records]
+
+        valid_dmarc = any("p=reject" in record for record in dmarc_txt)
         results['DMARC'] = {"status": valid_dmarc, "value": dmarc_txt}
     except dns.resolver.NoAnswer:
         results['DMARC'] = {"status": False, "value": f"DMARC record does not exist for this domain {domain}"}
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup
+    # MTA-STS lookup met fallback check
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -91,8 +92,15 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
 
         try:
             well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
+            fallback_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
             r = requests.get(well_known_url, timeout=5)
             mta_sts_http_ok = r.status_code == 200
+            if not mta_sts_http_ok:
+                try:
+                    r2 = requests.get(fallback_url, timeout=5)
+                    mta_sts_http_ok = r2.status_code == 200
+                except:
+                    mta_sts_http_ok = False
         except:
             mta_sts_http_ok = False
 
