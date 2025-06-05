@@ -4,6 +4,7 @@ import json
 import dns.resolver
 import dns.exception
 import requests
+import whois
 
 app = func.FunctionApp()
 
@@ -56,7 +57,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             try:
                 dkim_records = dns.resolver.resolve(dkim_domain, 'TXT')
                 dkim_txt = [b.decode('utf-8') for r in dkim_records for b in r.strings]
-                dkim_results.append(f"{selector}: {dkim_txt}")
+                dkim_results.append(f"{selector}: {dkim_txt[0]}")
             except dns.resolver.NoAnswer:
                 dkim_results.append(f"{selector}: DKIM record does not exist for this domain {domain}")
                 dkim_valid = False
@@ -80,23 +81,33 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup
+    # MTA-STS lookup uitgebreid
     try:
         mta_sts_domain = "_mta-sts." + domain
-        mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
-        mta_sts_dns_ok = len(mta_sts_records) > 0
+        try:
+            mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
+            mta_sts_dns_ok = True
+        except dns.resolver.NoAnswer:
+            mta_sts_dns_ok = False
 
-        well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
-        r = requests.get(well_known_url, timeout=5)
-        mta_sts_http_ok = r.status_code == 200
+        try:
+            well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
+            r = requests.get(well_known_url, timeout=5)
+            mta_sts_http_ok = r.status_code == 200
+        except:
+            mta_sts_http_ok = False
+
+        if mta_sts_dns_ok and mta_sts_http_ok:
+            message = "Record is found and policy found at /.well-known/mta-sts.txt"
+        elif mta_sts_dns_ok and not mta_sts_http_ok:
+            message = "Record is found but policy not hosted at /.well-known/mta-sts.txt"
+        elif not mta_sts_dns_ok and mta_sts_http_ok:
+            message = "Record not found but policy is found at /.well-known/mta-sts.txt"
+        else:
+            message = "Record and policy not found"
 
         valid_mta_sts = mta_sts_dns_ok and mta_sts_http_ok
-        results['MTA-STS'] = {
-            "status": valid_mta_sts,
-            "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"
-        }
-    except dns.resolver.NoAnswer:
-        results['MTA-STS'] = {"status": False, "value": f"MTA-STS record does not exist for this domain {domain}"}
+        results['MTA-STS'] = {"status": valid_mta_sts, "value": message}
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
@@ -109,6 +120,25 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         results['DNSSEC'] = {"status": False, "value": f"DNSSEC record does not exist for this domain {domain}"}
     except Exception as e:
         results['DNSSEC'] = {"status": False, "value": str(e)}
+
+    # NS lookup
+    try:
+        ns_records = dns.resolver.resolve(domain, 'NS')
+        results['NS'] = [str(r.target).rstrip('.') for r in ns_records]
+    except Exception as e:
+        results['NS'] = [f"Error retrieving NS records: {str(e)}"]
+
+    # WHOIS lookup
+    try:
+        w = whois.whois(domain)
+        whois_data = {
+            "registrar": w.registrar,
+            "creation_date": str(w.creation_date),
+            "expiration_date": str(w.expiration_date)
+        }
+        results['WHOIS'] = whois_data
+    except Exception as e:
+        results['WHOIS'] = {"error": str(e)}
 
     return func.HttpResponse(
         json.dumps(results),
