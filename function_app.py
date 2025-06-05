@@ -1,3 +1,4 @@
+
 import azure.functions as func
 import json
 import dns.resolver
