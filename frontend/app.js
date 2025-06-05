@@ -65,17 +65,11 @@ async function checkDomain() {
                 whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
             } else {
                 const registrar = data.WHOIS.registrar || 'Not found';
-                const reseller = data.WHOIS.reseller || 'Not found';
-                const abuse = data.WHOIS.abuse_contact || 'Not found';
                 const creation = data.WHOIS.creation_date || 'Not found';
-                const updated = data.WHOIS.updated_date || 'Not found';
                 whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
                 <ul>
                     <li>Registrar: ${registrar}</li>
-                    <li>Reseller: ${reseller}</li>
-                    <li>Abuse contact: ${abuse}</li>
                     <li>Date of Registration: ${creation}</li>
-                    <li>Date of last change: ${updated}</li>
                 </ul>`;
             }
             extraInfo.appendChild(whoisBox);
