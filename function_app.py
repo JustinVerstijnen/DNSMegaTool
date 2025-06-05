@@ -81,7 +81,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup uitgebreid
+    # MTA-STS uitgebreid met aparte meldingen
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -97,29 +97,25 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         except:
             mta_sts_http_ok = False
 
-        if mta_sts_dns_ok and mta_sts_http_ok:
-            message = "Record is found and policy found at /.well-known/mta-sts.txt"
-        elif mta_sts_dns_ok and not mta_sts_http_ok:
-            message = "Record is found but policy not hosted at /.well-known/mta-sts.txt"
-        elif not mta_sts_dns_ok and mta_sts_http_ok:
-            message = "Record not found but policy is found at /.well-known/mta-sts.txt"
-        else:
-            message = "Record and policy not found"
+        mta_sts_result = []
+        mta_sts_result.append("Record found" if mta_sts_dns_ok else "Record not found")
+        mta_sts_result.append("Policy at /.well-known/mta-sts.txt found" if mta_sts_http_ok else "Policy at /.well-known/mta-sts.txt not found")
 
         valid_mta_sts = mta_sts_dns_ok and mta_sts_http_ok
-        results['MTA-STS'] = {"status": valid_mta_sts, "value": message}
+        results['MTA-STS'] = {"status": valid_mta_sts, "value": mta_sts_result}
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
-    # DNSSEC lookup
+    # DNSSEC lookup in lijstvorm
     try:
         ds_records = dns.resolver.resolve(domain, 'DS')
         dnssec_valid = len(ds_records) > 0
-        results['DNSSEC'] = {"status": dnssec_valid, "value": [str(r) for r in ds_records]}
+        dnssec_list = [str(r) for r in ds_records]
+        results['DNSSEC'] = {"status": dnssec_valid, "value": dnssec_list}
     except dns.resolver.NoAnswer:
-        results['DNSSEC'] = {"status": False, "value": f"DNSSEC record does not exist for this domain {domain}"}
+        results['DNSSEC'] = {"status": False, "value": [f"DNSSEC record does not exist for this domain {domain}"]}
     except Exception as e:
-        results['DNSSEC'] = {"status": False, "value": str(e)}
+        results['DNSSEC'] = {"status": False, "value": [str(e)]}
 
     # NS lookup
     try:
@@ -128,13 +124,15 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['NS'] = [f"Error retrieving NS records: {str(e)}"]
 
-    # WHOIS lookup
+    # WHOIS lookup uitgebreid
     try:
         w = whois.whois(domain)
         whois_data = {
             "registrar": w.registrar,
+            "reseller": w.get("reseller", ""),
+            "abuse_contact": w.get("abuse_contact_email", ""),
             "creation_date": str(w.creation_date),
-            "expiration_date": str(w.expiration_date)
+            "updated_date": str(w.updated_date)
         }
         results['WHOIS'] = whois_data
     except Exception as e:
