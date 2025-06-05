@@ -34,10 +34,9 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         txt_records = dns.resolver.resolve(domain, 'TXT')
         spf_records = []
         for r in txt_records:
-            for b in r.strings:
-                record = b.decode('utf-8')
-                if record.startswith('v=spf1'):
-                    spf_records.append(record)
+            full_record = ''.join([b.decode('utf-8') for b in r.strings])
+            if full_record.startswith('v=spf1'):
+                spf_records.append(full_record)
 
         valid_spf = any('-all' in r for r in spf_records)
         results['SPF'] = {"status": valid_spf, "value": spf_records}
