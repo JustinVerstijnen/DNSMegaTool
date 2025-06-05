@@ -8,7 +8,7 @@ async function checkDomain() {
     tbody.innerHTML = "";
 
     try {
-        const response = await fetch(`/lookup?domain=${domain}`);
+        const response = await fetch(`/api/lookup?domain=${domain}`);
         const data = await response.json();
 
         for (const [type, record] of Object.entries(data)) {
