@@ -12,8 +12,8 @@
             <a href="https://justinverstijnen.nl" target="_blank">
                 <img src="https://justinverstijnen.nl/wp-content/uploads/2025/04/cropped-Logo-2.0-Transparant.png" alt="Logo" width="50" height="50">
             </a>
-            <h1>DNS MEGAtool</h1>
         </div>
+        <h1>DNS MEGAtool</h1>
 
         <div class="searchbox">
             <input type="text" id="domainInput" placeholder="example.com">
@@ -24,12 +24,14 @@
             <div class="spinner"></div>
         </div>
 
-        <table id="resultTable">
-            <thead>
-                <tr><th>Type</th><th>Status</th><th>Value</th></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div class="table-wrapper">
+            <table id="resultTable">
+                <thead>
+                    <tr><th>Type</th><th>Status</th><th>Value</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
         <div id="extraInfo" style="margin-top: 20px;"></div>
     </div>

@@ -112,3 +112,20 @@ ul { margin: 0; padding-left: 20px; }
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+th:first-child {
+    white-space: nowrap;
+}
+
+button {
+    background-color: #8EAFDA !important;
+}
+
+th, td {
+    word-break: break-word;
+    max-width: 400px;
+}

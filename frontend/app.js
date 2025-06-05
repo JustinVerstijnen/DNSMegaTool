@@ -13,12 +13,21 @@ async function checkDomain() {
         const response = await fetch(`/api/lookup?domain=${domain}`);
         const data = await response.json();
 
+        const tooltips = {
+            "MX": "Mail Exchange record",
+            "SPF": "Sender Policy Framework",
+            "DKIM": "DomainKeys Identified Mail",
+            "DMARC": "Domain-based Message Authentication",
+            "MTA-STS": "Mail Transfer Agent Strict Transport Security",
+            "DNSSEC": "Domain Name System Security Extensions"
+        };
+
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            typeCell.textContent = type;
+            typeCell.innerHTML = `<b title="${tooltips[type] || ''}">${type}</b>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
@@ -44,7 +53,7 @@ async function checkDomain() {
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
-            nsBox.innerHTML = "<h3>Nameservers:</h3><ul>" +
+            nsBox.innerHTML = `<h3>Nameservers for ${domain}:</h3><ul>` +
                 data.NS.map(ns => `<li>${ns}</li>`).join("") + "</ul>";
             extraInfo.appendChild(nsBox);
         }
@@ -53,15 +62,20 @@ async function checkDomain() {
             const whoisBox = document.createElement("div");
             whoisBox.className = "infobox";
             if (data.WHOIS.error) {
-                whoisBox.innerHTML = `<h3>Whois:</h3><p>${data.WHOIS.error}</p>`;
+                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
             } else {
-                whoisBox.innerHTML = `<h3>Whois:</h3>
+                const registrar = data.WHOIS.registrar || 'Not found';
+                const reseller = data.WHOIS.reseller || 'Not found';
+                const abuse = data.WHOIS.abuse_contact || 'Not found';
+                const creation = data.WHOIS.creation_date || 'Not found';
+                const updated = data.WHOIS.updated_date || 'Not found';
+                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
                 <ul>
-                    <li>Registrar: ${data.WHOIS.registrar}</li>
-                    <li>Reseller: ${data.WHOIS.reseller || '-'}</li>
-                    <li>Abuse contact: ${data.WHOIS.abuse_contact || '-'}</li>
-                    <li>Date of Registration: ${data.WHOIS.creation_date}</li>
-                    <li>Date of last change: ${data.WHOIS.updated_date}</li>
+                    <li>Registrar: ${registrar}</li>
+                    <li>Reseller: ${reseller}</li>
+                    <li>Abuse contact: ${abuse}</li>
+                    <li>Date of Registration: ${creation}</li>
+                    <li>Date of last change: ${updated}</li>
                 </ul>`;
             }
             extraInfo.appendChild(whoisBox);
