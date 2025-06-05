@@ -95,8 +95,7 @@ async function exportHTML() {
 
     const templateResponse = await fetch("export-template.html");
     let template = await templateResponse.text();
-    template = template.replace("{{domain}}", domain);
-    template = template.replace("{{report_content}}", reportSection);
+    template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
 
     const blob = new Blob([template], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
