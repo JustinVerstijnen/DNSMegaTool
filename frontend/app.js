@@ -31,7 +31,7 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            typeCell.innerHTML = `<div class="tooltip"><b>${type}</b><span class="tooltiptext">${tooltips[type] || ""}</span></div>`;
+            typeCell.innerHTML = `<b>${type}</b>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
