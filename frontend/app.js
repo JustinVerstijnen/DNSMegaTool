@@ -2,12 +2,17 @@
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
+    const resultsSection = document.getElementById("resultsSection");
+    const exportBtn = document.getElementById("exportBtn");
     const tbody = document.querySelector("#resultTable tbody");
     const extraInfo = document.getElementById("extraInfo");
-    
-    loader.style.display = "block";
+
+    // Reset state
     tbody.innerHTML = "";
     extraInfo.innerHTML = "";
+    resultsSection.style.display = "none";
+    exportBtn.style.display = "none";
+    loader.style.display = "flex";
 
     try {
         const response = await fetch(`/api/lookup?domain=${domain}`);
@@ -79,17 +84,11 @@ async function checkDomain() {
         console.error(e);
         alert("Er is iets misgegaan tijdens de lookup.");
     } finally {
-        loader.style.display = "none"; document.getElementById("resultsSection").style.display = "block"; document.getElementById("exportBtn").style.display = "inline-block";
+        loader.style.display = "none";
+        resultsSection.style.display = "block";
+        exportBtn.style.display = "inline-block";
     }
 }
-
-// Enter key activeert check
-document.getElementById("domainInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        document.getElementById("checkBtn").click();
-    }
-});
-
 
 function exportHTML() {
     const htmlContent = document.documentElement.outerHTML;
@@ -101,3 +100,9 @@ function exportHTML() {
     a.click();
     URL.revokeObjectURL(url);
 }
+
+document.getElementById("domainInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        document.getElementById("checkBtn").click();
+    }
+});
