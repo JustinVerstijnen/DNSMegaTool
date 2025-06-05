@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DNS MEGAtool - justinverstijnen.nl</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>DNS MEGAtool - justinverstijnen.nl</h2>
+    <form method="get" action="/">
+        <input type="text" name="domain" placeholder="Enter domain name" required>
+        <button type="submit" class="btn-icon">🔍 Search</button>
+    </form>
+
+    {% if domain %}
+    <div class="dnsinfo">
+        <h3>Results for: {{ domain }}</h3>
+
+        <table>
+            <tr>
+                <th>TXT Records</th>
+                <td>
+                    <ul>
+                        {% for record in txt %}
+                        <li>{{ record }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>NS Servers</th>
+                <td>
+                    <ul>
+                        {% for record in ns %}
+                        <li>{{ record }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>MX Records</th>
+                <td>
+                    <ul>
+                        {% for record in mx %}
+                        <li>{{ record }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>DS Records</th>
+                <td>
+                    <ul>
+                        {% for record in ds %}
+                        <li>{{ record }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>DNSSEC</th>
+                <td>
+                    {% if dnskey %}
+                        <span class="enabled">Enabled</span>
+                    {% else %}
+                        <span class="disabled">Disabled</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+</body>
+</html>
