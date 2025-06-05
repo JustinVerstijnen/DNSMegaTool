@@ -41,7 +41,7 @@ async function checkDomain() {
             tbody.appendChild(row);
         }
 
-        // Extra info: NS records
+        // NS records
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
@@ -50,7 +50,7 @@ async function checkDomain() {
             extraInfo.appendChild(nsBox);
         }
 
-        // Extra info: WHOIS records
+        // WHOIS records
         if (data.WHOIS) {
             const whoisBox = document.createElement("div");
             whoisBox.className = "infobox";
@@ -60,8 +60,10 @@ async function checkDomain() {
                 whoisBox.innerHTML = `<h3>Whois:</h3>
                 <ul>
                     <li>Registrar: ${data.WHOIS.registrar}</li>
-                    <li>Created: ${data.WHOIS.creation_date}</li>
-                    <li>Expires: ${data.WHOIS.expiration_date}</li>
+                    <li>Reseller: ${data.WHOIS.reseller || '-'}</li>
+                    <li>Abuse contact: ${data.WHOIS.abuse_contact || '-'}</li>
+                    <li>Date of Registration: ${data.WHOIS.creation_date}</li>
+                    <li>Date of last change: ${data.WHOIS.updated_date}</li>
                 </ul>`;
             }
             extraInfo.appendChild(whoisBox);
