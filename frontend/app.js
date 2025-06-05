@@ -91,6 +91,30 @@ async function checkDomain() {
 }
 
 function exportHTML() {
+    const reportSection = document.getElementById("resultsSection").innerHTML;
+    const htmlContent = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>DNS MEGAtool Export</title>
+<style>
+body {{ font-family: 'Segoe UI', sans-serif; background:#f8f8f8; margin:0;padding:20px; }}
+.container {{ background:#fff; padding:20px; border-radius:8px; max-width:1000px; margin:auto; box-shadow:0 0 10px rgba(0,0,0,0.1); }}
+h1 {{ text-align:center; }}
+h3 {{ margin-top:20px; }}
+table {{ width:100%; border-collapse:collapse; margin-top:20px; }}
+th, td {{ border:1px solid #ccc; padding:10px; text-align:left; word-break:break-word; }}
+.infobox {{ background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; }}
+</style></head><body><div class="container">
+<h1>DNS MEGAtool Export</h1>
+${reportSection}
+</div></body></html>`;
+
+    const blob = new Blob([htmlContent], {{ type: 'text/html' }});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "dns-megatool-report.html";
+    a.click();
+    URL.revokeObjectURL(url);
+}}
     const htmlContent = document.documentElement.outerHTML;
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
