@@ -72,7 +72,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     try:
         dmarc_domain = "_dmarc." + domain
         dmarc_records = dns.resolver.resolve(dmarc_domain, 'TXT')
-        dmarc_txt = ["".join(r.strings.decode('utf-8') if isinstance(r, bytes) else r for r in rr.strings) for rr in dmarc_records]
+        dmarc_txt = ["".join([b.decode("utf-8") for b in rr.strings]) for rr in dmarc_records]
 
         valid_dmarc = any("p=reject" in record for record in dmarc_txt)
         results['DMARC'] = {"status": valid_dmarc, "value": dmarc_txt}
