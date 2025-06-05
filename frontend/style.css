@@ -136,3 +136,13 @@ th, td {
 tbody tr:nth-child(even) {
     background-color: #f6f6f6;
 }
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#resultsSection {
+    animation: fadeIn 0.5s ease;
+}
