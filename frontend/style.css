@@ -182,3 +182,75 @@ tbody tr:nth-child(even) {
     visibility: visible;
     opacity: 1;
 }
+
+.footer {
+    text-align: center;
+    font-size: 9px;
+    color: #777;
+    margin-top: 40px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: max-content;
+    max-width: 240px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: max-content;
+    max-width: 240px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 8px;
+    position: fixed;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    word-wrap: break-word;
+    white-space: normal;
+    pointer-events: none;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    top: var(--tooltip-top);
+    left: var(--tooltip-left);
+}

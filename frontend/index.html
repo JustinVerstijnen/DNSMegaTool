@@ -42,5 +42,16 @@
     <div class="footer">© 2025 DNS MEGAtool by Justin Verstijnen</div>
 
     <script src="app.js"></script>
+<script>
+
+document.querySelectorAll('.tooltip').forEach(function(el) {
+  el.addEventListener('mousemove', function(e) {
+    let tooltip = el.querySelector('.tooltiptext');
+    tooltip.style.setProperty('--tooltip-top', (e.clientY + 20) + 'px');
+    tooltip.style.setProperty('--tooltip-left', (e.clientX + 20) + 'px');
+  });
+});
+    
+</script>
 </body>
 </html>
