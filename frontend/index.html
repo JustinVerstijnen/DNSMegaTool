@@ -10,12 +10,16 @@
     <h1>DNS Lookup Tool</h1>
     <input type="text" id="domainInput" placeholder="example.com">
     <button onclick="checkDomain()">Check</button>
+
+    <div id="loader" style="display:none;">Loading...</div>
+
     <table id="resultTable">
         <thead>
             <tr><th>Type</th><th>Status</th><th>Value</th></tr>
         </thead>
         <tbody></tbody>
     </table>
+
     <script src="app.js"></script>
 </body>
 </html>

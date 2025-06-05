@@ -1,28 +1,38 @@
 
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
-    const response = await fetch(`/api/lookup?domain=${domain}`);
-    const data = await response.json();
-
+    const loader = document.getElementById("loader");
     const tbody = document.querySelector("#resultTable tbody");
+    
+    loader.style.display = "block";
     tbody.innerHTML = "";
 
-    for (const [type, record] of Object.entries(data)) {
-        const row = document.createElement("tr");
+    try {
+        const response = await fetch(`/lookup?domain=${domain}`);
+        const data = await response.json();
 
-        const typeCell = document.createElement("td");
-        typeCell.textContent = type;
+        for (const [type, record] of Object.entries(data)) {
+            const row = document.createElement("tr");
 
-        const statusCell = document.createElement("td");
-        statusCell.textContent = record.status ? "✅" : "❌";
+            const typeCell = document.createElement("td");
+            typeCell.textContent = type;
 
-        const valueCell = document.createElement("td");
-        valueCell.textContent = Array.isArray(record.value) ? record.value.join(', ') : record.value;
+            const statusCell = document.createElement("td");
+            statusCell.textContent = record.status ? "✅" : "❌";
 
-        row.appendChild(typeCell);
-        row.appendChild(statusCell);
-        row.appendChild(valueCell);
+            const valueCell = document.createElement("td");
+            valueCell.textContent = Array.isArray(record.value) ? record.value.join(', ') : record.value;
 
-        tbody.appendChild(row);
+            row.appendChild(typeCell);
+            row.appendChild(statusCell);
+            row.appendChild(valueCell);
+
+            tbody.appendChild(row);
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Er is iets misgegaan tijdens de lookup.");
+    } finally {
+        loader.style.display = "none";
     }
 }
