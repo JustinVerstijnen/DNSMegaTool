@@ -25,16 +25,23 @@
             <div class="spinner"></div>
         </div>
 
-        <div class="table-wrapper">
-            <table id="resultTable">
-                <thead>
-                    <tr><th>Type</th><th>Status</th><th>Value</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+        <div id="resultsSection" style="display:none;">
+            <div class="table-wrapper">
+                <table id="resultTable">
+                    <thead>
+                        <tr><th>Type</th><th>Status</th><th>Value</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="extraInfo" style="margin-top: 20px;"></div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <button id="exportBtn" onclick="exportHTML()" style="display:none;">Export Results</button>
+            </div>
         </div>
 
-        <div id="extraInfo" style="margin-top: 20px;"></div>
     </div>
 
     <script src="app.js"></script>

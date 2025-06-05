@@ -79,7 +79,7 @@ async function checkDomain() {
         console.error(e);
         alert("Er is iets misgegaan tijdens de lookup.");
     } finally {
-        loader.style.display = "none";
+        loader.style.display = "none"; document.getElementById("resultsSection").style.display = "block"; document.getElementById("exportBtn").style.display = "inline-block";
     }
 }
 
@@ -89,3 +89,15 @@ document.getElementById("domainInput").addEventListener("keypress", function(e) 
         document.getElementById("checkBtn").click();
     }
 });
+
+
+function exportHTML() {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "dns-megatool-report.html";
+    a.click();
+    URL.revokeObjectURL(url);
+}
