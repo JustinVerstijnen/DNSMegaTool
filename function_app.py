@@ -81,7 +81,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS uitgebreid met aparte meldingen
+    # MTA-STS lookup
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -106,7 +106,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
-    # DNSSEC lookup in lijstvorm
+    # DNSSEC lookup
     try:
         ds_records = dns.resolver.resolve(domain, 'DS')
         dnssec_valid = len(ds_records) > 0
@@ -124,15 +124,12 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['NS'] = [f"Error retrieving NS records: {str(e)}"]
 
-    # WHOIS lookup uitgebreid
+    # WHOIS lookup
     try:
         w = whois.whois(domain)
         whois_data = {
             "registrar": w.registrar,
-            "reseller": w.get("reseller", ""),
-            "abuse_contact": w.get("abuse_contact_email", ""),
-            "creation_date": str(w.creation_date),
-            "updated_date": str(w.updated_date)
+            "creation_date": str(w.creation_date)
         }
         results['WHOIS'] = whois_data
     except Exception as e:
