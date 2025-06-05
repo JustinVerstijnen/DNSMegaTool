@@ -5,7 +5,6 @@ import dns.resolver
 import dns.exception
 import requests
 import whois
-import re
 
 app = func.FunctionApp()
 
@@ -30,7 +29,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['MX'] = {"status": False, "value": str(e)}
 
-    # SPF lookup (met samengevoegde TXT records)
+    # SPF lookup
     try:
         txt_records = dns.resolver.resolve(domain, 'TXT')
         spf_records = []
@@ -69,13 +68,12 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DKIM'] = {"status": False, "value": str(e)}
 
-    # DMARC lookup (met striktere validatie)
+    # DMARC lookup
     try:
         dmarc_domain = "_dmarc." + domain
         dmarc_records = dns.resolver.resolve(dmarc_domain, 'TXT')
-        dmarc_txt = ["".join(r.strings.decode('utf-8') if isinstance(r, bytes) else r for r in rr.strings) for rr in dmarc_records]
-
-        valid_dmarc = any(re.search(r"\bp\s*=\s*reject\b", record, re.IGNORECASE) for record in dmarc_txt)
+        dmarc_txt = [b.decode('utf-8') for r in dmarc_records for b in r.strings]
+        valid_dmarc = any("p=reject" in r for r in dmarc_txt)
         results['DMARC'] = {"status": valid_dmarc, "value": dmarc_txt}
     except dns.resolver.NoAnswer:
         results['DMARC'] = {"status": False, "value": f"DMARC record does not exist for this domain {domain}"}
