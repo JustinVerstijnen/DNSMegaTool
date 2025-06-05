@@ -6,4 +6,3 @@ azure-functions
 dnspython
 python-whois
 requests
-jinja2
