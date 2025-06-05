@@ -18,12 +18,12 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": "Mail Exchange record",
-            "SPF": "Sender Policy Framework",
-            "DKIM": "DomainKeys Identified Mail",
-            "DMARC": "Domain-based Message Authentication",
-            "MTA-STS": "Mail Transfer Agent Strict Transport Security",
-            "DNSSEC": "Domain Name System Security Extensions"
+            "MX": "Mail Exchange record used to route emails.",
+            "SPF": "Sender Policy Framework: prevents spoofing.",
+            "DKIM": "DomainKeys Identified Mail: verifies message integrity.",
+            "DMARC": "Domain-based Message Authentication Reporting and Conformance.",
+            "MTA-STS": "Mail Transfer Agent Strict Transport Security.",
+            "DNSSEC": "Domain Name System Security Extensions."
         };
 
         for (const [type, record] of Object.entries(data)) {
@@ -96,6 +96,9 @@ async function exportHTML() {
     const templateResponse = await fetch("export-template.html");
     let template = await templateResponse.text();
     template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
+
+    // Strip alle tooltip divs uit de export zodat alleen de type tekst overblijft
+    template = template.replace(/<div class="tooltip"><b>(.*?)<\/b><span class="tooltiptext">.*?<\/span><\/div>/g, '<b>$1</b>');
 
     const blob = new Blob([template], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
