@@ -27,7 +27,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             "status": mx_valid,
             "value": [str(r.exchange) for r in mx_records]
         }
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['MX'] = {"status": False, "value": record_not_found("MX", domain)}
     except Exception as e:
         results['MX'] = {"status": False, "value": str(e)}
@@ -43,7 +43,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
 
         valid_spf = any('-all' in r for r in spf_records)
         results['SPF'] = {"status": valid_spf, "value": spf_records}
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['SPF'] = {"status": False, "value": record_not_found("SPF", domain)}
     except Exception as e:
         results['SPF'] = {"status": False, "value": str(e)}
@@ -60,7 +60,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
                 dkim_records = dns.resolver.resolve(dkim_domain, 'TXT')
                 dkim_txt = [b.decode('utf-8') for r in dkim_records for b in r.strings]
                 dkim_results.append(f"{selector}: {dkim_txt[0]}")
-            except dns.resolver.NoAnswer:
+            except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
                 dkim_results.append(f"{selector}: {record_not_found('DKIM', dkim_domain)}")
                 dkim_valid = False
             except Exception as e:
@@ -79,7 +79,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
 
         valid_dmarc = any("p=reject" in record for record in dmarc_txt)
         results['DMARC'] = {"status": valid_dmarc, "value": dmarc_txt}
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['DMARC'] = {"status": False, "value": record_not_found("DMARC", dmarc_domain)}
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
@@ -90,7 +90,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         try:
             mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
             mta_sts_dns_ok = True
-        except dns.resolver.NoAnswer:
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             mta_sts_dns_ok = False
 
         try:
@@ -118,7 +118,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         dnssec_valid = len(ds_records) > 0
         ds_values = [str(r) for r in ds_records]
         results['DNSSEC'] = {"status": dnssec_valid, "value": ds_values}
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['DNSSEC'] = {"status": False, "value": record_not_found("DNSSEC", domain)}
     except Exception as e:
         results['DNSSEC'] = {"status": False, "value": str(e)}
