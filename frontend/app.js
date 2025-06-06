@@ -1,54 +1,3 @@
- (safe version)
-if (!document.getElementById("confetti-lib")) {
-    const script = document.createElement('script');
-    script.id = "confetti-lib";
-    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-    document.head.appendChild(script);
-}
-
-function startConfetti() {
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-}
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
-
-
-
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-document.head.appendChild(script);
-
-function startConfetti() {
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-}
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
-
-
-
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-document.head.appendChild(script);
-
-function startConfetti() {
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-}
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
-
-
 
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
@@ -87,8 +36,7 @@ async function checkDomain() {
             statusCell.textContent = record.status ? "✅" : "❌";
 
             const valueCell = document.createElement("td");
-            if (!Array.isArray(record.value)) { record.value = [record.value]; }
-        if (Array.isArray(record.value)) {
+            if (Array.isArray(record.value)) {
                 const list = document.createElement("ul");
                 record.value.forEach(val => {
                     const li = document.createElement("li");
@@ -114,7 +62,11 @@ async function checkDomain() {
             }
         }
         if (allGreen) {
-            startConfetti();
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
         }
 
 
@@ -147,7 +99,6 @@ async function checkDomain() {
         console.error(e);
         alert("Something went wrong while looking up your domain..");
     } finally {
-        
         loader.style.display = "none";
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
