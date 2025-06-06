@@ -87,7 +87,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup met strictere validatie
+    # MTA-STS lookup met fallback check
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -97,7 +97,6 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             mta_sts_dns_ok = False
             results['MTA-STS'] = {"status": False, "value": record_not_found("MTA-STS", mta_sts_domain)}
             mta_sts_dns_ok = None  # Stop verdere verwerking
-
         if mta_sts_dns_ok is not None:
             try:
                 well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
@@ -113,12 +112,8 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             except:
                 mta_sts_http_ok = False
 
-            # STRIKTE VALIDATIE: beide moeten slagen
-            mta_sts_valid = mta_sts_dns_ok and mta_sts_http_ok
-            results['MTA-STS'] = {
-                "status": mta_sts_valid,
-                "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"
-            }
+            mta_sts_valid = mta_sts_dns_ok or mta_sts_http_ok
+            results['MTA-STS'] = {"status": mta_sts_valid, "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"}
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
