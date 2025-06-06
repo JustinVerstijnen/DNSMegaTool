@@ -1,5 +1,22 @@
 
-// Load confetti library dynamically
+// Load confetti library dynamically (safe version)
+if (!document.getElementById("confetti-lib")) {
+    const script = document.createElement('script');
+    script.id = "confetti-lib";
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+    document.head.appendChild(script);
+}
+
+function startConfetti() {
+    confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
+
+
 const script = document.createElement('script');
 script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
 document.head.appendChild(script);
@@ -83,6 +100,18 @@ async function checkDomain() {
             row.appendChild(valueCell);
             tbody.appendChild(row);
         }
+        let allGreen = true;
+        for (const [type, record] of Object.entries(data)) {
+            if (type === 'NS' || type === 'WHOIS') continue;
+            if (!record.status) {
+                allGreen = false;
+                break;
+            }
+        }
+        if (allGreen) {
+            startConfetti();
+        }
+
         let allGreen = true;
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
