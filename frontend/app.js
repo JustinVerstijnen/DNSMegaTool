@@ -36,7 +36,8 @@ async function checkDomain() {
             statusCell.textContent = record.status ? "✅" : "❌";
 
             const valueCell = document.createElement("td");
-            if (Array.isArray(record.value)) {
+            if (!Array.isArray(record.value)) { record.value = [record.value]; }
+        if (Array.isArray(record.value)) {
                 const list = document.createElement("ul");
                 record.value.forEach(val => {
                     const li = document.createElement("li");
