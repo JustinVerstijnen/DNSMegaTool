@@ -14,6 +14,20 @@ function startConfetti() {
 
 
 
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+document.head.appendChild(script);
+
+function startConfetti() {
+    confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
+
+
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
@@ -69,6 +83,18 @@ async function checkDomain() {
             row.appendChild(valueCell);
             tbody.appendChild(row);
         }
+        let allGreen = true;
+        for (const [type, record] of Object.entries(data)) {
+            if (type === 'NS' || type === 'WHOIS') continue;
+            if (!record.status) {
+                allGreen = false;
+                break;
+            }
+        }
+        if (allGreen) {
+            startConfetti();
+        }
+
 
         if (data.NS) {
             const nsBox = document.createElement("div");
