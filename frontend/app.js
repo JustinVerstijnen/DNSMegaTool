@@ -1,5 +1,4 @@
-
-// Load confetti library dynamically (safe version)
+ (safe version)
 if (!document.getElementById("confetti-lib")) {
     const script = document.createElement('script');
     script.id = "confetti-lib";
@@ -8,6 +7,8 @@ if (!document.getElementById("confetti-lib")) {
 }
 
 function startConfetti() {
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+}
     confetti({
         particleCount: 150,
         spread: 70,
@@ -22,6 +23,8 @@ script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.b
 document.head.appendChild(script);
 
 function startConfetti() {
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+}
     confetti({
         particleCount: 150,
         spread: 70,
@@ -36,6 +39,8 @@ script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.b
 document.head.appendChild(script);
 
 function startConfetti() {
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+}
     confetti({
         particleCount: 150,
         spread: 70,
@@ -112,18 +117,6 @@ async function checkDomain() {
             startConfetti();
         }
 
-        let allGreen = true;
-        for (const [type, record] of Object.entries(data)) {
-            if (type === 'NS' || type === 'WHOIS') continue;
-            if (!record.status) {
-                allGreen = false;
-                break;
-            }
-        }
-        if (allGreen) {
-            startConfetti();
-        }
-
 
         if (data.NS) {
             const nsBox = document.createElement("div");
@@ -155,18 +148,6 @@ async function checkDomain() {
         alert("Something went wrong while looking up your domain..");
     } finally {
         
-        let allGreen = true;
-        for (const [type, record] of Object.entries(data)) {
-            if (type === 'NS' || type === 'WHOIS') continue;
-            if (!record.status) {
-                allGreen = false;
-                break;
-            }
-        }
-        if (allGreen) {
-            startConfetti();
-        }
-
         loader.style.display = "none";
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
