@@ -81,7 +81,7 @@ async function checkDomain() {
 
     } catch (e) {
         console.error(e);
-        alert("Er is iets misgegaan tijdens de lookup.");
+        alert("Something went wrong while looking up your domain..");
     } finally {
         loader.style.display = "none";
         resultsSection.style.display = "block";
@@ -96,8 +96,6 @@ async function exportHTML() {
     const templateResponse = await fetch("export-template.html");
     let template = await templateResponse.text();
     template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
-
-    // Strip alle tooltip divs uit de export zodat alleen de type tekst overblijft
     template = template.replace(/<div class="tooltip"><b>(.*?)<\/b><span class="tooltiptext">.*?<\/span><\/div>/g, '<b>$1</b>');
 
     const blob = new Blob([template], { type: 'text/html' });
