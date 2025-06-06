@@ -39,29 +39,31 @@ def query_dns_record(domain, record_type, selector=None):
 
 def check_dnssec(domain):
     try:
-        n = dns.name.from_text(domain)
-        request = dns.message.make_query(n, dns.rdatatype.DNSKEY, want_dnssec=True)
-        response = dns.query.udp(request, '8.8.8.8', timeout=5)
-        if response.flags & dns.flags.AD:
-            return ["DNSSEC is enabled"]
-        elif response.answer:
-            return [r.to_text() for r in response.answer[0]]
-        else:
-            return [f"DNSSEC record not found for {domain}"]
+        # We gebruiken alleen dns.resolver.resolve zodat Azure geen outbound UDP problemen heeft
+        answers = dns.resolver.resolve(domain, 'DNSKEY')
+        return [rdata.to_text() for rdata in answers] if answers else [f"DNSSEC record not found for {domain}"]
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        return [f"DNSSEC record not found for {domain}"]
     except Exception as e:
         return [f"Error while querying DNSSEC: {str(e)}"]
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Processing DNSMegaTool request.')
 
-    try:
-        req_body = req.get_json()
-    except ValueError:
-        return func.HttpResponse("Invalid JSON", status_code=400)
+    domain = None
 
-    domain = req_body.get('domain')
+    # Eerst GET support (zoals frontend nu werkt)
+    if req.method == "GET":
+        domain = req.params.get("domain")
+    else:
+        try:
+            req_body = req.get_json()
+            domain = req_body.get("domain")
+        except ValueError:
+            return func.HttpResponse("Invalid JSON", status_code=400)
+
     if not domain:
-        return func.HttpResponse("Please pass a domain in the request body", status_code=400)
+        return func.HttpResponse("Please pass a domain", status_code=400)
 
     result = {
         "A": query_dns_record(domain, "A"),
