@@ -9,7 +9,7 @@ import whois
 app = func.FunctionApp()
 
 def record_not_found(record_type, domain):
-    return f"{record_type} record not found for {domain}"
+    return f"{record_type} record not found: {domain}"
 
 @app.route(route="lookup")
 def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
@@ -41,8 +41,11 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             if full_record.startswith('v=spf1'):
                 spf_records.append(full_record)
 
-        valid_spf = any('-all' in r for r in spf_records)
-        results['SPF'] = {"status": valid_spf, "value": spf_records}
+        if spf_records:
+            valid_spf = any('-all' in r for r in spf_records)
+            results['SPF'] = {"status": valid_spf, "value": spf_records}
+        else:
+            results['SPF'] = {"status": False, "value": record_not_found("SPF", domain)}
     except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['SPF'] = {"status": False, "value": record_not_found("SPF", domain)}
     except Exception as e:
@@ -61,7 +64,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
                 dkim_txt = [b.decode('utf-8') for r in dkim_records for b in r.strings]
                 dkim_results.append(f"{selector}: {dkim_txt[0]}")
             except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-                dkim_results.append(f"{selector}: {record_not_found('DKIM', dkim_domain)}")
+                dkim_results.append(f"{selector}: DKIM record not found: {dkim_domain}")
                 dkim_valid = False
             except Exception as e:
                 dkim_results.append(f"{selector}: {str(e)}")
@@ -92,23 +95,25 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             mta_sts_dns_ok = True
         except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             mta_sts_dns_ok = False
+            results['MTA-STS'] = {"status": False, "value": record_not_found("MTA-STS", mta_sts_domain)}
+            mta_sts_dns_ok = None  # Stop verdere verwerking
+        if mta_sts_dns_ok is not None:
+            try:
+                well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
+                fallback_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
+                r = requests.get(well_known_url, timeout=5)
+                mta_sts_http_ok = r.status_code == 200
+                if not mta_sts_http_ok:
+                    try:
+                        r2 = requests.get(fallback_url, timeout=5)
+                        mta_sts_http_ok = r2.status_code == 200
+                    except:
+                        mta_sts_http_ok = False
+            except:
+                mta_sts_http_ok = False
 
-        try:
-            well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
-            fallback_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
-            r = requests.get(well_known_url, timeout=5)
-            mta_sts_http_ok = r.status_code == 200
-            if not mta_sts_http_ok:
-                try:
-                    r2 = requests.get(fallback_url, timeout=5)
-                    mta_sts_http_ok = r2.status_code == 200
-                except:
-                    mta_sts_http_ok = False
-        except:
-            mta_sts_http_ok = False
-
-        mta_sts_valid = mta_sts_dns_ok or mta_sts_http_ok
-        results['MTA-STS'] = {"status": mta_sts_valid, "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"}
+            mta_sts_valid = mta_sts_dns_ok or mta_sts_http_ok
+            results['MTA-STS'] = {"status": mta_sts_valid, "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"}
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
