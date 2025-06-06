@@ -1,148 +1,77 @@
 
+import logging
 import azure.functions as func
 import json
 import dns.resolver
-import dns.exception
-import requests
-import whois
+import dns.dnssec
+import dns.name
+import dns.query
+import dns.message
 
-app = func.FunctionApp()
+def query_dns_record(domain, record_type, selector=None):
+    try:
+        query_domain = domain
+        if selector:
+            query_domain = f"{selector}._domainkey.{domain}"
 
-@app.route(route="lookup")
-def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
-    domain = req.params.get('domain')
+        if record_type == "SPF":
+            answers = dns.resolver.resolve(domain, 'TXT')
+            spf_records = [rdata.to_text().strip('"') for rdata in answers if rdata.to_text().startswith('"v=spf1')]
+            return spf_records if spf_records else [f"SPF record not found for {domain}"]
+        elif record_type == "DKIM":
+            answers = dns.resolver.resolve(query_domain, 'TXT')
+            return [rdata.to_text().strip('"') for rdata in answers]
+        elif record_type == "DMARC":
+            query_domain = f"_dmarc.{domain}"
+            answers = dns.resolver.resolve(query_domain, 'TXT')
+            return [rdata.to_text().strip('"') for rdata in answers]
+        elif record_type == "MTA-STS":
+            query_domain = f"_mta-sts.{domain}"
+            answers = dns.resolver.resolve(query_domain, 'TXT')
+            return [rdata.to_text().strip('"') for rdata in answers]
+        else:
+            answers = dns.resolver.resolve(query_domain, record_type)
+            return [rdata.to_text() for rdata in answers]
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        return [f"{record_type} record not found for {query_domain}"]
+    except Exception as e:
+        return [f"Error while querying {record_type}: {str(e)}"]
+
+def check_dnssec(domain):
+    try:
+        n = dns.name.from_text(domain)
+        request = dns.message.make_query(n, dns.rdatatype.DNSKEY, want_dnssec=True)
+        response = dns.query.udp(request, '8.8.8.8', timeout=5)
+        if response.flags & dns.flags.AD:
+            return ["DNSSEC is enabled"]
+        elif response.answer:
+            return [r.to_text() for r in response.answer[0]]
+        else:
+            return [f"DNSSEC record not found for {domain}"]
+    except Exception as e:
+        return [f"Error while querying DNSSEC: {str(e)}"]
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Processing DNSMegaTool request.')
+
+    try:
+        req_body = req.get_json()
+    except ValueError:
+        return func.HttpResponse("Invalid JSON", status_code=400)
+
+    domain = req_body.get('domain')
     if not domain:
-        return func.HttpResponse("Please pass a domain on the query string", status_code=400)
+        return func.HttpResponse("Please pass a domain in the request body", status_code=400)
 
-    results = {}
+    result = {
+        "A": query_dns_record(domain, "A"),
+        "MX": query_dns_record(domain, "MX"),
+        "SPF": query_dns_record(domain, "SPF"),
+        "DKIM_selector1": query_dns_record(domain, "DKIM", "selector1"),
+        "DKIM_selector2": query_dns_record(domain, "DKIM", "selector2"),
+        "DMARC": query_dns_record(domain, "DMARC"),
+        "MTA-STS": query_dns_record(domain, "MTA-STS"),
+        "DNSSEC": check_dnssec(domain)
+    }
 
-    # MX lookup
-    try:
-        mx_records = dns.resolver.resolve(domain, 'MX')
-        mx_valid = len(mx_records) > 0
-        results['MX'] = {
-            "status": mx_valid,
-            "value": [str(r.exchange) for r in mx_records]
-        }
-    except dns.resolver.NoAnswer:
-        results['MX'] = {"status": False, "value": f"MX record does not exist for this domain {domain}"}
-    except Exception as e:
-        results['MX'] = {"status": False, "value": str(e)}
-
-    # SPF lookup (samengevoegd TXT record)
-    try:
-        txt_records = dns.resolver.resolve(domain, 'TXT')
-        spf_records = []
-        for r in txt_records:
-            full_record = ''.join([b.decode('utf-8') for b in r.strings])
-            if full_record.startswith('v=spf1'):
-                spf_records.append(full_record)
-
-        valid_spf = any('-all' in r for r in spf_records)
-        results['SPF'] = {"status": valid_spf, "value": spf_records}
-    except dns.resolver.NoAnswer:
-        results['SPF'] = {"status": False, "value": f"SPF record does not exist for this domain {domain}"}
-    except Exception as e:
-        results['SPF'] = {"status": False, "value": str(e)}
-
-    # DKIM lookup
-    try:
-        selectors = ['selector1', 'selector2']
-        dkim_results = []
-        dkim_valid = True
-
-        for selector in selectors:
-            dkim_domain = f"{selector}._domainkey.{domain}"
-            try:
-                dkim_records = dns.resolver.resolve(dkim_domain, 'TXT')
-                dkim_txt = [b.decode('utf-8') for r in dkim_records for b in r.strings]
-                dkim_results.append(f"{selector}: {dkim_txt[0]}")
-            except dns.resolver.NoAnswer:
-                dkim_results.append(f"{selector}: DKIM record does not exist for this domain {domain}")
-                dkim_valid = False
-            except Exception as e:
-                dkim_results.append(f"{selector}: {str(e)}")
-                dkim_valid = False
-
-        results['DKIM'] = {"status": dkim_valid, "value": dkim_results}
-    except Exception as e:
-        results['DKIM'] = {"status": False, "value": str(e)}
-
-    # DMARC lookup (oude validatie)
-    try:
-        dmarc_domain = "_dmarc." + domain
-        dmarc_records = dns.resolver.resolve(dmarc_domain, 'TXT')
-        dmarc_txt = ["".join([b.decode("utf-8") for b in rr.strings]) for rr in dmarc_records]
-
-        valid_dmarc = any("p=reject" in record for record in dmarc_txt)
-        results['DMARC'] = {"status": valid_dmarc, "value": dmarc_txt}
-    except dns.resolver.NoAnswer:
-        results['DMARC'] = {"status": False, "value": f"DMARC record does not exist for this domain {domain}"}
-    except Exception as e:
-        results['DMARC'] = {"status": False, "value": str(e)}
-
-    # MTA-STS lookup met fallback check
-    try:
-        mta_sts_domain = "_mta-sts." + domain
-        try:
-            mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
-            mta_sts_dns_ok = True
-        except dns.resolver.NoAnswer:
-            mta_sts_dns_ok = False
-
-        try:
-            well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
-            fallback_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
-            r = requests.get(well_known_url, timeout=5)
-            mta_sts_http_ok = r.status_code == 200
-            if not mta_sts_http_ok:
-                try:
-                    r2 = requests.get(fallback_url, timeout=5)
-                    mta_sts_http_ok = r2.status_code == 200
-                except:
-                    mta_sts_http_ok = False
-        except:
-            mta_sts_http_ok = False
-
-        mta_sts_result = []
-        mta_sts_result.append("Record found" if mta_sts_dns_ok else "Record not found")
-        mta_sts_result.append("Policy at /.well-known/mta-sts.txt found" if mta_sts_http_ok else "Policy at /.well-known/mta-sts.txt not found")
-
-        valid_mta_sts = mta_sts_dns_ok and mta_sts_http_ok
-        results['MTA-STS'] = {"status": valid_mta_sts, "value": mta_sts_result}
-    except Exception as e:
-        results['MTA-STS'] = {"status": False, "value": str(e)}
-
-    # DNSSEC lookup
-    try:
-        ds_records = dns.resolver.resolve(domain, 'DS')
-        dnssec_valid = len(ds_records) > 0
-        dnssec_list = [str(r) for r in ds_records]
-        results['DNSSEC'] = {"status": dnssec_valid, "value": dnssec_list}
-    except dns.resolver.NoAnswer:
-        results['DNSSEC'] = {"status": False, "value": [f"DNSSEC record does not exist for this domain {domain}"]}
-    except Exception as e:
-        results['DNSSEC'] = {"status": False, "value": [str(e)]}
-
-    # NS lookup
-    try:
-        ns_records = dns.resolver.resolve(domain, 'NS')
-        results['NS'] = [str(r.target).rstrip('.') for r in ns_records]
-    except Exception as e:
-        results['NS'] = [f"Error retrieving NS records: {str(e)}"]
-
-    # WHOIS lookup
-    try:
-        w = whois.whois(domain)
-        whois_data = {
-            "registrar": w.registrar,
-            "creation_date": str(w.creation_date)
-        }
-        results['WHOIS'] = whois_data
-    except Exception as e:
-        results['WHOIS'] = {"error": str(e)}
-
-    return func.HttpResponse(
-        json.dumps(results),
-        mimetype="application/json"
-    )
+    return func.HttpResponse(json.dumps(result), mimetype="application/json")
