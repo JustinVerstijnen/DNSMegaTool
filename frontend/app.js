@@ -1,4 +1,19 @@
 
+// Load confetti library dynamically
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+document.head.appendChild(script);
+
+function startConfetti() {
+    confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
+
+
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
@@ -84,6 +99,19 @@ async function checkDomain() {
         console.error(e);
         alert("Something went wrong while looking up your domain..");
     } finally {
+        
+        let allGreen = true;
+        for (const [type, record] of Object.entries(data)) {
+            if (type === 'NS' || type === 'WHOIS') continue;
+            if (!record.status) {
+                allGreen = false;
+                break;
+            }
+        }
+        if (allGreen) {
+            startConfetti();
+        }
+
         loader.style.display = "none";
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
