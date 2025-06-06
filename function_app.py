@@ -1,3 +1,4 @@
+
 import azure.functions as func
 import json
 import dns.resolver
@@ -111,12 +112,12 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
 
-    # DNSSEC lookup
+    # DNSSEC lookup - verbeterd
     try:
-        dnskey_records = dns.resolver.resolve(domain, 'DNSKEY')
-        dnssec_valid = len(dnskey_records) > 0
-        dnskey_values = [str(r) for r in dnskey_records]
-        results['DNSSEC'] = {"status": dnssec_valid, "value": dnskey_values}
+        ds_records = dns.resolver.resolve(domain, 'DS')
+        dnssec_valid = len(ds_records) > 0
+        ds_values = [str(r) for r in ds_records]
+        results['DNSSEC'] = {"status": dnssec_valid, "value": ds_values}
     except dns.resolver.NoAnswer:
         results['DNSSEC'] = {"status": False, "value": record_not_found("DNSSEC", domain)}
     except Exception as e:
