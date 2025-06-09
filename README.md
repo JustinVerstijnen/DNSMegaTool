@@ -1,10 +1,10 @@
-# DNSMegaTool 🚀
+# DNSMegaTool
 
 A powerful, open-source DNS checker and export tool developed by Justin Verstijnen.
 
 ---
 
-## 🧰 Overview
+## Overview
 
 **DNSMegaTool** is a simple yet comprehensive tool that allows you to:
 - Query DNS records for a domain (A, AAAA, MX, TXT, CNAME, etc.)
@@ -16,7 +16,7 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 
 ---
 
-## 📋 Features
+## Features
 
 - **Query all common DNS record types**: A, AAAA, CNAME, MX, TXT, NS, SRV, SPF
 - **DNSSEC validation**: checks if DNSSEC is enabled and properly configured
