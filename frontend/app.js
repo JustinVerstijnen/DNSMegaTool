@@ -63,8 +63,8 @@ async function checkDomain() {
         }
         if (allGreen) {
             confetti({
-                particleCount: 150,
-                spread: 70,
+                particleCount: 300,
+                spread: 200,
                 origin: { y: 0.6 }
             });
         }
