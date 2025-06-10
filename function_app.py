@@ -1,4 +1,3 @@
-
 import azure.functions as func
 import json
 import dns.resolver
@@ -87,7 +86,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup met strictere validatie
+    # MTA-STS lookup with stricter validation
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -96,7 +95,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
             mta_sts_dns_ok = False
             results['MTA-STS'] = {"status": False, "value": record_not_found("MTA-STS", mta_sts_domain)}
-            mta_sts_dns_ok = None  # Stop verdere verwerking
+            mta_sts_dns_ok = None  # Stop further processing
 
         if mta_sts_dns_ok is not None:
             try:
@@ -113,11 +112,11 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             except:
                 mta_sts_http_ok = False
 
-            # STRIKTE VALIDATIE: beide moeten slagen
+            # STRICT VALIDATION: both must succeed
             mta_sts_valid = mta_sts_dns_ok and mta_sts_http_ok
             results['MTA-STS'] = {
                 "status": mta_sts_valid,
-                "value": f"DNS: {mta_sts_dns_ok}, HTTP: {mta_sts_http_ok}"
+                "value": [f"DNS: {mta_sts_dns_ok}", f"HTTP: {mta_sts_http_ok}"]
             }
     except Exception as e:
         results['MTA-STS'] = {"status": False, "value": str(e)}
@@ -126,29 +125,13 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     try:
         ds_records = dns.resolver.resolve(domain, 'DS')
         dnssec_valid = len(ds_records) > 0
-        ds_values = [str(r) for r in ds_records]
-        results['DNSSEC'] = {"status": dnssec_valid, "value": ds_values}
+        results['DNSSEC'] = {"status": dnssec_valid, "value": [str(r.digest) for r in ds_records]}
     except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         results['DNSSEC'] = {"status": False, "value": record_not_found("DNSSEC", domain)}
     except Exception as e:
         results['DNSSEC'] = {"status": False, "value": str(e)}
 
-    # NS lookup
-    try:
-        ns_records = dns.resolver.resolve(domain, 'NS')
-        ns_list = [str(r.target) for r in ns_records]
-        results['NS'] = ns_list
-    except:
-        results['NS'] = []
-
-    # WHOIS lookup
-    try:
-        whois_data = whois.whois(domain)
-        results['WHOIS'] = {
-            "registrar": whois_data.registrar,
-            "creation_date": str(whois_data.creation_date)
-        }
-    except Exception as e:
-        results['WHOIS'] = {"error": str(e)}
-
-    return func.HttpResponse(json.dumps(results), mimetype="application/json")
+    return func.HttpResponse(
+        json.dumps(results),
+        mimetype="application/json"
+    )
