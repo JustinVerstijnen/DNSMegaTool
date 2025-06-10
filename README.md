@@ -24,3 +24,9 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 - **Export options**: save results to CSV/JSON or copy to clipboard
 - **Clean interface**: easy-to-read output even for bulk queries
 - **Open-source**: free to use, modify, and integrate
+
+---
+
+## Possible future features
+
+- **Tooltips**
