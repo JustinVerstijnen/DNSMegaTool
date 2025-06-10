@@ -88,39 +88,44 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
         results['DMARC'] = {"status": False, "value": str(e)}
 
         # MTA-STS lookup with stricter validation
+try:
+    mta_sts_domain = "_mta-sts." + domain
     try:
-        mta_sts_domain = "_mta-sts." + domain
+        mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
+        mta_sts_dns_ok = True
+        mta_sts_txt_value = ''.join([b.decode('utf-8') for b in mta_sts_records[0].strings])  # Get the TXT record value
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        mta_sts_dns_ok = False
+        results['MTA-STS'] = {"status": False, "value": record_not_found("MTA-STS", mta_sts_domain)}
+        mta_sts_dns_ok = None  # Stop further processing
+
+    if mta_sts_dns_ok is not None:
         try:
-            mta_sts_records = dns.resolver.resolve(mta_sts_domain, 'TXT')
-            mta_sts_dns_ok = True
-        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-            mta_sts_dns_ok = False
-            results['MTA-STS'] = {"status": False, "value": record_not_found("MTA-STS", mta_sts_domain)}
-            mta_sts_dns_ok = None  # Stop further processing
+            well_known_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
+            fallback_url = f"https://{domain}/.well-known/mta-sts.txt"
+            r = requests.get(well_known_url, timeout=5)
+            mta_sts_http_ok = r.status_code == 200
+            if not mta_sts_http_ok:
+                try:
+                    r2 = requests.get(fallback_url, timeout=5)
+                    mta_sts_http_ok = r2.status_code == 200
+                except:
+                    mta_sts_http_ok = False
+        except:
+            mta_sts_http_ok = False
 
-        if mta_sts_dns_ok is not None:
-            try:
-                well_known_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
-                fallback_url = f"https://{domain}/.well-known/mta-sts.txt"
-                r = requests.get(well_known_url, timeout=5)
-                mta_sts_http_ok = r.status_code == 200
-                if not mta_sts_http_ok:
-                    try:
-                        r2 = requests.get(fallback_url, timeout=5)
-                        mta_sts_http_ok = r2.status_code == 200
-                    except:
-                        mta_sts_http_ok = False
-            except:
-                mta_sts_http_ok = False
+        # STRICT VALIDATION: both must succeed
+        mta_sts_valid = mta_sts_dns_ok and mta_sts_http_ok
+        results['MTA-STS'] = {
+            "status": mta_sts_valid,
+            "value": [
+                f"{mta_sts_txt_value}",
+                f"DNS: {mta_sts_dns_ok}\t\tHTTP: {mta_sts_http_ok}"
+            ]
+        }
+except Exception as e:
+    results['MTA-STS'] = {"status": False, "value": str(e)}
 
-            # STRICT VALIDATION: both must succeed
-            mta_sts_valid = mta_sts_dns_ok and mta_sts_http_ok
-            results['MTA-STS'] = {
-                "status": mta_sts_valid,
-                "value": [f"DNS: {mta_sts_dns_ok}", f"HTTP: {mta_sts_http_ok}"]
-            }
-    except Exception as e:
-        results['MTA-STS'] = {"status": False, "value": str(e)}
 
     # DNSSEC lookup
     try:
