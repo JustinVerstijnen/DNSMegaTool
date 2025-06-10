@@ -100,8 +100,8 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
 
         if mta_sts_dns_ok is not None:
             try:
-                well_known_url = f"https://{domain}/.well-known/mta-sts.txt"
-                fallback_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
+                well_known_url = f"https://mta-sts.{domain}/.well-known/mta-sts.txt"
+                fallback_url = f"https://{domain}/.well-known/mta-sts.txt"
                 r = requests.get(well_known_url, timeout=5)
                 mta_sts_http_ok = r.status_code == 200
                 if not mta_sts_http_ok:
