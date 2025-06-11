@@ -1,4 +1,3 @@
-
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
@@ -31,6 +30,7 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
+            // Use innerHTML to insert the tooltip with HTML content (links)
             typeCell.innerHTML = `<b class="tooltip" title="${tooltips[type]}">${type}</b>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
