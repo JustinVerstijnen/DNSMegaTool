@@ -178,7 +178,7 @@ tbody tr:nth-child(even) {
     cursor: pointer;
 }
 
-/* Tooltip content - position absolute, placed to the right of the element */
+/* Tooltip content */
 .tooltip:hover::after {
     content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
@@ -191,7 +191,7 @@ tbody tr:nth-child(even) {
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-    max-width: 600px;  /* Maximum width for the tooltip (enough space for ~60 chars) */
+    max-width: 600px;  /* Maximum width for the tooltip */
     min-width: 180px; /* Minimum width for the tooltip */
     white-space: normal;  /* Allows text to wrap normally */
     word-wrap: break-word; /* Ensure words break correctly */
@@ -199,19 +199,26 @@ tbody tr:nth-child(even) {
     display: inline-block;
     z-index: 1000;  /* Ensure tooltip appears above other elements */
     pointer-events: auto;  /* Make the entire tooltip clickable */
-}
-
-/* Tooltip content is now fully clickable, and it will open the link */
-.tooltip:hover::after {
-    cursor: pointer;  /* Cursor should indicate it's clickable */
     font-weight: normal; /* Prevent bold font in tooltip */
 }
 
-/* Make the tooltip content linkable */
+/* Remove text underlining in the tooltip */
 .tooltip:hover::after {
-    pointer-events: auto; /* Ensure the tooltip is clickable */
-    text-decoration: underline;
+    text-decoration: none;  /* Remove underlining from the tooltip text */
 }
+
+/* Make sure the tooltip link is styled properly */
+.tooltip:hover::after a {
+    color: #fff;
+    text-decoration: underline; /* Ensure the link inside the tooltip is underlined */
+    pointer-events: auto; /* Allow clicking on the link */
+}
+
+/* Style the link hover inside the tooltip */
+.tooltip:hover::after a:hover {
+    text-decoration: none; /* Prevent underlining on hover */
+}
+
 
 
 
