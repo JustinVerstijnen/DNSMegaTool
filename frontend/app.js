@@ -1,4 +1,3 @@
-
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
@@ -18,12 +17,12 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": "Mail Exchange record used to route emails.",
-            "SPF": "Sender Policy Framework: prevents spoofing.",
-            "DKIM": "DomainKeys Identified Mail: verifies message integrity.",
-            "DMARC": "Domain-based Message Authentication Reporting and Conformance.",
-            "MTA-STS": "Mail Transfer Agent Strict Transport Security.",
-            "DNSSEC": "Domain Name System Security Extensions."
+            "MX": "MX (Mail Exchange) records zijn DNS-records die aangeven welke mailservers verantwoordelijk zijn voor het ontvangen van e-mail voor dit domein.",
+            "SPF": "SPF (Sender Policy Framework) is een systeem voor e-mailverificatie om te controleren of een e-mailbericht afkomstig is van een geautoriseerde mailserver.",
+            "DKIM": "DKIM (DomainKeys Identified Mail) helpt bij het verifiëren van de afzender van een e-mail door een digitale handtekening te gebruiken.",
+            "DMARC": "DMARC (Domain-based Message Authentication, Reporting & Conformance) helpt bij het beschermen tegen e-mailspoofing door een beleid voor e-mailverificatie in te stellen.",
+            "MTA-STS": "MTA-STS (Mail Transfer Agent Strict Transport Security) dwingt versleutelde e-mailverbindingen af, wat helpt om te voorkomen dat e-mails worden onderschept.",
+            "DNSSEC": "DNSSEC (Domain Name System Security Extensions) voegt beveiliging toe aan het DNS-systeem, waardoor je je kunt beschermen tegen aanvallen zoals DNS-spoofing."
         };
 
         for (const [type, record] of Object.entries(data)) {
@@ -31,7 +30,7 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            typeCell.innerHTML = `<b>${type}</b>`;
+            typeCell.innerHTML = `<b class="tooltip" title="${tooltips[type]}">${type}</b>`; // Add tooltip class here
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
@@ -68,7 +67,6 @@ async function checkDomain() {
                 origin: { y: 0.6 }
             });
         }
-
 
         if (data.NS) {
             const nsBox = document.createElement("div");
@@ -112,7 +110,7 @@ async function exportHTML() {
     const templateResponse = await fetch("export-template.html");
     let template = await templateResponse.text();
     template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
-    template = template.replace(/<div class="tooltip"><b>(.*?)<\/b><span class="tooltiptext">.*?<\/span><\/div>/g, '<b>$1</b>');
+    template = template.replace(/<b class="tooltip">(.*?)<\/b>/g, '<b class="tooltip" title="$1">$1</b>'); // Keep tooltips in export
 
     const blob = new Blob([template], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
