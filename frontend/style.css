@@ -156,26 +156,16 @@ tbody tr:nth-child(even) {
 
 /* Tooltip styling */
 
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltip:hover::after {
-    content: attr(title);
+.tooltip-content {
     position: absolute;
-    top: -5px;
-    left: 105%;
-    padding: 5px;
-    border: 1px solid #333;
-    background-color: #fff;
+    background-color: #f0f0f0;
     color: #333;
-    font-size: 12px;
+    padding: 5px;
     border-radius: 3px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    max-width: 250px;
+    word-wrap: break-word;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    white-space: nowrap;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 9999;
 }

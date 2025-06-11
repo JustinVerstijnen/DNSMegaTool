@@ -44,3 +44,27 @@
     <div class="footer">© 2025 DNS MEGAtool by Justin Verstijnen</div>
 
     <script src="app.js"></script>
+
+<script>
+    // Function to show tooltips when hovering over the elements
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipElements = document.querySelectorAll('.tooltip');
+        tooltipElements.forEach(element => {
+            element.addEventListener('mouseover', function() {
+                const tooltipText = this.getAttribute('data-tooltip');
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip-content');
+                tooltip.textContent = tooltipText;
+                document.body.appendChild(tooltip);
+
+                const rect = this.getBoundingClientRect();
+                tooltip.style.left = `${rect.left + window.scrollX}px`;
+                tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+
+                this.addEventListener('mouseout', () => {
+                    document.body.removeChild(tooltip);
+                });
+            });
+        });
+    });
+</script>
