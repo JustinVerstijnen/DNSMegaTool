@@ -30,7 +30,8 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            typeCell.innerHTML = `<b class="tooltip" data-tooltip="${tooltips[type]}">${type}</b>`;
+            // We make the entire tooltip a clickable link
+            typeCell.innerHTML = `<a href="${tooltips[type]}" class="tooltip" target="_blank">${type}</a>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
