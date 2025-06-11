@@ -178,9 +178,9 @@ tbody tr:nth-child(even) {
     cursor: pointer;
 }
 
-/* Tooltip content - zorg ervoor dat het standaard verborgen is */
+/* Tooltip content - verborgen totdat er over het recordtype wordt gehoverd */
 .tooltip .tooltip-text {
-    display: none;
+    display: none; /* Tooltip standaard verborgen */
     position: absolute;
     top: 100%;  /* Plaats de tooltip onder de recordtekst */
     left: 0%;
@@ -198,23 +198,23 @@ tbody tr:nth-child(even) {
     word-break: break-word;
     z-index: 50000;
     pointer-events: auto;
-    font-weight: normal; /* Prevent bold font in tooltip */
+    font-weight: normal;
 }
 
-/* Toon de tooltip-tekst als je met de cursor over het recordtype beweegt */
+/* Toon de tooltip-tekst bij hover over het type record */
 .tooltip:hover .tooltip-text {
-    display: block;
+    display: block; /* Maak de tooltip zichtbaar wanneer je over het type record beweegt */
 }
 
-/* Zorg ervoor dat de tooltip link goed gestyled is */
+/* Zorg ervoor dat de link in de tooltip goed gestyled is */
 .tooltip-text a {
     color: #fff;
     text-decoration: none;
 }
 
-/* Style de hover van de link in de tooltip */
+/* Verwijder onderstreping bij hover van de link in de tooltip */
 .tooltip-text a:hover {
-    text-decoration: none; /* Verwijder onderstreping bij hover */
+    text-decoration: none;
 }
 
 .table-wrapper {
