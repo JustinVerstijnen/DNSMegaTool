@@ -17,8 +17,8 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "Mail Exchange record, checks if a record is configured": {
-                text: "MX",
+            "MX": {
+                text: "Mail Exchange record, checks if a record is configured",
                 link: "https://mxtoolbox.com/technical/mx-records"
             },
             "SPF": {
@@ -49,11 +49,13 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
+
+            // Voeg de tooltip buiten de b-tag toe en zet de tooltip in de 'tooltip-text' div
             typeCell.innerHTML = `
-                <b class="tooltip" data-tooltip="${type}">
-                    ${type}
-                    <span class="tooltip-text">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
-                </b>`;
+                <b>${type}</b>
+                <span class="tooltip-text">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
+            `;
+
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
@@ -131,15 +133,13 @@ async function checkDomain() {
 
 // Tooltip voor hover
 document.addEventListener('mouseover', function (e) {
-    if (e.target && e.target.classList.contains('tooltip')) {
-        const tooltipText = e.target.querySelector('.tooltip-text');
-        tooltipText.style.display = 'block';
+    if (e.target && e.target.classList.contains('tooltip-text')) {
+        e.target.style.display = 'block';
     }
 });
 
 document.addEventListener('mouseout', function (e) {
-    if (e.target && e.target.classList.contains('tooltip')) {
-        const tooltipText = e.target.querySelector('.tooltip-text');
-        tooltipText.style.display = 'none';
+    if (e.target && e.target.classList.contains('tooltip-text')) {
+        e.target.style.display = 'none';
     }
 });
