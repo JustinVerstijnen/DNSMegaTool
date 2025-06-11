@@ -160,9 +160,10 @@ tbody tr:nth-child(even) {
     position: relative;
     display: inline-block;
     cursor: pointer;
+    font-weight: bold; /* Optional: to emphasize the term */
 }
 
-.tooltip:hover::after {
+.tooltip::after {
     content: attr(title);
     position: absolute;
     top: -5px;
@@ -175,4 +176,12 @@ tbody tr:nth-child(even) {
     border-radius: 3px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     white-space: nowrap;
+    opacity: 0; /* Hide by default */
+    visibility: hidden; /* Hide by default */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.tooltip:hover::after {
+    opacity: 1; /* Show on hover */
+    visibility: visible; /* Ensure it's visible when hovered */
 }
