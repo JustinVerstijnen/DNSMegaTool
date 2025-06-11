@@ -17,114 +17,52 @@ async function checkDomain() {
         const response = await fetch(`/api/lookup?domain=${domain}`);
         const data = await response.json();
 
+        // Tooltips for MX, SPF, DKIM, and DMARC
         const tooltips = {
-            "MX": "Mail Exchange record used to route emails.",
-            "SPF": "Sender Policy Framework: prevents spoofing.",
-            "DKIM": "DomainKeys Identified Mail: verifies message integrity.",
-            "DMARC": "Domain-based Message Authentication Reporting and Conformance.",
-            "MTA-STS": "Mail Transfer Agent Strict Transport Security.",
-            "DNSSEC": "Domain Name System Security Extensions."
+            "MX": "Mail Exchange record used to route emails. More info: https://en.wikipedia.org/wiki/Mail_exchange_record",
+            "SPF": "Sender Policy Framework: prevents spoofing. More info: https://en.wikipedia.org/wiki/Sender_Policy_Framework",
+            "DKIM": "DomainKeys Identified Mail: verifies message integrity. More info: https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail",
+            "DMARC": "Domain-based Message Authentication, Reporting, and Conformance: improves email security. More info: https://en.wikipedia.org/wiki/DMARC"
         };
 
-        for (const [type, record] of Object.entries(data)) {
-            if (type === 'NS' || type === 'WHOIS') continue;
+        // Example of adding results dynamically (based on the actual data structure)
+        Object.keys(data).forEach(record => {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            const text = document.createTextNode(record);
+            cell.appendChild(text);
 
-            const row = document.createElement("tr");
-            const typeCell = document.createElement("td");
-            typeCell.innerHTML = `<b>${type}</b>`;
-            const statusCell = document.createElement("td");
-            statusCell.textContent = record.status ? "✅" : "❌";
-
-            const valueCell = document.createElement("td");
-            if (Array.isArray(record.value)) {
-                const list = document.createElement("ul");
-                record.value.forEach(val => {
-                    const li = document.createElement("li");
-                    li.textContent = val;
-                    list.appendChild(li);
-                });
-                valueCell.appendChild(list);
-            } else {
-                valueCell.textContent = record.value;
+            // Add tooltip if the record matches a key in the tooltips object
+            if (tooltips[record]) {
+                cell.innerHTML = `<span title="${tooltips[record]}">${record}</span>`;
             }
 
-            row.appendChild(typeCell);
-            row.appendChild(statusCell);
-            row.appendChild(valueCell);
+            row.appendChild(cell);
             tbody.appendChild(row);
-        }
-        let allGreen = true;
-        for (const [type, record] of Object.entries(data)) {
-            if (type === 'NS' || type === 'WHOIS') continue;
-            if (!record.status) {
-                allGreen = false;
-                break;
-            }
-        }
-        if (allGreen) {
-            confetti({
-                particleCount: 300,
-                spread: 200,
-                origin: { y: 0.6 }
-            });
-        }
+        });
 
-
-        if (data.NS) {
-            const nsBox = document.createElement("div");
-            nsBox.className = "infobox";
-            nsBox.innerHTML = `<h3>Nameservers for ${domain}:</h3><ul>` +
-                data.NS.map(ns => `<li>${ns}</li>`).join("") + "</ul>";
-            extraInfo.appendChild(nsBox);
-        }
-
-        if (data.WHOIS) {
-            const whoisBox = document.createElement("div");
-            whoisBox.className = "infobox";
-            if (data.WHOIS.error) {
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
-            } else {
-                const registrar = data.WHOIS.registrar || 'Not found';
-                const creation = data.WHOIS.creation_date || 'Not found';
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
-                <ul>
-                    <li>Registrar: ${registrar}</li>
-                    <li>Date of Registration: ${creation}</li>
-                </ul>`;
-            }
-            extraInfo.appendChild(whoisBox);
-        }
-
-    } catch (e) {
-        console.error(e);
-        alert("Something went wrong while looking up your domain..");
-    } finally {
-        loader.style.display = "none";
-        resultsSection.style.display = "block";
-        exportBtn.style.display = "inline-block";
+        // After the table is populated, we call the function to add tooltips to the results
+        addTooltipsToResults();
+    } catch (error) {
+        console.error("Error:", error);
     }
 }
 
-async function exportHTML() {
-    const domain = document.getElementById("domainInput").value;
-    const reportSection = document.getElementById("resultsSection").innerHTML;
-
-    const templateResponse = await fetch("export-template.html");
-    let template = await templateResponse.text();
-    template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
-    template = template.replace(/<div class="tooltip"><b>(.*?)<\/b><span class="tooltiptext">.*?<\/span><\/div>/g, '<b>$1</b>');
-
-    const blob = new Blob([template], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "dns-megatool-report.html";
-    a.click();
-    URL.revokeObjectURL(url);
+// Dynamically add the tooltips when the results are populated in the table
+function addTooltipsToResults() {
+    const rows = document.querySelectorAll("#resultTable tbody tr");
+    rows.forEach(row => {
+        row.querySelectorAll("td").forEach(cell => {
+            const cellText = cell.innerText.trim();
+            const tooltips = {
+                "MX": "Mail Exchange record used to route emails. More info: https://en.wikipedia.org/wiki/Mail_exchange_record",
+                "SPF": "Sender Policy Framework: prevents spoofing. More info: https://en.wikipedia.org/wiki/Sender_Policy_Framework",
+                "DKIM": "DomainKeys Identified Mail: verifies message integrity. More info: https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail",
+                "DMARC": "Domain-based Message Authentication, Reporting, and Conformance: improves email security. More info: https://en.wikipedia.org/wiki/DMARC"
+            };
+            if (tooltips[cellText]) {
+                cell.innerHTML = `<span title="${tooltips[cellText]}">${cellText}</span>`;
+            }
+        });
+    });
 }
-
-document.getElementById("domainInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        document.getElementById("checkBtn").click();
-    }
-});
