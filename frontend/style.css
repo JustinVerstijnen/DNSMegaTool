@@ -163,29 +163,28 @@ tbody tr:nth-child(even) {
 }
 
 .tooltip:hover::after {
-    content: attr(data-tooltip); /* Use data-tooltip instead of title */
+    content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
     top: -5px;
     left: 105%;
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: 14px;
+    font-size: calc(12px + 0.5vw); /* Dynamically scale font size */
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     white-space: normal;  /* Allows text to wrap */
     max-width: 250px;  /* Max width for tooltip */
     max-height: 150px;  /* Max height for tooltip */
-    overflow: auto;  /* Allow scrolling if content exceeds max height */
-    word-wrap: break-word;
-    word-break: break-word;
+    overflow: hidden;  /* Hide overflowing text */
+    word-wrap: break-word;  /* Break long words */
+    word-break: break-word;  /* Prevent words from overflowing */
     display: inline-block;
     text-align: justify;
     font-size: calc(12px + 0.5vw); /* Dynamically scale font size */
 }
 
-/* Ensuring links in tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
