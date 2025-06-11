@@ -178,7 +178,7 @@ tbody tr:nth-child(even) {
     cursor: pointer;
 }
 
-/* Tooltip content - position absolute, placed to the right of the element */
+/* Tooltip content */
 .tooltip:hover::after {
     content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
@@ -191,16 +191,12 @@ tbody tr:nth-child(even) {
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    max-width: 600px;  /* Maximum width for the tooltip (enough space for ~60 chars) */
     white-space: normal;  /* Allows text to wrap normally */
-    max-width: 600px;  /* Increased max-width for better readability (~60 characters) */
-    min-width: 150px; /* Ensures tooltip has a minimum width */
-    overflow-wrap: break-word; /* Ensures words break correctly */
-    word-wrap: break-word; /* Prevents long words from overflowing */
+    word-wrap: break-word; /* Ensure words break correctly */
     word-break: break-word; /* Breaks words if necessary */
     display: inline-block;
-    text-align: justify;  /* Align text inside the tooltip */
-    z-index: 1000;  /* Ensures tooltip appears above other elements */
-    white-space: normal; /* Ensures multi-line text wraps inside the tooltip */
+    z-index: 1000;  /* Ensure tooltip appears above other elements */
 }
 
 /* Ensure links inside the tooltip are styled properly */
@@ -215,9 +211,9 @@ tbody tr:nth-child(even) {
     text-decoration: none;
 }
 
-/* Ensure the text inside tooltip is not bold */
+/* Prevent bold font in tooltip */
 .tooltip:hover::after {
-    font-weight: normal; /* Prevent bold font in tooltip */
+    font-weight: normal;
 }
 
 
