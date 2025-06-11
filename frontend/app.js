@@ -31,7 +31,7 @@ async function checkDomain() {
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
             // Insert the tooltip text into data-tooltip instead of title
-            typeCell.innerHTML = `<b class="tooltip" data-tooltip="${tooltips[type]}">${type}</b>`;
+            typeCell.innerHTML = `<span class="tooltip" data-tooltip="${tooltips[type]}">${type}</span>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
