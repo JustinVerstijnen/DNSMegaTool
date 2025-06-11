@@ -1,11 +1,12 @@
-
 body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f2f2f2;
     margin: 0;
     padding: 0;
 }
+
 .container {
+    position: relative;  /* Ensure the tooltip can be positioned outside the container */
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
@@ -13,6 +14,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
+
 .header {
     display: flex;
     align-items: center;
@@ -20,20 +22,24 @@ body {
     gap: 15px;
     margin-bottom: 20px;
 }
+
 h1 {
     text-align: center;
     margin-top: 10px;
 }
+
 .subtitle {
     text-align: center;
     font-size: 1.2em;
     color: #555;
     margin-bottom: 20px;
 }
+
 .searchbox {
     text-align: center;
     margin-bottom: 20px;
 }
+
 input[type="text"] {
     padding: 10px;
     width: 300px;
@@ -41,6 +47,7 @@ input[type="text"] {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 button {
     padding: 10px 20px;
     font-size: 16px;
@@ -51,6 +58,7 @@ button {
     border-radius: 4px;
     cursor: pointer;
 }
+
 .spinner-container {
     position: fixed;
     top: 50%;
@@ -61,6 +69,7 @@ button {
     align-items: center;
     z-index: 1000;
 }
+
 .spinner {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #8EAFDA;
@@ -69,10 +78,12 @@ button {
     height: 60px;
     animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
 #exportBtn {
     background-color: #92dba5;
     color: #FFF;
@@ -83,19 +94,24 @@ button {
     cursor: pointer;
     margin-left: 10px;
 }
+
 #exportBtn:hover {
     background-color: #7ccf95;
 }
+
 .table-wrapper {
     overflow-x: auto;
 }
+
 th:first-child {
     white-space: nowrap;
 }
+
 th, td {
     word-break: break-word;
     max-width: 400px;
 }
+
 .infobox {
     background-color: #e0f0ff;
     border: 1px solid #aad;
@@ -103,6 +119,7 @@ th, td {
     margin-bottom: 10px;
     border-radius: 5px;
 }
+
 ul { margin: 0; padding-left: 20px; }
 
 .table-wrapper {
@@ -156,35 +173,35 @@ tbody tr:nth-child(even) {
 
 /* Tooltips */
 
+/* Tooltip container relative positioning */
 .tooltip {
     position: relative;
     display: inline-block;
     cursor: pointer;
 }
 
+/* Tooltip content - position absolute, right of the element */
 .tooltip:hover::after {
     content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
-    top: -5px;
-    left: 105%; /* Place the tooltip to the right of the element */
+    top: 0;  /* Align tooltip above or below the element */
+    left: 105%; /* Position tooltip to the right */
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: calc(12px + 0.5vw); /* Dynamically scale font size */
+    font-size: clamp(12px, 2vw + 0.5em, 16px); /* Dynamically scale font size */
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     white-space: normal;  /* Allows text to wrap */
-    max-width: 250px;  /* Max width for tooltip */
+    max-width: 300px;  /* Max width for tooltip */
     max-height: 150px;  /* Max height for tooltip */
     overflow: hidden;  /* Hide overflowing text */
-    word-wrap: break-word;  /* Ensure the text wraps within the tooltip */
-    word-break: break-word;  /* Break long words if necessary */
+    word-wrap: break-word;  /* Wrap text inside tooltip */
+    word-break: break-word;  /* Prevent words from overflowing */
     display: inline-block;
     text-align: justify;
-    /* Ensure the tooltip text is readable */
-    font-size: clamp(12px, 2vw + 0.5em, 16px); /* Dynamically scale font size */
-    /* The tooltip text will resize but won't exceed the max size */
+    z-index: 1000;  /* Ensure tooltip appears above other elements */
 }
 
 /* Ensure links inside the tooltip are styled properly */
@@ -197,6 +214,3 @@ tbody tr:nth-child(even) {
 .tooltip:hover::after a:hover {
     text-decoration: none;
 }
-
-
-
