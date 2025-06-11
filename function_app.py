@@ -1,3 +1,4 @@
+# Module imports
 import azure.functions as func
 import json
 import dns.resolver
@@ -5,6 +6,7 @@ import dns.exception
 import requests
 import whois
 
+# Function settings
 app = func.FunctionApp()
 
 def record_not_found(record_type, domain):
@@ -86,7 +88,7 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         results['DMARC'] = {"status": False, "value": str(e)}
 
-    # MTA-STS lookup with stricter validation
+    # MTA-STS lookup with validation
     try:
         mta_sts_domain = "_mta-sts." + domain
         try:
@@ -118,8 +120,8 @@ def dns_lookup(req: func.HttpRequest) -> func.HttpResponse:
             results['MTA-STS'] = {
                 "status": mta_sts_valid,
                 "value": [
-                    f"{mta_sts_txt_value}",  # Only include the TXT record value
-                    f"DNS: {mta_sts_dns_ok}\t\tHTTP: {mta_sts_http_ok}"  # This will be the second line
+                    f"{mta_sts_txt_value}",
+                    f"DNS: {mta_sts_dns_ok}\t\tHTTP: {mta_sts_http_ok}"
                 ]
             }
     except Exception as e:
