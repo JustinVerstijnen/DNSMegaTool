@@ -189,8 +189,10 @@ tbody tr:nth-child(even) {
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
+    pointer-events: auto; /* Ensure the link is clickable */
 }
 
 .tooltip:hover::after a:hover {
     text-decoration: none;
 }
+
