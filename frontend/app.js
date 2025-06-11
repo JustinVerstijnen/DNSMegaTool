@@ -50,10 +50,11 @@ async function checkDomain() {
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
 
-            // Voeg de tooltip buiten de b-tag toe en zet de tooltip in de 'tooltip-text' div
+            // Voeg de tooltip als een extra span toe binnen de td voor het recordtype
             typeCell.innerHTML = `
-                <b>${type}</b>
-                <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
+                <b class="tooltip">${type}
+                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
+                </b>
             `;
 
             const statusCell = document.createElement("td");
