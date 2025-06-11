@@ -53,7 +53,7 @@ async function checkDomain() {
             // Voeg de tooltip buiten de b-tag toe en zet de tooltip in de 'tooltip-text' div
             typeCell.innerHTML = `
                 <b>${type}</b>
-                <span class="tooltip-text">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
+                <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
             `;
 
             const statusCell = document.createElement("td");
@@ -123,23 +123,10 @@ async function checkDomain() {
 
     } catch (e) {
         console.error(e);
-        alert("An error occured when checking your domain. Please reload the page and try again. It could be a temporary error with the tool. My apologies for the unconvenience.");
+        alert("Something went wrong while looking up your domain..");
     } finally {
         loader.style.display = "none";
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
     }
 }
-
-// Tooltip voor hover
-document.addEventListener('mouseover', function (e) {
-    if (e.target && e.target.classList.contains('tooltip-text')) {
-        e.target.style.display = 'block';
-    }
-});
-
-document.addEventListener('mouseout', function (e) {
-    if (e.target && e.target.classList.contains('tooltip-text')) {
-        e.target.style.display = 'none';
-    }
-});
