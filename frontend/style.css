@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    position: relative;  /* Make sure the tooltip can be positioned outside the container */
+    position: relative;
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
@@ -154,7 +154,6 @@ tbody tr:nth-child(even) {
     background-color: #f6f6f6;
 }
 
-/* Fade in animation */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -171,20 +170,18 @@ tbody tr:nth-child(even) {
     margin-top: 40px;
 }
 
-/* Tooltip container */
 .tooltip {
     position: relative;
     display: inline-block;
     cursor: pointer;
 }
 
-/* Tooltip content - verborgen totdat er over het recordtype wordt gehoverd */
 .tooltip .tooltip-text {
-    display: none; /* Tooltip standaard verborgen */
+    display: none;
     position: absolute;
-    top: 100%;  /* Plaats de tooltip onder de recordtekst */
+    top: 100%; 
     left: 0%;
-    padding: 12px; /* Padding binnen de tooltip */
+    padding: 12px;
     background-color: #8EAFDA;
     color: #fff;
     font-size: 12px;
@@ -201,21 +198,19 @@ tbody tr:nth-child(even) {
     font-weight: normal;
 }
 
-/* Toon de tooltip-tekst bij hover over het type record */
 .tooltip:hover .tooltip-text {
-    display: block; /* Maak de tooltip zichtbaar wanneer je over het type record beweegt */
+    display: block; 
 }
 
-/* Maak de tooltip zelf volledig klikbaar */
 .tooltip-text a {
     color: #fff;
     text-decoration: none;
-    pointer-events: auto; /* Zorg ervoor dat de link klikbaar is */
+    pointer-events: auto;
 }
 
-/* Zorg ervoor dat de link in de tooltip geen onderstreping heeft */
+
 .tooltip-text a:hover {
-    text-decoration: none; /* Verwijder onderstreping bij hover */
+    text-decoration: none;
 }
 
 .table-wrapper {
