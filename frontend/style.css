@@ -218,11 +218,6 @@ tbody tr:nth-child(even) {
     text-decoration: none; /* Verwijder onderstreping bij hover */
 }
 
-/* Verwijder onderstreping bij hover van de link in de tooltip */
-.tooltip-text a:hover {
-    text-decoration: none;
-}
-
 .table-wrapper {
     overflow: visible;
 }
