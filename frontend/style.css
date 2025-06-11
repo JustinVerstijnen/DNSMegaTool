@@ -206,11 +206,11 @@ tbody tr:nth-child(even) {
     text-decoration: none;  /* Remove underlining from the tooltip text */
 }
 
-/* Ensure links inside the tooltip are styled properly */
+/* Make sure the tooltip link is styled properly */
 .tooltip:hover::after a {
     color: #fff;
-    text-decoration: underline; /* Ensure the link inside the tooltip is underlined */
-    pointer-events: auto; /* Allow clicking on the link */
+    text-decoration: none; /* Prevent underlining for the whole tooltip */
+    pointer-events: auto; /* Allow clicking on the entire tooltip */
 }
 
 /* Style the link hover inside the tooltip */
@@ -221,6 +221,11 @@ tbody tr:nth-child(even) {
 /* Prevent bold font in tooltip */
 .tooltip:hover::after {
     font-weight: normal; /* Prevent bold font in tooltip */
+}
+
+/* Container settings to allow tooltip to overflow */
+.table-wrapper {
+    overflow: visible; /* Allow the tooltip to overflow beyond container boundaries */
 }
 
 
