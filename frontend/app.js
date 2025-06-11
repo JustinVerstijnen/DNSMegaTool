@@ -17,8 +17,8 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": {
-                text: "Mail Exchange record, checks if a record is configured",
+            "Mail Exchange record, checks if a record is configured": {
+                text: "MX",
                 link: "https://mxtoolbox.com/technical/mx-records"
             },
             "SPF": {
