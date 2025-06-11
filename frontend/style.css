@@ -171,22 +171,25 @@ tbody tr:nth-child(even) {
     margin-top: 40px;
 }
 
-/* Tooltip styles */
+/* Tooltips */
+
+/* Tooltip container relative positioning */
 .tooltip {
     position: relative;
     display: inline-block;
     cursor: pointer;
 }
 
+/* Tooltip content - position absolute, right of the element */
 .tooltip:hover::after {
-    content: attr(data-tooltip);  /* Tooltip content from data-tooltip attribute */
+    content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
-    top: 0;  /* Tooltip will align to the top of the element */
-    left: 105%; /* Tooltip will appear to the right of the element */
+    top: 0;  /* Align tooltip vertically to the top */
+    left: 105%; /* Position tooltip to the right of the element */
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: clamp(12px, 2vw + 0.5em, 16px);  /* Dynamically scale font size between 12px and 16px */
+    font-size: clamp(12px, 2vw + 0.5em, 16px); /* Dynamically scale font size */
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
@@ -194,21 +197,21 @@ tbody tr:nth-child(even) {
     max-width: 300px;  /* Max width for tooltip */
     max-height: 150px;  /* Max height for tooltip */
     overflow: hidden;  /* Prevents overflow of text */
-    word-wrap: break-word;  /* Ensures the text wraps correctly inside the tooltip */
-    word-break: break-word;  /* Breaks long words if necessary */
+    word-wrap: break-word; /* Ensure the text wraps correctly inside the tooltip */
+    word-break: break-word; /* Prevent words from overflowing */
     display: inline-block;
-    text-align: justify;  /* Align text inside the tooltip */
+    text-align: justify; /* Align text inside the tooltip */
     z-index: 1000;  /* Ensure tooltip appears above other elements */
 }
 
-/* Styling for links inside the tooltip */
+/* Ensure links inside the tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
-    pointer-events: auto;  /* Ensure the link is clickable */
+    pointer-events: auto; /* Ensure the link is clickable */
 }
 
-/* Style for link hover inside the tooltip */
+/* Style the link hover inside the tooltip */
 .tooltip:hover::after a:hover {
     text-decoration: none;
 }
