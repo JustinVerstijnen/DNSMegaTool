@@ -51,7 +51,7 @@ async function checkDomain() {
 
             typeCell.innerHTML = `
                 <b class="tooltip">${type}
-                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Learn more</a></span>
+                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Click here to learn more</a></span>
                 </b>
             `;
 
