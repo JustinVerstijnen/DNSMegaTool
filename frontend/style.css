@@ -178,9 +178,9 @@ tbody tr:nth-child(even) {
     cursor: pointer;
 }
 
-/* Tooltip content */
-.tooltip:hover .tooltip-text {
-    display: block;
+/* Tooltip content - zorg ervoor dat het standaard verborgen is */
+.tooltip .tooltip-text {
+    display: none;
     position: absolute;
     top: 100%;  /* Plaats de tooltip onder de recordtekst */
     left: 0%;
@@ -201,15 +201,20 @@ tbody tr:nth-child(even) {
     font-weight: normal; /* Prevent bold font in tooltip */
 }
 
-/* Make sure the tooltip link is styled properly */
+/* Toon de tooltip-tekst als je met de cursor over het recordtype beweegt */
+.tooltip:hover .tooltip-text {
+    display: block;
+}
+
+/* Zorg ervoor dat de tooltip link goed gestyled is */
 .tooltip-text a {
     color: #fff;
     text-decoration: none;
 }
 
-/* Style the link hover inside the tooltip */
+/* Style de hover van de link in de tooltip */
 .tooltip-text a:hover {
-    text-decoration: none; /* Prevent underlining on hover */
+    text-decoration: none; /* Verwijder onderstreping bij hover */
 }
 
 .table-wrapper {
