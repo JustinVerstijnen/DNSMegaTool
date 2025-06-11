@@ -18,6 +18,11 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
+        "MX": "Mail Exchange record used to route emails. More info: https://en.wikipedia.org/wiki/Mail_exchange_record",
+        "SPF": "Sender Policy Framework: prevents spoofing. More info: https://en.wikipedia.org/wiki/Sender_Policy_Framework",
+        "DKIM": "DomainKeys Identified Mail: verifies message integrity. More info: https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail",
+        "DMARC": "Domain-based Message Authentication, Reporting, and Conformance: improves email security. More info: https://en.wikipedia.org/wiki/DMARC"
+    };
             "MX": "Mail Exchange record used to route emails.",
             "SPF": "Sender Policy Framework: prevents spoofing.",
             "DKIM": "DomainKeys Identified Mail: verifies message integrity.",
