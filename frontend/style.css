@@ -20,7 +20,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 h1 {
@@ -30,7 +30,8 @@ h1 {
 
 .subtitle {
     text-align: center;
-    font-size: 1.2em;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.9em;
     color: #555;
     margin-bottom: 20px;
 }
