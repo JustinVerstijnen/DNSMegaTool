@@ -176,6 +176,7 @@ tbody tr:nth-child(even) {
 /* Tooltip container relative positioning */
 .tooltip {
     position: relative;
+    float: left;
     display: inline-block;
     cursor: pointer;
 }
