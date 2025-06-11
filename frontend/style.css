@@ -191,23 +191,23 @@ tbody tr:nth-child(even) {
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-    max-width: 600px;  /* Maximum width for the tooltip */
-    min-width: 180px; /* Minimum width for the tooltip */
+    max-width: 600px;  /* Increase max-width for wider tooltips (enough space for ~60 chars) */
+    min-width: 200px; /* Minimum width to ensure readability */
     white-space: normal;  /* Allows text to wrap normally */
     word-wrap: break-word; /* Ensure words break correctly */
     word-break: break-word; /* Breaks words if necessary */
     display: inline-block;
     z-index: 1000;  /* Ensure tooltip appears above other elements */
-    pointer-events: auto;  /* Make the entire tooltip clickable */
+    pointer-events: auto;  /* Ensure the entire tooltip is clickable */
     font-weight: normal; /* Prevent bold font in tooltip */
 }
 
-/* Remove text underlining in the tooltip */
+/* Remove text underlining from the tooltip */
 .tooltip:hover::after {
     text-decoration: none;  /* Remove underlining from the tooltip text */
 }
 
-/* Make sure the tooltip link is styled properly */
+/* Ensure links inside the tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline; /* Ensure the link inside the tooltip is underlined */
@@ -218,6 +218,12 @@ tbody tr:nth-child(even) {
 .tooltip:hover::after a:hover {
     text-decoration: none; /* Prevent underlining on hover */
 }
+
+/* Prevent bold font in tooltip */
+.tooltip:hover::after {
+    font-weight: normal; /* Prevent bold font in tooltip */
+}
+
 
 
 
