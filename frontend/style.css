@@ -179,54 +179,39 @@ tbody tr:nth-child(even) {
 }
 
 /* Tooltip content */
-.tooltip:hover::after {
-    content: attr(data-tooltip); /* Tooltip content from data-tooltip */
+.tooltip:hover .tooltip-text {
+    display: block;
     position: absolute;
-    top: 0%;  /* Align tooltip to the top of the element */
-    left: 105%; /* Position tooltip to the right of the element */
-    padding: 12px; /* Padding inside the tooltip */
+    top: 100%;  /* Plaats de tooltip onder de recordtekst */
+    left: 0%;
+    padding: 12px; /* Padding binnen de tooltip */
     background-color: #8EAFDA;
     color: #fff;
-    font-size: 12px; /* Dynamically scale font size */
+    font-size: 12px;
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-    max-width: 1200px;  /* Maximum width for the tooltip */
-    min-width: 400px; /* Minimum width for the tooltip */
-    white-space: normal;  /* Allows text to wrap normally */
-    word-wrap: break-word; /* Ensure words break correctly */
-    word-break: break-word; /* Breaks words if necessary */
-    z-index: 50000;  /* Ensure tooltip appears above other elements */
-    pointer-events: auto;  /* Make the entire tooltip clickable */
+    max-width: 1200px;
+    min-width: 200px;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    z-index: 50000;
+    pointer-events: auto;
     font-weight: normal; /* Prevent bold font in tooltip */
 }
 
-/* Remove text underlining from the tooltip */
-.tooltip:hover::after {
-    text-decoration: none;  /* Remove underlining from the tooltip text */
-}
-
 /* Make sure the tooltip link is styled properly */
-.tooltip:hover::after a {
+.tooltip-text a {
     color: #fff;
-    text-decoration: none; /* Prevent underlining for the whole tooltip */
-    pointer-events: auto; /* Allow clicking on the entire tooltip */
+    text-decoration: none;
 }
 
 /* Style the link hover inside the tooltip */
-.tooltip:hover::after a:hover {
+.tooltip-text a:hover {
     text-decoration: none; /* Prevent underlining on hover */
-}
-
-.tooltip:hover::after {
-    font-weight: normal;
 }
 
 .table-wrapper {
     overflow: visible;
 }
-
-
-
-
-
