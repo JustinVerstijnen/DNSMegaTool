@@ -218,14 +218,12 @@ tbody tr:nth-child(even) {
     text-decoration: none; /* Prevent underlining on hover */
 }
 
-/* Prevent bold font in tooltip */
 .tooltip:hover::after {
-    font-weight: normal; /* Prevent bold font in tooltip */
+    font-weight: normal;
 }
 
-/* Container settings to allow tooltip to overflow */
 .table-wrapper {
-    overflow: visible; /* Allow the tooltip to overflow beyond container boundaries */
+    overflow: visible;
 }
 
 
