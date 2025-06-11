@@ -206,10 +206,16 @@ tbody tr:nth-child(even) {
     display: block; /* Maak de tooltip zichtbaar wanneer je over het type record beweegt */
 }
 
-/* Zorg ervoor dat de link in de tooltip goed gestyled is */
+/* Maak de tooltip zelf volledig klikbaar */
 .tooltip-text a {
     color: #fff;
     text-decoration: none;
+    pointer-events: auto; /* Zorg ervoor dat de link klikbaar is */
+}
+
+/* Zorg ervoor dat de link in de tooltip geen onderstreping heeft */
+.tooltip-text a:hover {
+    text-decoration: none; /* Verwijder onderstreping bij hover */
 }
 
 /* Verwijder onderstreping bij hover van de link in de tooltip */
