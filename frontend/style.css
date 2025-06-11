@@ -171,12 +171,8 @@ tbody tr:nth-child(even) {
     margin-top: 40px;
 }
 
-/* Tooltips */
-
-/* Tooltip container relative positioning */
 .tooltip {
     position: relative;
-    float: left;
     display: inline-block;
     cursor: pointer;
 }
@@ -190,7 +186,7 @@ tbody tr:nth-child(even) {
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: clamp(12px, 2vw + 0.5em, 16px); /* Dynamically scale font size */
+    font-size: 12px; /* Dynamically scale font size */
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
