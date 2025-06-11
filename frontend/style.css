@@ -170,19 +170,22 @@ tbody tr:nth-child(even) {
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: 4vw;  /* Font size scales with viewport width */
+    font-size: 14px; /* Base font size */
+    line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     white-space: normal;  /* Allows text to wrap */
-    max-width: 250px;  /* Maximum width of the tooltip */
-    max-height: 150px;  /* Maximum height of the tooltip */
-    overflow: hidden;  /* Hide text if it exceeds the max height */
+    max-width: 250px;  /* Max width for tooltip */
+    max-height: 150px;  /* Max height for tooltip */
+    overflow: auto;  /* Allow scrolling if content exceeds max height */
     word-wrap: break-word;
     word-break: break-word;
     display: inline-block;
     text-align: justify;
+    font-size: calc(12px + 0.5vw); /* Dynamically scale font size */
 }
 
+/* Ensuring links in tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
