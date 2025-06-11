@@ -163,14 +163,14 @@ tbody tr:nth-child(even) {
 }
 
 .tooltip:hover::after {
-    content: attr(title);
+    content: attr(data-tooltip); /* Use data-tooltip instead of title */
     position: absolute;
     top: -5px;
     left: 105%;
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
-    font-size: 14px; /* Base font size */
+    font-size: 14px;
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
@@ -195,4 +195,5 @@ tbody tr:nth-child(even) {
 .tooltip:hover::after a:hover {
     text-decoration: none;
 }
+
 
