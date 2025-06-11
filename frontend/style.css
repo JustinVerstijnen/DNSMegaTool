@@ -201,6 +201,7 @@ tbody tr:nth-child(even) {
     word-break: break-word;  /* Prevent words from overflowing */
     display: inline-block;
     text-align: justify;
+    writing-mode: horizontal-tb;
     z-index: 1000;  /* Ensure tooltip appears above other elements */
 }
 
