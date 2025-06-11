@@ -30,8 +30,7 @@ async function checkDomain() {
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            // Insert the tooltip text into data-tooltip instead of title
-            typeCell.innerHTML = `<span class="tooltip" data-tooltip="${tooltips[type]}">${type}</span>`;
+            typeCell.innerHTML = `<b class="tooltip" data-tooltip="${tooltips[type]}">${type}</b>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
@@ -104,27 +103,3 @@ async function checkDomain() {
         exportBtn.style.display = "inline-block";
     }
 }
-
-async function exportHTML() {
-    const domain = document.getElementById("domainInput").value;
-    const reportSection = document.getElementById("resultsSection").innerHTML;
-
-    const templateResponse = await fetch("export-template.html");
-    let template = await templateResponse.text();
-    template = template.replaceAll("{{domain}}", domain).replace("{{report_content}}", reportSection);
-    template = template.replace(/<b class="tooltip">(.*?)<\/b>/g, '<b class="tooltip" data-tooltip="$1">$1</b>'); // Keep tooltips in export
-
-    const blob = new Blob([template], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "dns-megatool-report.html";
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-document.getElementById("domainInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        document.getElementById("checkBtn").click();
-    }
-});
