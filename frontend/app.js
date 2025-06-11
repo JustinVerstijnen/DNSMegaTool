@@ -17,20 +17,43 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": "Mail Exchange record, checks if a record is configured",
-            "SPF": "Sender Policy Framework, checks if a record is configured and is using hardfail (-all)",
-            "DKIM": "DomainKeys Identified Mail, checks if records for DKIM are configured",
-            "DMARC": "Domain-based Message Authentication, Reporting & Conformance checks if a record is configured and using the Reject policy",
-            "MTA-STS": "Mail Transfer Agent Strict Transport Security, checks if the TXT record is configured and the policy is published",
-            "DNSSEC": "Domain Name System Security Extensions, checks if DNSSEC is enabled for the domain"
+            "MX": {
+                text: "Mail Exchange record, checks if a record is configured",
+                link: "https://mxtoolbox.com/technical/mx-records"
+            },
+            "SPF": {
+                text: "Sender Policy Framework, checks if a record is configured and is using hardfail (-all)",
+                link: "https://dmarcian.com/spf/"
+            },
+            "DKIM": {
+                text: "DomainKeys Identified Mail, checks if records for DKIM are configured",
+                link: "https://dmarcian.com/dkim/"
+            },
+            "DMARC": {
+                text: "Domain-based Message Authentication, Reporting and Conformance",
+                link: "https://dmarc.org/"
+            },
+            "MTA-STS": {
+                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured",
+                link: "https://datatracker.ietf.org/doc/html/rfc8461"
+            },
+            "DNSSEC": {
+                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled",
+                link: "https://www.cloudflare.com/learning/dns/dnssec/"
+            }
         };
 
+        // Vul de tabel met de resultaten en tooltips
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
-            typeCell.innerHTML = `<b class="tooltip" data-tooltip="${tooltips[type]}">${type}</b>`;
+            typeCell.innerHTML = `
+                <b class="tooltip" data-tooltip="${type}">
+                    ${type}
+                    <span class="tooltip-text">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
+                </b>`;
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
 
@@ -53,6 +76,7 @@ async function checkDomain() {
             tbody.appendChild(row);
         }
 
+        // Confetti effect als alle records groen zijn
         let allGreen = true;
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
@@ -69,6 +93,7 @@ async function checkDomain() {
             });
         }
 
+        // Extra informatie voor Nameservers en WHOIS
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
@@ -103,3 +128,18 @@ async function checkDomain() {
         exportBtn.style.display = "inline-block";
     }
 }
+
+// Tooltip voor hover
+document.addEventListener('mouseover', function (e) {
+    if (e.target && e.target.classList.contains('tooltip')) {
+        const tooltipText = e.target.querySelector('.tooltip-text');
+        tooltipText.style.display = 'block';
+    }
+});
+
+document.addEventListener('mouseout', function (e) {
+    if (e.target && e.target.classList.contains('tooltip')) {
+        const tooltipText = e.target.querySelector('.tooltip-text');
+        tooltipText.style.display = 'none';
+    }
+});
