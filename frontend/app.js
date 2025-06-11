@@ -17,12 +17,12 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": "Mail Exchange record <a href='https://en.wikipedia.org/wiki/Mail_exchange_record' target='_blank'>Learn more</a>",
-            "SPF": "Sender Policy Framework <a href='https://en.wikipedia.org/wiki/Sender_Policy_Framework' target='_blank'>Learn more</a>",
-            "DKIM": "DomainKeys Identified Mail <a href='https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail' target='_blank'>Learn more</a>",
-            "DMARC": "Domain-based Message Authentication, Reporting & Conformance <a href='https://en.wikipedia.org/wiki/DMARC' target='_blank'>Learn more</a>",
-            "MTA-STS": "Mail Transfer Agent Strict Transport Security <a href='https://en.wikipedia.org/wiki/MTA-STS' target='_blank'>Learn more</a>",
-            "DNSSEC": "Domain Name System Security Extensions <a href='https://en.wikipedia.org/wiki/DNSSEC' target='_blank'>Learn more</a>"
+            "MX": "Mail Exchange record, checks if a record is configured",
+            "SPF": "Sender Policy Framework, checks if a record is configured and is using hardfail (-all)",
+            "DKIM": "DomainKeys Identified Mail, checks if records for DKIM are configured",
+            "DMARC": "Domain-based Message Authentication, Reporting & Conformance checks if a record is configured and using the Reject policy",
+            "MTA-STS": "Mail Transfer Agent Strict Transport Security, checks if the TXT record is configured and the policy is published",
+            "DNSSEC": "Domain Name System Security Extensions, checks if DNSSEC is enabled for the domain"
         };
 
         for (const [type, record] of Object.entries(data)) {
