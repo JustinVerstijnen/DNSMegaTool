@@ -166,10 +166,11 @@ tbody tr:nth-child(even) {
     content: attr(data-tooltip); /* Tooltip content from data-tooltip */
     position: absolute;
     top: -5px;
-    left: 105%;
+    left: 105%; /* Place the tooltip to the right of the element */
     padding: 10px;
     background-color: #8EAFDA;
     color: #fff;
+    font-size: calc(12px + 0.5vw); /* Dynamically scale font size */
     line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
@@ -177,16 +178,16 @@ tbody tr:nth-child(even) {
     max-width: 250px;  /* Max width for tooltip */
     max-height: 150px;  /* Max height for tooltip */
     overflow: hidden;  /* Hide overflowing text */
-    word-wrap: break-word;  /* Wrap text inside tooltip */
-    word-break: break-word;  /* Prevent words from overflowing */
+    word-wrap: break-word;  /* Ensure the text wraps within the tooltip */
+    word-break: break-word;  /* Break long words if necessary */
     display: inline-block;
     text-align: justify;
-    
-    font-size: calc(0.5em + 1vw); /* Dynamically scale font size (min 12px, max 16px) */
-    max-font-size: 16px; /* Ensure maximum font size does not exceed 16px */
+    /* Ensure the tooltip text is readable */
+    font-size: clamp(12px, 2vw + 0.5em, 16px); /* Dynamically scale font size */
+    /* The tooltip text will resize but won't exceed the max size */
 }
 
-/* Ensuring links inside the tooltip are styled properly */
+/* Ensure links inside the tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
