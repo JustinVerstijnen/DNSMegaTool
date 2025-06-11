@@ -154,31 +154,7 @@ tbody tr:nth-child(even) {
     margin-top: 40px;
 }
 
-/* Tooltip styling */
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.tooltip:hover::after {
-    content: attr(title);
-    position: absolute;
-    top: -5px;
-    left: 105%;
-    padding: 5px;
-    border: 1px solid #333;
-    background-color: #fff;
-    color: #333;
-    font-size: 12px;
-    border-radius: 3px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    white-space: nowrap;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+/* Tooltips */
 
 .tooltip {
     position: relative;
@@ -201,15 +177,20 @@ tbody tr:nth-child(even) {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    max-width: 300px;
+    max-width: 250px; /* Limiting the width of the tooltip */
     word-wrap: break-word;
+    word-break: break-word;
 }
 
 .tooltip:hover::after a {
-    color: #fff;  /* Links in the tooltip will have white color */
+    color: #fff;
     text-decoration: underline;
 }
 
 .tooltip:hover::after a:hover {
-    text-decoration: none;  /* Links on hover will not be underlined */
+    text-decoration: none;
+}
+
+.tooltip:hover::after {
+    display: inline-block;
 }
