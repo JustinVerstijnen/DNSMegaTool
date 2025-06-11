@@ -16,6 +16,14 @@ async function checkDomain() {
     try {
         const response = await fetch(`/api/lookup?domain=${domain}`);
         const data = await response.json();
+        
+        console.log("Backend Response Data:", data);  // Log the response data
+
+        if (!data || Object.keys(data).length === 0) {
+            console.error("No data received from backend.");
+            loader.style.display = "none";  // Hide loader if no data
+            return;
+        }
 
         // Tooltips for MX, SPF, DKIM, and DMARC
         const tooltips = {
@@ -41,10 +49,12 @@ async function checkDomain() {
             tbody.appendChild(row);
         });
 
-        // After the table is populated, we call the function to add tooltips to the results
-        addTooltipsToResults();
+        loader.style.display = "none";  // Hide loader after results are rendered
+        resultsSection.style.display = "block";  // Show results section
+        exportBtn.style.display = "block";  // Show export button
     } catch (error) {
         console.error("Error:", error);
+        loader.style.display = "none";  // Hide loader if there's an error
     }
 }
 
