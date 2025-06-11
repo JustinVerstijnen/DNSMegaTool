@@ -192,28 +192,32 @@ tbody tr:nth-child(even) {
     border-radius: 6px;
     box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     white-space: normal;  /* Allows text to wrap normally */
-    max-width: 300px;  /* Max width for the tooltip */
-    max-height: none;  /* Remove max height limit */
+    max-width: 500px;  /* Increased max-width for better readability */
     overflow-wrap: break-word; /* Ensures words break correctly */
     word-wrap: break-word; /* Prevents long words from overflowing */
     word-break: break-word; /* Breaks words if necessary */
     display: inline-block;
     text-align: justify;  /* Align text inside the tooltip */
-    z-index: 1000;  /* Ensures the tooltip appears above other elements */
+    z-index: 1000;  /* Ensures tooltip appears above other elements */
     /* Tooltip position adjustments */
-    min-width: 120px; /* Ensures tooltip has a minimum width */
-    max-width: 300px; /* Maximum width to prevent overflowing */
-    white-space: normal;
+    min-width: 150px; /* Ensures tooltip has a minimum width */
+    max-width: 500px; /* Maximum width to prevent overflowing */
 }
 
-/* Style links inside the tooltip */
+/* Ensure links inside the tooltip are styled properly */
 .tooltip:hover::after a {
     color: #fff;
     text-decoration: underline;
-    pointer-events: auto; /* Ensures link is clickable */
+    pointer-events: auto; /* Ensure the link is clickable */
 }
 
-/* Hover effect for links inside the tooltip */
+/* Style the link hover inside the tooltip */
 .tooltip:hover::after a:hover {
     text-decoration: none;
 }
+
+/* Ensuring that tooltip text is not bold */
+.tooltip:hover::after {
+    font-weight: normal; /* Prevent bold font in tooltip */
+}
+
