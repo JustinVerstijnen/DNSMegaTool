@@ -123,7 +123,7 @@ async function checkDomain() {
 
     } catch (e) {
         console.error(e);
-        alert("Something went wrong while looking up your domain..");
+        alert("An error occured when checking your domain. Please reload the page and try again. It could be a temporary error with the tool. My apologies for the unconvenience.");
     } finally {
         loader.style.display = "none";
         resultsSection.style.display = "block";
