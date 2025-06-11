@@ -17,8 +17,8 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
-            "MX": "MX (Mail Exchange) records zijn DNS-records die aangeven welke mailservers verantwoordelijk zijn voor het ontvangen van e-mail voor dit domein. <a href='https://en.wikipedia.org/wiki/Mail_exchange_record' target='_blank'>Meer info</a>",
-            "SPF": "SPF (Sender Policy Framework) is een systeem voor e-mailverificatie om te controleren of een e-mailbericht afkomstig is van een geautoriseerde mailserver. <a href='https://en.wikipedia.org/wiki/Sender_Policy_Framework' target='_blank'>Meer info</a>",
+            "MX": "Mail Exchange) record <a href='https://en.wikipedia.org/wiki/Mail_exchange_record' target='_blank'>Read more</a>",
+            "SPF": "Sender Policy Framework <a href='https://en.wikipedia.org/wiki/Sender_Policy_Framework' target='_blank'>Read more</a>",
             "DKIM": "DKIM (DomainKeys Identified Mail) helpt bij het verifiëren van de afzender van een e-mail door een digitale handtekening te gebruiken. <a href='https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail' target='_blank'>Meer info</a>",
             "DMARC": "DMARC (Domain-based Message Authentication, Reporting & Conformance) helpt bij het beschermen tegen e-mailspoofing door een beleid voor e-mailverificatie in te stellen. <a href='https://en.wikipedia.org/wiki/DMARC' target='_blank'>Meer info</a>",
             "MTA-STS": "MTA-STS (Mail Transfer Agent Strict Transport Security) dwingt versleutelde e-mailverbindingen af, wat helpt om te voorkomen dat e-mails worden onderschept. <a href='https://en.wikipedia.org/wiki/MTA-STS' target='_blank'>Meer info</a>",
