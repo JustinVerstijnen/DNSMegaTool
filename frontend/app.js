@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // Focus het invoerveld direct wanneer de pagina geladen is
+    document.getElementById("domainInput").focus();
+
     // Voeg event listener toe voor Enter-toets in het invoerveld
     document.getElementById("domainInput").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
