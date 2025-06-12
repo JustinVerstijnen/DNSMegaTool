@@ -1,18 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Focus het invoerveld direct wanneer de pagina geladen is
     document.getElementById("domainInput").focus();
 
-    // Voeg event listener toe voor Enter-toets in het invoerveld
     document.getElementById("domainInput").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            event.preventDefault();  // Voorkom dat het formulier wordt verzonden
-            checkDomain();  // Roep de checkDomain functie aan
+            event.preventDefault();
+            checkDomain();
         }
     });
 
-    // Event listener voor de knop (indien deze wordt aangeklikt)
     document.getElementById("checkBtn").addEventListener("click", function() {
-        checkDomain();  // Roep de checkDomain functie aan bij klikken op de knop
+        checkDomain();
     });
 });
 
@@ -30,7 +27,6 @@ async function checkDomain() {
     exportBtn.style.display = "none";
     loader.style.display = "flex";
 
-    // Check if a domain is entered
     if (!domain) {
         alert("Please enter a valid domain.");
         return;
@@ -42,7 +38,7 @@ async function checkDomain() {
 
         const tooltips = {
             "MX": {
-                text: "Mail Exchange record, checks if a record is configured. ",
+                text: "Mail Exchange record, checks if a MX record is configured. ",
                 link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#mx"
             },
             "SPF": {
@@ -54,15 +50,15 @@ async function checkDomain() {
                 link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dkim"
             },
             "DMARC": {
-                text: "Domain-based Message Authentication, Reporting and Conformance. ",
+                text: "Domain-based Message Authentication, Reporting and Conformance. Checks if a DMARC record is configured and is using Reject as policy. ",
                 link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dmarc"
             },
             "MTA-STS": {
-                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured. ",
+                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured and published through HTTPS. ",
                 link: "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow/"
             },
             "DNSSEC": {
-                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled. ",
+                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled and signed for the domain. ",
                 link: "https://justinverstijnen.nl/configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365/"
             }
         };
