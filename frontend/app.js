@@ -1,3 +1,16 @@
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("domainInput").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();  
+            checkDomain();  
+        }
+    });
+
+    document.getElementById("checkBtn").addEventListener("click", function() {
+        checkDomain();
+    });
+});
+
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
@@ -18,40 +31,42 @@ async function checkDomain() {
 
         const tooltips = {
             "MX": {
-                text: "Mail Exchange record, checks if a record is configured. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#mx"
+                text: "Mail Exchange record, checks if a record is configured",
+                link: "https://mxtoolbox.com/technical/mx-records"
             },
             "SPF": {
-                text: "Sender Policy Framework, checks if a record is configured and is using hardfail (-all). ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#spf"
+                text: "Sender Policy Framework, checks if a record is configured and is using hardfail (-all)",
+                link: "https://dmarcian.com/spf/"
             },
             "DKIM": {
-                text: "DomainKeys Identified Mail, checks if records for DKIM are configured. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dkim"
+                text: "DomainKeys Identified Mail, checks if records for DKIM are configured",
+                link: "https://dmarcian.com/dkim/"
             },
             "DMARC": {
-                text: "Domain-based Message Authentication, Reporting and Conformance. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dmarc"
+                text: "Domain-based Message Authentication, Reporting and Conformance",
+                link: "https://dmarc.org/"
             },
             "MTA-STS": {
-                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured. ",
-                link: "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow/"
+                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured",
+                link: "https://datatracker.ietf.org/doc/html/rfc8461"
             },
             "DNSSEC": {
-                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled. ",
-                link: "https://justinverstijnen.nl/configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365/"
+                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled",
+                link: "https://www.cloudflare.com/learning/dns/dnssec/"
             }
         };
 
+        // Vul de tabel met de resultaten en tooltips
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
 
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
 
+            // Voeg de tooltip buiten de b-tag toe en zet de tooltip in de 'tooltip-text' div
             typeCell.innerHTML = `
                 <b class="tooltip">${type}
-                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Click here to learn more</a></span>
+                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Meer info</a></span>
                 </b>
             `;
 
@@ -77,6 +92,7 @@ async function checkDomain() {
             tbody.appendChild(row);
         }
 
+        // Confetti effect als alle records groen zijn
         let allGreen = true;
         for (const [type, record] of Object.entries(data)) {
             if (type === 'NS' || type === 'WHOIS') continue;
@@ -93,6 +109,7 @@ async function checkDomain() {
             });
         }
 
+        // Extra informatie voor Nameservers
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
@@ -101,26 +118,9 @@ async function checkDomain() {
             extraInfo.appendChild(nsBox);
         }
 
-        if (data.WHOIS) {
-            const whoisBox = document.createElement("div");
-            whoisBox.className = "infobox";
-            if (data.WHOIS.error) {
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
-            } else {
-                const registrar = data.WHOIS.registrar || 'Not found';
-                const creation = data.WHOIS.creation_date || 'Not found';
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
-                <ul>
-                    <li>Registrar: ${registrar}</li>
-                    <li>Date of Registration: ${creation}</li>
-                </ul>`;
-            }
-            extraInfo.appendChild(whoisBox);
-        }
-
     } catch (e) {
         console.error(e);
-        alert("An error occured. My apologies for the inconvenience.");
+        alert("Something went wrong while looking up your domain..");
     } finally {
         loader.style.display = "none";
         resultsSection.style.display = "block";
