@@ -199,7 +199,7 @@ document.getElementById("exportBtn").addEventListener("click", function () {
 </html>
 `;
     template = template.replace("{domain}", domain);
-    template = template.replace("{table_rows}", tableHTML);
+    template = template.replace("{report_content}", tableHTML);
 
     const blob = new Blob([template], { type: "text/html;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
