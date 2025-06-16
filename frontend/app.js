@@ -158,7 +158,14 @@ document.getElementById("exportBtn").addEventListener("click", function () {
     let tableHTML = "";
 
     if (table) {
-        tableHTML = table.outerHTML;
+        // Clone the table to avoid modifying the original
+        const clone = table.cloneNode(true);
+
+        // Remove all tooltip spans
+        clone.querySelectorAll(".tooltip").forEach(el => el.remove());
+
+        // Get outer HTML without tooltip elements
+        tableHTML = clone.outerHTML;
     }
 
     let template = `
