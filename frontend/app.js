@@ -158,15 +158,7 @@ document.getElementById("exportBtn").addEventListener("click", function () {
     let tableHTML = "";
 
     if (table) {
-        const thead = table.querySelector("thead");
-        const tbody = table.querySelector("tbody");
-
-        if (thead) {
-            tableHTML += "<thead>" + thead.innerHTML + "</thead>";
-        }
-        if (tbody) {
-            tableHTML += "<tbody>" + tbody.innerHTML + "</tbody>";
-        }
+        tableHTML = table.outerHTML;
     }
 
     let template = `
