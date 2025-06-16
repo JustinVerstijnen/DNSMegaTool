@@ -151,3 +151,24 @@ async function checkDomain() {
         exportBtn.style.display = "inline-block";
     }
 }
+
+document.getElementById("exportBtn").addEventListener("click", function () {
+    const rows = Array.from(document.querySelectorAll("#resultTable tr"));
+    let csvContent = "";
+
+    rows.forEach(row => {
+        const cols = Array.from(row.querySelectorAll("th, td"));
+        const rowText = cols.map(col => `"${col.innerText.replace(/"/g, '""')}"`).join(",");
+        csvContent += rowText + "\n";
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "dns_export.csv");
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
