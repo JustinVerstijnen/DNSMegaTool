@@ -1,6 +1,6 @@
 # DNSMegaTool
 
-A powerful, open-source DNS checker and export tool developed by Justin Verstijnen.
+A powerful, lightweight, efficient and open-source DNS checker and export tool developed by Justin Verstijnen.
 
 ---
 
