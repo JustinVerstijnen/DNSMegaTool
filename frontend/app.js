@@ -153,17 +153,51 @@ async function checkDomain() {
 }
 
 document.getElementById("exportBtn").addEventListener("click", function () {
-    const rows = Array.from(document.querySelectorAll("#resultTable tr"));
+    const table = document.querySelector("#resultTable");
     const domain = document.getElementById("domainInput").value;
     let tableHTML = "";
 
-    rows.forEach(row => {
-        const cols = Array.from(row.querySelectorAll("th, td"));
-        const rowHTML = cols.map(col => `<td>{col.innerHTML}</td>`).join("");
-        tableHTML += `<tr>{rowHTML}</tr>`;
-    });
+    if (table) {
+        const thead = table.querySelector("thead");
+        const tbody = table.querySelector("tbody");
 
-    let template = "\n<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"utf-8\">\n    <title>DNS MEGAtool report for {{domain}}</title>\n    <style>\n        body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }\n        .container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }\n        h1 { text-align:center; margin-top:10px; font-family: 'Segoe UI', sans-serif; }\n        .subtitle { text-align:center; font-size: 1em; color:#777; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }\n        h3 { margin-top:20px; font-family: 'Segoe UI', sans-serif; }\n        table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; margin-top:20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }\n        thead { background-color:#f9f9f9; }\n        th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) { text-align:center; vertical-align:middle; }\n        th, td { padding:15px; word-break:break-word; max-width:600px; }\n        tbody tr:nth-child(even) { background-color: #f6f6f6; }\n        .infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; font-family: 'Segoe UI', sans-serif; }\n    </style>\n</head>\n<body>\n<div class=\"container\">\n    <h1>DNS MEGAtool report for {{domain}}</h1>\n    <div class=\"subtitle\">Report generated with <a href=\"https://dnsmegatool.justinverstijnen.nl\" target=\"_blank\">Justin Verstijnen DNS MEGAtool</a></div>\n    {{report_content}}\n</div>\n</body>\n</html>\n";
+        if (thead) {
+            tableHTML += "<thead>" + thead.innerHTML + "</thead>";
+        }
+        if (tbody) {
+            tableHTML += "<tbody>" + tbody.innerHTML + "</tbody>";
+        }
+    }
+
+    let template = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>DNS MEGAtool report for {{domain}}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }
+        .container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1 { text-align:center; margin-top:10px; font-family: 'Segoe UI', sans-serif; }
+        .subtitle { text-align:center; font-size: 1em; color:#777; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }
+        h3 { margin-top:20px; font-family: 'Segoe UI', sans-serif; }
+        table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; margin-top:20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        thead { background-color:#f9f9f9; }
+        th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) { text-align:center; vertical-align:middle; }
+        th, td { padding:15px; word-break:break-word; max-width:600px; }
+        tbody tr:nth-child(even) { background-color: #f6f6f6; }
+        .infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; font-family: 'Segoe UI', sans-serif; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>DNS MEGAtool report for {{domain}}</h1>
+    <div class="subtitle">Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">Justin Verstijnen DNS MEGAtool</a></div>
+    {{report_content}}
+</div>
+</body>
+</html>
+`;
     template = template.replace("{domain}", domain);
     template = template.replace("{table_rows}", tableHTML);
 
