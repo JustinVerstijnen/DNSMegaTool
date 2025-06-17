@@ -58,3 +58,34 @@ async function checkDomain() {
         checkBtn.disabled = false;
     }
 }
+
+
+function displayResults(data) {
+    const resultsSection = document.getElementById("resultsSection");
+    const exportBtn = document.getElementById("exportBtn");
+    const tbody = document.querySelector("#resultTable tbody");
+    const extraInfo = document.getElementById("extraInfo");
+
+    // Vul de result table
+    data.results.forEach(result => {
+        const row = document.createElement("tr");
+
+        const typeCell = document.createElement("td");
+        typeCell.textContent = result.type;
+
+        const valueCell = document.createElement("td");
+        valueCell.textContent = result.value;
+
+        row.appendChild(typeCell);
+        row.appendChild(valueCell);
+        tbody.appendChild(row);
+    });
+
+    // Extra info tonen als aanwezig
+    if (data.extra) {
+        extraInfo.innerHTML = `<pre>${data.extra}</pre>`;
+    }
+
+    resultsSection.style.display = "block";
+    exportBtn.style.display = "inline-block";
+}
