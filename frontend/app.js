@@ -98,4 +98,3 @@ function displayResults(data) {
 
     resultsSection.style.display = "block";
     exportBtn.style.display = "inline-block";
-}
