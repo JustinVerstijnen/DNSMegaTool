@@ -216,11 +216,3 @@ tbody tr:nth-child(even) {
 .table-wrapper {
     overflow: visible;
 }
-
-
-
-#loader {
-    display: none;
-    margin-top: 150px;
-    text-align: center;
-}
