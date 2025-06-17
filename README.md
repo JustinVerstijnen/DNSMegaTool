@@ -25,5 +25,12 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 - **Open-source**: free to use, modify, and integrate
 - **Tooltips**: to better understand the checks and links to my articles to learn more about the type of record.
 
+---
+
+## Known issues
+
+- **Clicking check will display everything 2 times**: Will be fixed in the near future
+- **Export results style f*ked up**
+
 
 
