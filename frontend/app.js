@@ -1,30 +1,4 @@
-
 document.addEventListener("DOMContentLoaded", function() {
-    const checkBtn = document.getElementById("checkBtn");
-    const domainInput = document.getElementById("domainInput");
-
-    domainInput.focus();
-
-    domainInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            if (checkBtn.disabled) return;
-            checkBtn.disabled = true;
-            checkDomain().finally(() => {
-                setTimeout(() => checkBtn.disabled = false, 2000);
-            });
-        }
-    });
-
-    checkBtn.addEventListener("click", function() {
-        if (checkBtn.disabled) return;
-        checkBtn.disabled = true;
-        checkDomain().finally(() => {
-            setTimeout(() => checkBtn.disabled = false, 2000);
-        });
-    });
-});
-, function() {
     document.getElementById("domainInput").focus();
 
     document.getElementById("domainInput").addEventListener("keydown", function(event) {
