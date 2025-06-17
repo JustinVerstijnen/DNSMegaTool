@@ -1,4 +1,3 @@
-
 let lookupInProgress = false;
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -60,26 +59,37 @@ async function checkDomain() {
 }
 
 
+
+
+    resultsSection.style.display = "block";
+    exportBtn.style.display = "inline-block";
+}
+
+
 function displayResults(data) {
     const resultsSection = document.getElementById("resultsSection");
     const exportBtn = document.getElementById("exportBtn");
     const tbody = document.querySelector("#resultTable tbody");
     const extraInfo = document.getElementById("extraInfo");
 
-    // Vul de result table
-    data.results.forEach(result => {
-        const row = document.createElement("tr");
+    // Alleen doorgaan als er geldige resultaten zijn
+    if (Array.isArray(data.results)) {
+        data.results.forEach(result => {
+            const row = document.createElement("tr");
 
-        const typeCell = document.createElement("td");
-        typeCell.textContent = result.type;
+            const typeCell = document.createElement("td");
+            typeCell.textContent = result.type;
 
-        const valueCell = document.createElement("td");
-        valueCell.textContent = result.value;
+            const valueCell = document.createElement("td");
+            valueCell.textContent = result.value;
 
-        row.appendChild(typeCell);
-        row.appendChild(valueCell);
-        tbody.appendChild(row);
-    });
+            row.appendChild(typeCell);
+            row.appendChild(valueCell);
+            tbody.appendChild(row);
+        });
+    } else {
+        tbody.innerHTML = "<tr><td colspan='2'>Geen resultaten gevonden of fout bij ophalen.</td></tr>";
+    }
 
     // Extra info tonen als aanwezig
     if (data.extra) {
