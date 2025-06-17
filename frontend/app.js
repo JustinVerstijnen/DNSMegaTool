@@ -63,7 +63,6 @@ async function checkDomain() {
 
     resultsSection.style.display = "block";
     exportBtn.style.display = "inline-block";
-}
 
 
 function displayResults(data) {
