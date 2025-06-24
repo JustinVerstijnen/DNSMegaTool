@@ -1,3 +1,5 @@
+let currentDomain = "";
+
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("domainInput").focus();
 
@@ -16,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 async function checkDomain() {
     const domain = document.getElementById("domainInput").value;
+    currentDomain = domain;
     const loader = document.getElementById("loader");
     const resultsSection = document.getElementById("resultsSection");
     const exportBtn = document.getElementById("exportBtn");
@@ -156,6 +159,7 @@ async function checkDomain() {
 document.getElementById("exportBtn").addEventListener("click", function () {
     const table = document.querySelector("#resultTable");
     const domain = document.getElementById("domainInput").value;
+    currentDomain = domain;
     let tableHTML = "";
 
     if (table) {
