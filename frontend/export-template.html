@@ -7,30 +7,22 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }
         .container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        .header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px; }
-        .header img { width: 50px; height: 50px; }
         h1 { text-align:center; margin-top:10px; font-family: 'Segoe UI', sans-serif; }
         .subtitle { text-align:center; font-size: 1em; color:#777; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }
-        table { width:100%; border-collapse: collapse; margin-top:20px; }
-        th, td { padding:15px; border:1px solid #ccc; text-align:left; vertical-align: top; }
+        h3 { margin-top:20px; font-family: 'Segoe UI', sans-serif; }
+        table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; margin-top:20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        thead { background-color:#f9f9f9; }
+        th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) { text-align:center; vertical-align:middle; }
+        th, td { padding:15px; word-break:break-word; max-width:600px; }
         tbody tr:nth-child(even) { background-color: #f6f6f6; }
         .infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; font-family: 'Segoe UI', sans-serif; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <a href="https://justinverstijnen.nl" target="_blank">
-            <img src="logo.png" alt="Logo">
-        </a>
-        <h1>DNS MEGAtool report for {{domain}}</h1>
-    </div>
-    <div class="subtitle">
-        Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">Justin Verstijnen DNS MEGAtool</a>
-    </div>
-    <div id="content">
-        {{report_content}}
-    </div>
+    <h1>DNS MEGAtool report for {{domain}}</h1>
+    <div class="subtitle">Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">Justin Verstijnen DNS MEGAtool</a></div>
+    {{report_content}}
 </div>
 </body>
 </html>
