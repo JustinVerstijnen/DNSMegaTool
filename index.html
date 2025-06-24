@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DNS MEGAtool</title>
+</head>
+<body>
+  <input id="domainInput" type="text" placeholder="example.com"/>
+  <button id="checkBtn">Check</button>
+  <button id="exportBtn" onclick="exportHTML()" style="display:none;">Export</button>
+  <div id="loader" style="display:none;">Loading...</div>
+  <div id="resultsSection" style="display:none;">
+    <table id="resultTable"><tbody></tbody></table>
+    <div id="extraInfo"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
