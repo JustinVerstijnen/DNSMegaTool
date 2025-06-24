@@ -58,26 +58,29 @@ async function checkDomain() {
 }
 
 async function exportHTML() {
+    if (!currentDomain) {
+        alert("Geen domein opgezocht. Voer een domein in en klik op 'Check' eerst.");
+        return;
+    }
+
     const tableHTML = document.getElementById("resultTable").outerHTML;
     const extraInfoHTML = document.getElementById("extraInfo").innerHTML;
 
-    try {
-        const response = await fetch("export-template.html");
-        let template = await response.text();
+    const response = await fetch("export-template.html");
+    let template = await response.text();
 
-        template = template.replace(/{{domain}}/g, currentDomain);
-        template = template.replace(/{{report_content}}/g, tableHTML + extraInfoHTML);
+    console.log("Vervangen voor domein:", currentDomain);
 
-        const blob = new Blob([template], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
+    template = template.replaceAll("{{domain}}", currentDomain);
+    template = template.replace("{{report_content}}", tableHTML + extraInfoHTML);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `dns-report-${currentDomain}.html`;
-        a.click();
+    const blob = new Blob([template], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
 
-        URL.revokeObjectURL(url);
-    } catch (err) {
-        alert("Export mislukt: " + err.message);
-    }
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `dns-report-${currentDomain}.html`;
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
