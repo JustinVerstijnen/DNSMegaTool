@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 async function checkDomain() {
+    const checkBtn = document.getElementById("checkBtn");
+    checkBtn.disabled = true;
     const domain = document.getElementById("domainInput").value;
     const loader = document.getElementById("loader");
     const resultsSection = document.getElementById("resultsSection");
@@ -148,6 +150,7 @@ async function checkDomain() {
         alert("An error occurred. My apologies for the inconvenience.");
     } finally {
         loader.style.display = "none";
+        checkBtn.disabled = false;
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
     }
