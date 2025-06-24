@@ -8,7 +8,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.getElementById("checkBtn").addEventListener("click", function() {
+    document.getElementById("checkBtn").addEventListener("click", function(event) {
+        event.preventDefault();
         checkDomain();
     });
 });
