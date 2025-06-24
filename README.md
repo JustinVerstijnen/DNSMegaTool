@@ -29,7 +29,6 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 
 ## Known issues
 
-- **Clicking check will display everything 2 times**: Will be fixed in the near future
 - **Export results style f*ked up**
 
 
