@@ -24,6 +24,7 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 - **Clean interface**: easy-to-read output even for bulk queries
 - **Open-source**: free to use, modify, and integrate
 - **Tooltips**: to better understand the checks and links to my articles to learn more about the type of record.
+- **Confetti**: 100% Email security grants you with some confetti over the screen.
 
 ---
 
