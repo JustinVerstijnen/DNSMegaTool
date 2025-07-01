@@ -1,8 +1,10 @@
+let isLoading = false;
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("domainInput").focus();
 
     document.getElementById("domainInput").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
+            if (isLoading) return;
             event.preventDefault();
             checkDomain();
         }
@@ -15,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 async function checkDomain() {
+    isLoading = true;
     const checkBtn = document.getElementById("checkBtn");
     checkBtn.disabled = true;
     const domain = document.getElementById("domainInput").value;
@@ -151,6 +154,7 @@ async function checkDomain() {
     } finally {
         loader.style.display = "none";
         checkBtn.disabled = false;
+        isLoading = false;
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
     }
