@@ -20,7 +20,7 @@ Ideal for sysadmins, DevOps engineers, and network administrators who need quick
 
 - **Query all common DNS record types**: A, AAAA, CNAME, MX, TXT, NS, SRV, SPF
 - **DNSSEC validation**: checks if DNSSEC is enabled and properly configured
-- **Export options**: save results to CSV/JSON
+- **Export options**: save results to HTML
 - **Clean interface**: easy-to-read output even for bulk queries
 - **Open-source**: free to use, modify, and integrate
 - **Tooltips**: to better understand the checks and links to my articles to learn more about the type of record.
