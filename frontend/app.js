@@ -20,7 +20,18 @@ async function checkDomain() {
     isLoading = true;
     const checkBtn = document.getElementById("checkBtn");
     checkBtn.disabled = true;
-    const domain = document.getElementById("domainInput").value;
+    
+    let domain = document.getElementById("domainInput").value.trim();
+    document.getElementById("domainInput").value = domain;
+
+    const domainPattern = /^(?!\-)([a-zA-Z0-9\-]{1,63}(?<!\-)\.)+[a-zA-Z]{2,}$/;
+    if (!domainPattern.test(domain)) {
+        alert("The input does not appear to be a valid domain. Please check your entry.");
+        isLoading = false;
+        checkBtn.disabled = false;
+        return;
+    }
+
     const loader = document.getElementById("loader");
     const resultsSection = document.getElementById("resultsSection");
     const exportBtn = document.getElementById("exportBtn");
@@ -162,7 +173,18 @@ async function checkDomain() {
 
 document.getElementById("exportBtn").addEventListener("click", function () {
     const table = document.querySelector("#resultTable");
-    const domain = document.getElementById("domainInput").value;
+    
+    let domain = document.getElementById("domainInput").value.trim();
+    document.getElementById("domainInput").value = domain;
+
+    const domainPattern = /^(?!\-)([a-zA-Z0-9\-]{1,63}(?<!\-)\.)+[a-zA-Z]{2,}$/;
+    if (!domainPattern.test(domain)) {
+        alert("The input does not appear to be a valid domain. Please check your entry.");
+        isLoading = false;
+        checkBtn.disabled = false;
+        return;
+    }
+
     let tableHTML = "";
 
     if (table) {
