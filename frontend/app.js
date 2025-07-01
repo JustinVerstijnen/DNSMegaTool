@@ -176,6 +176,7 @@ document.getElementById("exportBtn").addEventListener("click", function () {
         tableHTML = clone.outerHTML;
     }
 
+function exportHTML() {
     fetch("export-template.html")
         .then(response => response.text())
         .then(template => {
