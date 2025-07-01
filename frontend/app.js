@@ -37,17 +37,20 @@ async function checkDomain() {
     extraInfo.innerHTML = "";
 
     if (!hasLoadedOnce) {
-        loaderBar.style.display = "block";
+        if (loaderBar) loaderBar.style.display = "block";
     } else {
-        spinner.style.display = "inline-block";
+        if (spinner) spinner.style.display = "inline-block";
     }
 
     try {
-        const response = await fetch(`/api/check?domain=${encodeURIComponent(domain)}`);
+        const response = await fetch(`http://localhost:7071/api/check?domain=${encodeURIComponent(domain)}`);
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.results) {
-            data.results.forEach((entry, index) => {
+            data.results.forEach((entry) => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${entry.type}</td>
@@ -64,11 +67,11 @@ async function checkDomain() {
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
     } catch (error) {
-        alert("Er ging iets mis bij het ophalen van de gegevens.");
+        alert("Fout bij ophalen van gegevens: " + error.message);
         console.error(error);
     } finally {
-        loaderBar.style.display = "none";
-        spinner.style.display = "none";
+        if (loaderBar) loaderBar.style.display = "none";
+        if (spinner) spinner.style.display = "none";
         checkBtn.disabled = false;
         isLoading = false;
         hasLoadedOnce = true;
