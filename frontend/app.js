@@ -176,39 +176,13 @@ document.getElementById("exportBtn").addEventListener("click", function () {
         tableHTML = clone.outerHTML;
     }
 
-    let template = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>DNS MEGAtool report for {{domain}}</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }
-        .container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1 { text-align:center; margin-top:10px; font-family: 'Segoe UI', sans-serif; }
-        .subtitle { text-align:center; font-size: 1em; color:#777; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif; }
-        h3 { margin-top:20px; font-family: 'Segoe UI', sans-serif; }
-        table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; margin-top:20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        thead { background-color:#f9f9f9; }
-        th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) { text-align:center; vertical-align:middle; }
-        th, td { padding:15px; word-break:break-word; max-width:600px; }
-        tbody tr:nth-child(even) { background-color: #f6f6f6; }
-        .infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; font-family: 'Segoe UI', sans-serif; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>DNS MEGAtool report for {{domain}}</h1>
-    <div class="subtitle">Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank">Justin Verstijnen DNS MEGAtool</a></div>
-    {{report_content}}
-</div>
-</body>
-</html>
-`;
-    template = template.replace("{domain}", domain);
-    template = template.replace("{report_content}", tableHTML);
+    fetch("export-template.html")
+        .then(response => response.text())
+        .then(template => {
+            template = template.replace("{{domain}}", domain);
+            template = template.replace("{{report_content}}", tableHTML);
 
-    const blob = new Blob([template], { type: "text/html;charset=utf-8;" });
+            const blob = new Blob([template], { type: "text/html;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);

@@ -216,3 +216,9 @@ tbody tr:nth-child(even) {
 .table-wrapper {
     overflow: visible;
 }
+
+
+.footer a {
+    color: #777;
+    text-decoration: none;
+}
