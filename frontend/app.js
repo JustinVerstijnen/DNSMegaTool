@@ -87,11 +87,7 @@ async function checkDomain() {
             const row = document.createElement("tr");
             const typeCell = document.createElement("td");
 
-            typeCell.innerHTML = `
-                <b class="tooltip">${type}
-                    <span class="tooltip-text" data-tooltip="${type}">${tooltips[type].text} <a href="${tooltips[type].link}" target="_blank">Click here to learn more</a></span>
-                </b>
-            `;
+            typeCell.textContent = type;
 
             const statusCell = document.createElement("td");
             statusCell.textContent = record.status ? "✅" : "❌";
@@ -221,7 +217,7 @@ document.getElementById("exportBtn").addEventListener("click", function () {
 document.getElementById("exportBtn").addEventListener("click", function () {
     const domain = document.getElementById("domainInput").value.trim();
     const reportContent = `
-        <h3>Scan results</h3>
+        
         <table>${document.querySelector("#resultTable").innerHTML}</table>
         ${document.getElementById("extraInfo").outerHTML}
     `;
