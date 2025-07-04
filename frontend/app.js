@@ -272,13 +272,13 @@ document.getElementById("exportBtn").addEventListener("click", function () {
 document.getElementById("exportBtn").addEventListener("click", function () {
     const domain = document.getElementById("domainInput").value.trim();
 
-    // Clone de resultTable zonder tooltips (alleen tekst tonen)
+    // Clone de resultTable zonder tooltips en zonder extra kopjes
     const tableClone = document.querySelector("#resultTable").cloneNode(true);
+
+    // Tooltip-HTML verwijderen, type als platte tekst behouden
     tableClone.querySelectorAll(".tooltip").forEach(el => {
-        const plainText = el.textContent.trim();
-        const span = document.createElement("span");
-        span.textContent = plainText;
-        el.replaceWith(span);
+        const textNode = document.createTextNode(el.textContent.trim());
+        el.replaceWith(textNode);
     });
 
     const reportContent = `
