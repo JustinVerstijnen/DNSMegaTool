@@ -194,10 +194,7 @@ document.getElementById("exportBtn").addEventListener("click", function () {
         tableHTML = clone.outerHTML;
     }
 
-    fetch("export-template.html")
-        .then(response => response.text())
-        .then(template => {
-            template = template.replace("{{domain}}", domain);
+    
             template = template.replace("{{report_content}}", tableHTML);
 
             const blob = new Blob([template], { type: "text/html;charset=utf-8;" });
