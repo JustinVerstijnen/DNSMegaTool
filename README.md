@@ -14,11 +14,5 @@ A powerful, lightweight, efficient and open-source DNS checker and export tool d
 - **Tooltips**: to better understand the checks and links to my articles to learn more about the type of record.
 - **Confetti**: 100% Email security grants you with some confetti over the screen.
 
----
-
-## Known issues
-
-- **Export results style f*ked up**
-
 
 
