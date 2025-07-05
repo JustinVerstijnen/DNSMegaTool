@@ -312,4 +312,3 @@ function formatRecordType(recordType) {
     }
     return '<span class="record-link">' + recordType + '</span>';
 }
-
