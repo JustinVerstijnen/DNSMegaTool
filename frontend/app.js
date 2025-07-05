@@ -53,37 +53,6 @@ async function checkDomain() {
         const response = await fetch(`/api/lookup?domain=${domain}`);
         const data = await response.json();
 
-        const tooltips = {
-
-    if (tooltips[recordType]) {
-        const url = tooltips[recordType].link;
-    }
-}
-            "MX": {
-                text: "Mail Exchange record, checks if a MX record is configured. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#mx"
-            },
-            "SPF": {
-                text: "Sender Policy Framework, checks if a record is configured and is using hardfail (-all). ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#spf"
-            },
-            "DKIM": {
-                text: "DomainKeys Identified Mail, checks if records for DKIM are configured. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dkim"
-            },
-            "DMARC": {
-                text: "Domain-based Message Authentication, Reporting and Conformance. Checks if a DMARC record is configured and is using Reject as policy. ",
-                link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dmarc"
-            },
-            "MTA-STS": {
-                text: "Mail Transfer Agent Strict Transport Security, checks if a policy is configured and published through HTTPS. ",
-                link: "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow/"
-            },
-            "DNSSEC": {
-                text: "Domain Name System Security Extensions, checks if DNSSEC is enabled and signed for the domain. ",
-                link: "https://justinverstijnen.nl/configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365/"
-            }
-        };
 
         // Vul de tabel met de resultaten en tooltips
         for (const [type, record] of Object.entries(data)) {
@@ -326,3 +295,21 @@ document.getElementById("exportBtn").addEventListener("click", function () {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 });
+
+
+function formatRecordType(recordType) {
+    const baseUrl = "https://justinverstijnen.nl/";
+    const recordLinks = {
+        "MX": baseUrl + "enhance-email-security-with-spf-dkim-dmarc/#mx",
+        "SPF": baseUrl + "enhance-email-security-with-spf-dkim-dmarc/#spf",
+        "DKIM": baseUrl + "enhance-email-security-with-spf-dkim-dmarc/#dkim",
+        "DMARC": baseUrl + "enhance-email-security-with-spf-dkim-dmarc/#dmarc",
+        "MTA-STS": baseUrl + "what-is-mta-sts-and-how-to-protect-your-email-flow/",
+        "DNSSEC": baseUrl + "configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365/"
+    };
+    if (recordLinks[recordType]) {
+        return '<a href="' + recordLinks[recordType] + '" class="record-link" target="_blank" rel="noopener noreferrer">' + recordType + '</a>';
+    }
+    return '<span class="record-link">' + recordType + '</span>';
+}
+
