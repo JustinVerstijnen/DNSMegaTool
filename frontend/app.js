@@ -55,7 +55,6 @@ async function checkDomain() {
 
         const tooltips = {
 
-function formatRecordType(recordType) {
     if (tooltips[recordType]) {
         const url = tooltips[recordType].link;
         return `<a href="${url}" class="record-link" target="_blank" rel="noopener noreferrer">${recordType}</a>`;
