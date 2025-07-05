@@ -54,6 +54,14 @@ async function checkDomain() {
         const data = await response.json();
 
         const tooltips = {
+
+function formatRecordType(recordType) {
+    if (tooltips[recordType]) {
+        const url = tooltips[recordType].link;
+        return `<a href="${url}" class="record-link" target="_blank" rel="noopener noreferrer">${recordType}</a>`;
+    }
+    return `<span class="record-link">${recordType}</span>`;
+}
             "MX": {
                 text: "Mail Exchange record, checks if a MX record is configured. ",
                 link: "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#mx"

@@ -223,3 +223,11 @@ tbody tr:nth-child(even) {
     color: #777;
     text-decoration: none;
 }
+
+
+/* Linkstijl voor DNS-record types */
+.record-link {
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+}
