@@ -57,9 +57,7 @@ async function checkDomain() {
 
     if (tooltips[recordType]) {
         const url = tooltips[recordType].link;
-        return `<a href="${url}" class="record-link" target="_blank" rel="noopener noreferrer">${recordType}</a>`;
     }
-    return `<span class="record-link">${recordType}</span>`;
 }
             "MX": {
                 text: "Mail Exchange record, checks if a MX record is configured. ",
