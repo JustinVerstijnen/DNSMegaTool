@@ -11,7 +11,6 @@ A powerful, lightweight, efficient and open-source DNS checker and export tool d
 - **Export options**: save results to HTML
 - **Clean interface**: easy-to-read output even for bulk queries
 - **Open-source**: free to use, modify, and integrate
-- **Tooltips**: to better understand the checks and links to my articles to learn more about the type of record.
 - **Confetti**: 100% Email security grants you with some confetti over the screen.
 
 
