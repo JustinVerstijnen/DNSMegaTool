@@ -236,7 +236,7 @@ tbody tr:nth-child(even) {
 
 /* Bulk button */
 .bulk-btn{
-    background-color:#ff8c00;
+    background-color:ffbc6a;
     color:#fff;
 }
 .bulk-btn:hover{ filter:brightness(0.95); }
