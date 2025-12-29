@@ -258,11 +258,11 @@ ul {
 /* =========================
    Bulk button
    ========================= */
-.bulk-btn {
+-btn {
     background-color: #ffbc6a;
 }
 
-.bulk-btn:hover {
+-btn:hover {
     filter: brightness(0.95);
 }
 
@@ -308,7 +308,7 @@ ul {
 }
 
 .bulk-textarea {
-    width: 100%;
+    width: 97%;
     min-height: 220px;
     padding: 12px;
     border: 1px solid #ccc;
