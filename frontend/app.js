@@ -1,6 +1,5 @@
 let isLoading = false;
-
-const domainPattern = /^(?!\-)([a-zA-Z0-9\-]{1,63}(?<!\-)\.)+[a-zA-Z]{2,}$/;
+let currentMode = "single"; // "single" | "bulk"
 
 document.addEventListener("DOMContentLoaded", function () {
     const domainInput = document.getElementById("domainInput");
@@ -23,414 +22,389 @@ document.addEventListener("DOMContentLoaded", function () {
         checkDomain();
     });
 
-    bulkBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-        openBulkModal();
-    });
+    if (bulkBtn) {
+        bulkBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            openBulkModal();
+        });
+    }
+
+    const bulkClose = document.getElementById("bulkClose");
+    if (bulkClose) bulkClose.addEventListener("click", closeBulkModal);
+
+    const bulkModal = document.getElementById("bulkModal");
+    if (bulkModal) {
+        bulkModal.addEventListener("click", function (e) {
+            // close when clicking outside the dialog
+            if (e.target === bulkModal) closeBulkModal();
+        });
+    }
+
+    const bulkRunBtn = document.getElementById("bulkRunBtn");
+    if (bulkRunBtn) bulkRunBtn.addEventListener("click", runBulkLookup);
 
     exportBtn.addEventListener("click", function (event) {
         event.preventDefault();
-        exportHTML();
-    });
-
-    // Bulk modal buttons
-    document.getElementById("bulkRunBtn").addEventListener("click", function (event) {
-        event.preventDefault();
-        runBulkFromModal();
-    });
-    document.getElementById("bulkCancelBtn").addEventListener("click", function (event) {
-        event.preventDefault();
-        closeBulkModal();
-    });
-
-    // Close modal when clicking backdrop
-    document.getElementById("bulkModal").addEventListener("click", function (event) {
-        if (event.target && event.target.id === "bulkModal") closeBulkModal();
+        exportReport();
     });
 });
 
-function sanitizeDomain(raw) {
-    let d = (raw || "").trim();
+function openBulkModal() {
+    const bulkModal = document.getElementById("bulkModal");
+    const bulkTextarea = document.getElementById("bulkTextarea");
+    if (!bulkModal || !bulkTextarea) return;
+
+    bulkModal.style.display = "flex";
+    setTimeout(() => bulkTextarea.focus(), 0);
+}
+
+function closeBulkModal() {
+    const bulkModal = document.getElementById("bulkModal");
+    if (!bulkModal) return;
+    bulkModal.style.display = "none";
+}
+
+function normalizeDomain(input) {
+    let d = (input || "").trim();
     if (!d) return "";
-
-    // Strip common copy/paste formats like https://example.com/path
-    try {
-        if (d.includes("://")) {
-            const u = new URL(d);
-            d = u.hostname || d;
-        }
-    } catch (_) {
-        // ignore
-    }
-
-    // Strip path/query fragments if present (example.com/path)
-    d = d.split("/")[0];
-
-    // Strip trailing dot
+    // strip protocol/path if someone pastes a URL
+    d = d.replace(/^https?:\/\//i, "");
+    d = d.split("/")[0].trim();
+    // strip trailing dot
     d = d.replace(/\.$/, "");
-
-    return d.trim();
+    return d.toLowerCase();
 }
 
-function parseDomains(text) {
-    const lines = (text || "").split(/\r?\n/);
-    const domains = [];
-    const invalid = [];
-    const seen = new Set();
-
-    for (const line of lines) {
-        const d = sanitizeDomain(line);
-        if (!d) continue;
-
-        if (!domainPattern.test(d)) {
-            invalid.push(d);
-            continue;
-        }
-
-        const key = d.toLowerCase();
-        if (seen.has(key)) continue;
-        seen.add(key);
-        domains.push(d);
-    }
-
-    return { domains, invalid };
+function isValidDomain(domain) {
+    const domainPattern = /^(?!\-)([a-zA-Z0-9\-]{1,63}(?<!\-)\.)+[a-zA-Z]{2,}$/;
+    return domainPattern.test(domain);
 }
 
-function setLoadingState(loading) {
-    isLoading = loading;
+async function checkDomain() {
+    isLoading = true;
+    currentMode = "single";
 
     const checkBtn = document.getElementById("checkBtn");
     const bulkBtn = document.getElementById("bulkBtn");
     const exportBtn = document.getElementById("exportBtn");
-    const loader = document.getElementById("loader");
 
-    checkBtn.disabled = loading;
-    bulkBtn.disabled = loading;
+    checkBtn.disabled = true;
+    if (bulkBtn) bulkBtn.disabled = true;
 
-    if (loading) {
-        exportBtn.style.display = "none";
-        loader.style.display = "flex";
-    } else {
-        loader.style.display = "none";
-    }
-}
+    let domain = normalizeDomain(document.getElementById("domainInput").value);
+    document.getElementById("domainInput").value = domain;
 
-function resetResultsUI() {
-    const resultsSection = document.getElementById("resultsSection");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const progressText = document.getElementById("progressText");
-
-    resultsContainer.innerHTML = "";
-    progressText.style.display = "none";
-    progressText.textContent = "";
-    resultsSection.style.display = "none";
-}
-
-async function fetchLookup(domain) {
-    const response = await fetch(`/api/lookup?domain=${encodeURIComponent(domain)}`);
-    if (!response.ok) {
-        throw new Error(`Lookup failed (${response.status})`);
-    }
-    return await response.json();
-}
-
-function renderDomainResult(domain, data, container) {
-    const block = document.createElement("div");
-    block.className = "result-block";
-
-    const title = document.createElement("h2");
-    title.className = "domain-title";
-    title.textContent = domain;
-    block.appendChild(title);
-
-    const tableWrapper = document.createElement("div");
-    tableWrapper.className = "table-wrapper";
-
-    const table = document.createElement("table");
-    table.className = "resultTable";
-
-    const thead = document.createElement("thead");
-    thead.innerHTML = `<tr><th>Type</th><th>Status</th><th>Value</th></tr>`;
-    table.appendChild(thead);
-
-    const tbody = document.createElement("tbody");
-
-    // Records table (skip NS/WHOIS)
-    for (const [type, record] of Object.entries(data || {})) {
-        if (type === "NS" || type === "WHOIS") continue;
-
-        const row = document.createElement("tr");
-
-        const typeCell = document.createElement("td");
-        typeCell.textContent = type;
-
-        const statusCell = document.createElement("td");
-        statusCell.textContent = record && record.status ? "✅" : "❌";
-
-        const valueCell = document.createElement("td");
-        const value = record ? record.value : "";
-        if (Array.isArray(value)) {
-            const list = document.createElement("ul");
-            value.forEach(v => {
-                const li = document.createElement("li");
-                li.textContent = v;
-                list.appendChild(li);
-            });
-            valueCell.appendChild(list);
-        } else {
-            valueCell.textContent = value;
-        }
-
-        row.appendChild(typeCell);
-        row.appendChild(statusCell);
-        row.appendChild(valueCell);
-        tbody.appendChild(row);
-    }
-
-    // If we got no usable records, show something
-    if (!tbody.children.length) {
-        const row = document.createElement("tr");
-        row.innerHTML = `<td colspan="3">No results.</td>`;
-        tbody.appendChild(row);
-    }
-
-    table.appendChild(tbody);
-    tableWrapper.appendChild(table);
-    block.appendChild(tableWrapper);
-
-    // Extra info boxes
-    const extra = document.createElement("div");
-    extra.className = "extraInfo";
-    extra.style.marginTop = "12px";
-
-    if (data && data.NS) {
-        const nsBox = document.createElement("div");
-        nsBox.className = "infobox";
-        nsBox.innerHTML = `<h3>Nameservers for ${domain}:</h3><ul>` +
-            data.NS.map(ns => `<li>${ns}</li>`).join("") + "</ul>";
-        extra.appendChild(nsBox);
-    }
-
-    if (data && data.WHOIS) {
-        const whoisBox = document.createElement("div");
-        whoisBox.className = "infobox";
-
-        if (data.WHOIS.error) {
-            whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
-        } else {
-            const registrar = data.WHOIS.registrar || "Not found";
-            const creation = data.WHOIS.creation_date || "Not found";
-            whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
-                <ul>
-                    <li>Registrar: ${registrar}</li>
-                    <li>Date of Registration: ${creation}</li>
-                </ul>`;
-        }
-        extra.appendChild(whoisBox);
-    }
-
-    if (extra.children.length) block.appendChild(extra);
-
-    container.appendChild(block);
-
-    // Confetti if all records (except NS/WHOIS) are green
-    let allGreen = true;
-    for (const [type, record] of Object.entries(data || {})) {
-        if (type === "NS" || type === "WHOIS") continue;
-        if (!record || !record.status) {
-            allGreen = false;
-            break;
-        }
-    }
-    if (allGreen && typeof confetti === "function") {
-        confetti({
-            particleCount: 300,
-            spread: 200,
-            origin: { y: 0.6 }
-        });
-    }
-}
-
-function renderDomainError(domain, err, container) {
-    const data = {
-        ERROR: { status: false, value: (err && err.message) ? err.message : String(err) }
-    };
-    renderDomainResult(domain, data, container);
-}
-
-async function checkDomain() {
-    if (isLoading) return;
-
-    const domainInput = document.getElementById("domainInput");
-    const domain = sanitizeDomain(domainInput.value);
-    domainInput.value = domain;
-
-    if (!domainPattern.test(domain)) {
+    if (!isValidDomain(domain)) {
         alert("The input does not appear to be a valid domain. Please check your entry.");
+        isLoading = false;
+        checkBtn.disabled = false;
+        if (bulkBtn) bulkBtn.disabled = false;
         return;
     }
 
-    resetResultsUI();
-    setLoadingState(true);
-
+    const loader = document.getElementById("loader");
     const resultsSection = document.getElementById("resultsSection");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const exportBtn = document.getElementById("exportBtn");
+    const bulkResultsSection = document.getElementById("bulkResultsSection");
+    const tbody = document.querySelector("#resultTable tbody");
+    const extraInfo = document.getElementById("extraInfo");
+
+    // Reset views
+    if (bulkResultsSection) bulkResultsSection.style.display = "none";
+    resultsSection.style.display = "none";
+    exportBtn.style.display = "none";
+    loader.style.display = "flex";
+
+    // Clear existing content
+    tbody.innerHTML = "";
+    extraInfo.innerHTML = "";
 
     try {
-        const data = await fetchLookup(domain);
-        renderDomainResult(domain, data, resultsContainer);
+        const response = await fetch(`/api/lookup?domain=${encodeURIComponent(domain)}`);
+        const data = await response.json();
 
-        resultsSection.style.display = "block";
-        exportBtn.style.display = "inline-block";
-        exportBtn.dataset.exportName = domain;
+        // Fill the table
+        for (const [type, record] of Object.entries(data)) {
+            if (type === "NS" || type === "WHOIS") continue;
+
+            const row = document.createElement("tr");
+            const typeCell = document.createElement("td");
+            typeCell.textContent = type;
+
+            const statusCell = document.createElement("td");
+            statusCell.textContent = record.status ? "✅" : "❌";
+
+            const valueCell = document.createElement("td");
+            if (Array.isArray(record.value)) {
+                const list = document.createElement("ul");
+                record.value.forEach((val) => {
+                    const li = document.createElement("li");
+                    li.textContent = val;
+                    list.appendChild(li);
+                });
+                valueCell.appendChild(list);
+            } else {
+                valueCell.textContent = record.value;
+            }
+
+            row.appendChild(typeCell);
+            row.appendChild(statusCell);
+            row.appendChild(valueCell);
+            tbody.appendChild(row);
+        }
+
+        // Confetti if all green
+        let allGreen = true;
+        for (const [type, record] of Object.entries(data)) {
+            if (type === "NS" || type === "WHOIS") continue;
+            if (!record.status) {
+                allGreen = false;
+                break;
+            }
+        }
+        if (allGreen && typeof confetti === "function") {
+            confetti({
+                particleCount: 300,
+                spread: 200,
+                origin: { y: 0.6 },
+            });
+        }
+
+        // Extra info: Nameservers
+        if (data.NS) {
+            const nsBox = document.createElement("div");
+            nsBox.className = "infobox";
+
+            const nsTitle = document.createElement("h3");
+            nsTitle.textContent = "Nameservers";
+            nsBox.appendChild(nsTitle);
+
+            const nsList = document.createElement("ul");
+            if (Array.isArray(data.NS.value)) {
+                data.NS.value.forEach((ns) => {
+                    const li = document.createElement("li");
+                    li.textContent = ns;
+                    nsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement("li");
+                li.textContent = data.NS.value;
+                nsList.appendChild(li);
+            }
+            nsBox.appendChild(nsList);
+            extraInfo.appendChild(nsBox);
+        }
+
+        // Extra info: WHOIS
+        if (data.WHOIS) {
+            const whoisBox = document.createElement("div");
+            whoisBox.className = "infobox";
+
+            const whoisTitle = document.createElement("h3");
+            whoisTitle.textContent = "WHOIS";
+            whoisBox.appendChild(whoisTitle);
+
+            const whoisContent = document.createElement("pre");
+            whoisContent.textContent = data.WHOIS.value || "";
+            whoisBox.appendChild(whoisContent);
+
+            extraInfo.appendChild(whoisBox);
+        }
     } catch (e) {
         console.error(e);
-        renderDomainError(domain, e, resultsContainer);
+        alert("An error occurred. My apologies for the inconvenience.");
+    } finally {
+        loader.style.display = "none";
+        checkBtn.disabled = false;
+        if (bulkBtn) bulkBtn.disabled = false;
+        isLoading = false;
+
         resultsSection.style.display = "block";
         exportBtn.style.display = "inline-block";
-        exportBtn.dataset.exportName = domain;
-    } finally {
-        setLoadingState(false);
     }
 }
 
-/* ---------------- Bulk modal ---------------- */
-
-function openBulkModal() {
-    const modal = document.getElementById("bulkModal");
-    const textarea = document.getElementById("bulkTextarea");
-    textarea.value = "";
-    modal.style.display = "flex";
-    textarea.focus();
+function statusIcon(status) {
+    return status ? "✅" : "❌";
 }
 
-function closeBulkModal() {
-    const modal = document.getElementById("bulkModal");
-    modal.style.display = "none";
+function formatValueForTitle(value) {
+    if (Array.isArray(value)) return value.join("\n");
+    return (value ?? "").toString();
 }
 
-async function runBulkFromModal() {
+async function runBulkLookup() {
     if (isLoading) return;
 
-    const textarea = document.getElementById("bulkTextarea");
-    const { domains, invalid } = parseDomains(textarea.value);
+    const bulkTextarea = document.getElementById("bulkTextarea");
+    const bulkRunBtn = document.getElementById("bulkRunBtn");
+    const bulkBtn = document.getElementById("bulkBtn");
+    const checkBtn = document.getElementById("checkBtn");
+    const exportBtn = document.getElementById("exportBtn");
 
-    if (invalid.length) {
-        const preview = invalid.slice(0, 10).join("\n");
-        alert(`These lines are not valid domains and will be skipped:\n\n${preview}${invalid.length > 10 ? "\n..." : ""}`);
+    const raw = (bulkTextarea?.value || "").split(/\r?\n/);
+    const domains = raw
+        .map(normalizeDomain)
+        .filter((d) => d.length > 0);
+
+    // de-duplicate while preserving order
+    const seen = new Set();
+    const uniqueDomains = [];
+    for (const d of domains) {
+        if (!seen.has(d)) {
+            seen.add(d);
+            uniqueDomains.push(d);
+        }
     }
 
-    if (!domains.length) {
-        alert("No valid domains found.");
+    const invalid = uniqueDomains.filter((d) => !isValidDomain(d));
+    if (uniqueDomains.length === 0) {
+        alert("Plak minimaal 1 domein (één per regel).");
+        return;
+    }
+    if (invalid.length > 0) {
+        alert("Ongeldige domeinen gevonden:\n\n" + invalid.slice(0, 25).join("\n"));
         return;
     }
 
     closeBulkModal();
-    await runBulk(domains);
-}
 
-async function runBulk(domains) {
-    resetResultsUI();
-    setLoadingState(true);
+    isLoading = true;
+    currentMode = "bulk";
 
+    checkBtn.disabled = true;
+    if (bulkBtn) bulkBtn.disabled = true;
+    if (bulkRunBtn) bulkRunBtn.disabled = true;
+
+    const loader = document.getElementById("loader");
     const resultsSection = document.getElementById("resultsSection");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const progressText = document.getElementById("progressText");
-    const exportBtn = document.getElementById("exportBtn");
+    const bulkResultsSection = document.getElementById("bulkResultsSection");
+    const bulkProgressText = document.getElementById("bulkProgressText");
+    const bulkTbody = document.querySelector("#bulkTable tbody");
 
-    resultsSection.style.display = "block";
-    progressText.style.display = "block";
+    // Hide single results, show loader
+    resultsSection.style.display = "none";
+    exportBtn.style.display = "none";
+    if (bulkResultsSection) bulkResultsSection.style.display = "none";
+    loader.style.display = "flex";
 
-    exportBtn.dataset.exportName = `bulk_${domains.length}_domains`;
+    // Reset bulk table
+    if (bulkTbody) bulkTbody.innerHTML = "";
+    if (bulkProgressText) {
+        bulkProgressText.style.display = "block";
+        bulkProgressText.textContent = `0/${uniqueDomains.length} verwerkt...`;
+    }
+
+    const recordCols = ["MX", "SPF", "DKIM", "DMARC", "MTA-STS", "DNSSEC"];
 
     try {
-        for (let i = 0; i < domains.length; i++) {
-            const domain = domains[i];
-            progressText.textContent = `Checking ${i + 1}/${domains.length}: ${domain}`;
+        for (let i = 0; i < uniqueDomains.length; i++) {
+            const domain = uniqueDomains[i];
 
+            let data = null;
             try {
-                const data = await fetchLookup(domain);
-                renderDomainResult(domain, data, resultsContainer);
+                const response = await fetch(`/api/lookup?domain=${encodeURIComponent(domain)}`);
+                data = await response.json();
             } catch (e) {
-                console.error(e);
-                renderDomainError(domain, e, resultsContainer);
+                data = null;
+            }
+
+            const row = document.createElement("tr");
+
+            const domainCell = document.createElement("td");
+            domainCell.textContent = domain;
+            row.appendChild(domainCell);
+
+            for (const col of recordCols) {
+                const cell = document.createElement("td");
+                if (data && data[col]) {
+                    cell.textContent = statusIcon(!!data[col].status);
+                    cell.title = formatValueForTitle(data[col].value);
+                } else {
+                    cell.textContent = "❌";
+                    cell.title = "No data";
+                }
+                row.appendChild(cell);
+            }
+
+            // Nameservers column
+            const nsCell = document.createElement("td");
+            if (data && data.NS) {
+                if (Array.isArray(data.NS.value)) {
+                    nsCell.textContent = data.NS.value.join(", ");
+                    nsCell.title = data.NS.value.join("\n");
+                } else {
+                    nsCell.textContent = data.NS.value;
+                    nsCell.title = String(data.NS.value || "");
+                }
+            } else {
+                nsCell.textContent = "";
+            }
+            row.appendChild(nsCell);
+
+            if (bulkTbody) bulkTbody.appendChild(row);
+
+            if (bulkProgressText) {
+                bulkProgressText.textContent = `${i + 1}/${uniqueDomains.length} verwerkt...`;
             }
         }
-
-        progressText.textContent = `Done. Looked up ${domains.length} domain(s).`;
-        exportBtn.style.display = "inline-block";
     } finally {
-        setLoadingState(false);
+        loader.style.display = "none";
+        isLoading = false;
+
+        checkBtn.disabled = false;
+        if (bulkBtn) bulkBtn.disabled = false;
+        if (bulkRunBtn) bulkRunBtn.disabled = false;
+
+        if (bulkProgressText) bulkProgressText.style.display = "none";
+        if (bulkResultsSection) bulkResultsSection.style.display = "block";
+        exportBtn.style.display = "inline-block";
     }
 }
 
-/* ---------------- Export ---------------- */
+async function exportReport() {
+    const exportBtn = document.getElementById("exportBtn");
+    if (exportBtn.disabled) return;
 
-function exportHTML() {
-    const resultsContainer = document.getElementById("resultsContainer");
-    const progressText = document.getElementById("progressText");
+    let table = null;
+    let label = "";
+    let filename = "";
 
-    const exportName = (document.getElementById("exportBtn").dataset.exportName || "dnsmegatool_report")
-        .replace(/[^a-zA-Z0-9_\-\.]/g, "_");
+    if (currentMode === "bulk") {
+        table = document.querySelector("#bulkTable");
+        const count = document.querySelectorAll("#bulkTable tbody tr").length;
+        label = `Bulk (${count} domains)`;
+        filename = "bulk_dns_report.html";
+    } else {
+        table = document.querySelector("#resultTable");
+        const domain = normalizeDomain(document.getElementById("domainInput").value);
+        if (!isValidDomain(domain)) {
+            alert("The input does not appear to be a valid domain. Please check your entry.");
+            return;
+        }
+        label = domain;
+        filename = domain + "_dns_report.html";
+    }
 
-    const reportContent = `
-        ${progressText && progressText.textContent ? `<div class="progress-text">${escapeHtml(progressText.textContent)}</div>` : ""}
-        <div>${resultsContainer.innerHTML}</div>
-    `;
+    let tableHTML = "";
+    if (table) {
+        const clone = table.cloneNode(true);
+        clone.querySelectorAll(".tooltip").forEach((el) => el.remove());
+        tableHTML = clone.outerHTML;
+    }
 
-    const template = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>DNS MEGAtool report</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background:#f2f2f2; margin:0;padding:20px; }
-        .container { background:#fff; padding:20px; border-radius:8px; max-width:900px; margin:auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        h1 { text-align:center; margin-top:10px; }
-        .subtitle { text-align:center; font-size: 1em; color:#777; margin-bottom: 20px; }
-        h2 { margin: 0 0 10px 0; }
-        h3 { margin-top: 20px; }
-        .table-wrapper { margin-top: 10px; overflow-x:auto; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background:#fff; }
-        table { width:100%; border-collapse: separate; border-spacing: 0; border-radius:10px; overflow:hidden; }
-        thead { background-color:#f9f9f9; }
-        th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) { text-align:center; vertical-align:middle; }
-        th, td { padding:15px; word-break:break-word; max-width:600px; text-align:left; vertical-align:top; }
-        tbody tr:nth-child(even) { background-color: #f6f6f6; }
-        ul { margin: 0; padding-left: 20px; }
-        .infobox { background:#e0f0ff; padding:10px; border-radius:5px; margin-top:10px; border: 1px solid #aad; }
-        .result-block { margin-top: 20px; padding-top: 10px; }
-        .progress-text { margin-top: 10px; padding: 10px; background: #fff7e6; border: 1px solid #f3d19b; border-radius: 6px; color: #7a4b00; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>DNS MEGAtool report</h1>
-    <div class="subtitle">Report generated with <a href="https://dnsmegatool.justinverstijnen.nl" target="_blank" rel="noopener noreferrer">Justin Verstijnen DNS MEGAtool</a></div>
-    ${reportContent}
-</div>
-</body>
-</html>
-    `;
+    const template = await fetch("export-template.html").then((r) => r.text());
+    const filled = template
+        .replace("{{domain}}", label)
+        .replace("{{report_content}}", tableHTML);
 
-    const blob = new Blob([template], { type: "text/html" });
+    const blob = new Blob([filled], { type: "text/html;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${exportName}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
-}
-
-function escapeHtml(str) {
-    return (str || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
 }
