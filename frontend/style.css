@@ -44,7 +44,10 @@ h1 {
 
 .searchbox {
     text-align: center;
-    display:flex;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
