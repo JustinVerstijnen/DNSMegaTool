@@ -21,7 +21,8 @@
         <div class="searchbox">
             <input type="text" id="domainInput" placeholder="example.com">
             <button id="checkBtn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="white" width="18" height="18" style="vertical-align:middle;margin-right:8px"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6 .1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>Check</button>
-            <button id="exportBtn" onclick="exportHTML()" style="display:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="white" width="18" height="18" style="vertical-align:middle;margin-right:8px"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM216 232l0 102.1 31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31L168 232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>Export</button>
+            <button id="bulkBtn" style="display:inline-block;background-color:#f39c12;"><span style="vertical-align:middle;margin-right:8px">📋</span>Bulk</button>
+            <button id="exportBtn" style="display:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="white" width="18" height="18" style="vertical-align:middle;margin-right:8px"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM216 232l0 102.1 31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31L168 232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>Export</button>
         </div>
 
         <div id="loader" class="spinner-container" style="display:none;">
@@ -29,17 +30,23 @@
         </div>
 
         <div id="resultsSection" style="display:none;">
-            <div class="table-wrapper">
-                <table id="resultTable">
-                    <thead>
-                        <tr><th>Type</th><th>Status</th><th>Value</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div id="extraInfo" style="margin-top: 20px;"></div>
+            <div id="progressText" class="progress-text" style="display:none;"></div>
+            <div id="resultsContainer"></div>
         </div>
+
+        <!-- Bulk modal -->
+        <div id="bulkModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Bulk lookup</h2>
+                <p>Plak hier domeinen (één per regel). Lege regels worden genegeerd.</p>
+                <textarea id="bulkTextarea" placeholder="example.com&#10;example.org"></textarea>
+                <div class="modal-actions">
+                    <button id="bulkRunBtn">Run bulk</button>
+                    <button id="bulkCancelBtn" class="secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
 
     <div class="footer"><a href="https://github.com/JustinVerstijnen/DNSMegaTool">&copy; <span id="copyright-year">2025</span> DNS MEGAtool by Justin Verstijnen. Click here to visit GitHub project.</a></div>
 <script>
