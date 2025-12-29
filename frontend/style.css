@@ -41,19 +41,25 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* =========================
+   Input (same height as buttons)
+   ========================= */
 input[type="text"] {
-    padding: 10px;
+    height: 42px;
+    padding: 0 10px;
     width: 300px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 /* =========================
-   Buttons (uniform)
+   Buttons (uniform height)
    ========================= */
 button {
-    padding: 10px 20px;
+    height: 42px;
+    padding: 0 20px;
     font-size: 16px;
     margin-left: 10px;
     background-color: #8EAFDA;
@@ -65,7 +71,7 @@ button {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    line-height: 1;
+    box-sizing: border-box;
 }
 
 /* SVG icons inside buttons */
