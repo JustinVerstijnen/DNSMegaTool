@@ -1,3 +1,7 @@
+:root{
+    --control-height: 44px;
+}
+
 body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f2f2f2;
@@ -15,6 +19,9 @@ body {
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
+/* =========================
+   Header
+   ========================= */
 .header {
     display: flex;
     align-items: center;
@@ -25,8 +32,7 @@ body {
 
 h1 {
     text-align: center;
-    margin-bottom: 10px;
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
 .subtitle {
@@ -42,39 +48,42 @@ h1 {
 }
 
 /* =========================
-   Input (same height as buttons)
+   Input (reference height)
    ========================= */
 input[type="text"] {
-    height: 42px;
+    height: var(--control-height);
     padding: 0 10px;
     width: 300px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    line-height: normal;
 }
 
 /* =========================
-   Buttons (uniform height)
+   Buttons (exact same outer height)
    ========================= */
 button {
-    height: 42px;
+    height: var(--control-height);
     padding: 0 20px;
     font-size: 16px;
     margin-left: 10px;
+
     background-color: #8EAFDA;
     color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 
+    border: 1px solid transparent; /* CRUCIAAL */
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-sizing: border-box;
 }
 
-/* SVG icons inside buttons */
+/* Icons inside buttons */
 button svg {
     width: 16px;
     height: 16px;
@@ -87,13 +96,10 @@ button svg {
    ========================= */
 .spinner-container {
     position: relative;
-    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
     margin: 150px 0;
 }
 
@@ -116,7 +122,6 @@ button svg {
    ========================= */
 #exportBtn {
     background-color: #92dba5;
-    color: #fff;
 }
 
 #exportBtn:hover {
@@ -135,11 +140,10 @@ button svg {
 }
 
 table {
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    width: 100%;
     border-radius: 10px;
-    overflow: hidden;
 }
 
 thead {
@@ -179,7 +183,7 @@ ul {
 }
 
 /* =========================
-   Animations
+   Animation
    ========================= */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
@@ -210,7 +214,6 @@ ul {
    ========================= */
 .tooltip {
     position: relative;
-    display: inline-block;
     cursor: pointer;
 }
 
@@ -223,16 +226,11 @@ ul {
     background-color: #8EAFDA;
     color: #fff;
     font-size: 12px;
-    line-height: 1.4;
     border-radius: 6px;
     box-shadow: 0 0 8px rgba(0,0,0,0.3);
-    max-width: 1200px;
     min-width: 600px;
-    white-space: normal;
-    word-break: break-word;
+    max-width: 1200px;
     z-index: 50000;
-    pointer-events: auto;
-    font-weight: normal;
 }
 
 .tooltip:hover .tooltip-text {
@@ -241,10 +239,6 @@ ul {
 
 .tooltip-text a {
     color: #fff;
-    text-decoration: none;
-}
-
-.tooltip-text a:hover {
     text-decoration: none;
 }
 
@@ -262,7 +256,6 @@ ul {
    ========================= */
 .bulk-btn {
     background-color: #ffbc6a;
-    color: #fff;
 }
 
 .bulk-btn:hover {
@@ -274,10 +267,7 @@ ul {
    ========================= */
 .modal {
     position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0,0,0,0.45);
     display: flex;
     align-items: center;
@@ -296,22 +286,16 @@ ul {
 
 .modal-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    align-items: center;
 }
 
 .modal-close {
-    border: none;
     background: transparent;
+    border: none;
     font-size: 20px;
     cursor: pointer;
     padding: 6px 10px;
-    border-radius: 8px;
-}
-
-.modal-close:hover {
-    background: #f2f2f2;
 }
 
 .modal-hint {
@@ -326,17 +310,15 @@ ul {
     border: 1px solid #ccc;
     border-radius: 10px;
     resize: vertical;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family: monospace;
     font-size: 14px;
-    line-height: 1.35;
-    box-sizing: border-box;
 }
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 12px;
     gap: 10px;
+    margin-top: 12px;
 }
 
 .bulk-run-btn {
@@ -346,7 +328,6 @@ ul {
     padding: 10px 14px;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 600;
 }
 
 .bulk-run-btn:disabled {
