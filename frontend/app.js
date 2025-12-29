@@ -246,11 +246,11 @@ async function runBulkLookup() {
 
     const invalid = uniqueDomains.filter((d) => !isValidDomain(d));
     if (uniqueDomains.length === 0) {
-        alert("Plak minimaal 1 domein (één per regel).");
+        alert("Paste at least 1 domain (one per line).");
         return;
     }
     if (invalid.length > 0) {
-        alert("Ongeldige domeinen gevonden:\n\n" + invalid.slice(0, 25).join("\n"));
+        alert("Invalid domains found:\n\n" + invalid.slice(0, 25).join("\n"));
         return;
     }
 
@@ -279,7 +279,7 @@ async function runBulkLookup() {
     if (bulkTbody) bulkTbody.innerHTML = "";
     if (bulkProgressText) {
         bulkProgressText.style.display = "block";
-        bulkProgressText.textContent = `0/${uniqueDomains.length} verwerkt...`;
+        bulkProgressText.textContent = `0/${uniqueDomains.length} processed...`;
     }
 
     const recordCols = ["MX", "SPF", "DKIM", "DMARC", "MTA-STS", "DNSSEC"];
@@ -332,7 +332,7 @@ async function runBulkLookup() {
             if (bulkTbody) bulkTbody.appendChild(row);
 
             if (bulkProgressText) {
-                bulkProgressText.textContent = `${i + 1}/${uniqueDomains.length} verwerkt...`;
+                bulkProgressText.textContent = `${i + 1}/${uniqueDomains.length} processed...`;
             }
         }
     } finally {
@@ -362,7 +362,7 @@ async function exportReport() {
     if (currentMode === "bulk") {
         table = document.querySelector("#bulkTable");
         count = document.querySelectorAll("#bulkTable tbody tr").length;
-        label = `Bulk export (${count} domeinen)`;
+        label = `Bulk export (${count} domains)`;
         filename = "bulk_dns_report.html";
         templateFile = "export-template-bulk.html";
     } else {

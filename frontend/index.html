@@ -33,10 +33,10 @@
                     <h2>Bulk lookup</h2>
                     <button id="bulkClose" class="modal-close" aria-label="Close">✕</button>
                 </div>
-                <p class="modal-hint">Plak één domein per regel (bijv. 50 regels).</p>
+                <p class="modal-hint">Paste one domain per line (e.g., 50 lines).</p>
                 <textarea id="bulkTextarea" class="bulk-textarea" placeholder="example.com&#10;example.org"></textarea>
                 <div class="modal-actions">
-                    <button id="bulkRunBtn" class="bulk-run-btn">Start bulk</button>
+                    <button id="bulkRunBtn" class="bulk-run-btn">Run bulk</button>
                 </div>
             </div>
         </div>
@@ -65,14 +65,14 @@
                 <table id="bulkTable" class="result-table">
                     <thead>
                         <tr>
-                            <th>Domein</th>
+                            <th>Domain</th>
                             <th>MX</th>
                             <th>SPF</th>
                             <th>DKIM</th>
                             <th>DMARC</th>
                             <th>MTA-STS</th>
                             <th>DNSSEC</th>
-                            <th>NS</th>
+                            <th>DNS servers</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
