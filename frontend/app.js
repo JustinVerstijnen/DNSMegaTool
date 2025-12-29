@@ -169,43 +169,31 @@ async function checkDomain() {
             });
         }
 
-        // Extra info: Nameservers
+        // Extra info: Nameservers (API returns an array)
         if (data.NS) {
             const nsBox = document.createElement("div");
             nsBox.className = "infobox";
-
-            const nsTitle = document.createElement("h3");
-            nsTitle.textContent = "Nameservers";
-            nsBox.appendChild(nsTitle);
-
-            const nsList = document.createElement("ul");
-            if (Array.isArray(data.NS.value)) {
-                data.NS.value.forEach((ns) => {
-                    const li = document.createElement("li");
-                    li.textContent = ns;
-                    nsList.appendChild(li);
-                });
-            } else {
-                const li = document.createElement("li");
-                li.textContent = data.NS.value;
-                nsList.appendChild(li);
-            }
-            nsBox.appendChild(nsList);
+            const listItems = Array.isArray(data.NS) ? data.NS.map((ns) => `<li>${ns}</li>`).join("") : "";
+            nsBox.innerHTML = `<h3>Nameservers for ${domain}:</h3><ul>${listItems}</ul>`;
             extraInfo.appendChild(nsBox);
         }
 
-        // Extra info: WHOIS
+        // Extra info: WHOIS (API returns registrar/creation_date or error)
         if (data.WHOIS) {
             const whoisBox = document.createElement("div");
             whoisBox.className = "infobox";
 
-            const whoisTitle = document.createElement("h3");
-            whoisTitle.textContent = "WHOIS";
-            whoisBox.appendChild(whoisTitle);
-
-            const whoisContent = document.createElement("pre");
-            whoisContent.textContent = data.WHOIS.value || "";
-            whoisBox.appendChild(whoisContent);
+            if (data.WHOIS.error) {
+                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
+            } else {
+                const registrar = data.WHOIS.registrar || "Not found";
+                const creation = data.WHOIS.creation_date || "Not found";
+                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
+                <ul>
+                    <li>Registrar: ${registrar}</li>
+                    <li>Date of Registration: ${creation}</li>
+                </ul>`;
+            }
 
             extraInfo.appendChild(whoisBox);
         }
@@ -326,15 +314,15 @@ async function runBulkLookup() {
                 row.appendChild(cell);
             }
 
-            // Nameservers column
+            // Nameservers column (API returns an array)
             const nsCell = document.createElement("td");
             if (data && data.NS) {
-                if (Array.isArray(data.NS.value)) {
-                    nsCell.textContent = data.NS.value.join(", ");
-                    nsCell.title = data.NS.value.join("\n");
+                if (Array.isArray(data.NS)) {
+                    nsCell.textContent = data.NS.join(", ");
+                    nsCell.title = data.NS.join("\n");
                 } else {
-                    nsCell.textContent = data.NS.value;
-                    nsCell.title = String(data.NS.value || "");
+                    nsCell.textContent = String(data.NS);
+                    nsCell.title = String(data.NS);
                 }
             } else {
                 nsCell.textContent = "";
