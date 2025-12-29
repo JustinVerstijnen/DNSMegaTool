@@ -31,7 +31,6 @@ h1 {
 
 .subtitle {
     text-align: center;
-    font-family: 'Segoe UI', sans-serif;
     font-size: 0.9em;
     color: #555;
     margin-bottom: 20px;
@@ -50,6 +49,9 @@ input[type="text"] {
     border-radius: 4px;
 }
 
+/* =========================
+   Buttons (uniform)
+   ========================= */
 button {
     padding: 10px 20px;
     font-size: 16px;
@@ -59,8 +61,24 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1;
 }
 
+/* SVG icons inside buttons */
+button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
+/* =========================
+   Spinner
+   ========================= */
 .spinner-container {
     position: relative;
     top: 50%;
@@ -87,47 +105,24 @@ button {
     100% { transform: rotate(360deg); }
 }
 
+/* =========================
+   Export button
+   ========================= */
 #exportBtn {
     background-color: #92dba5;
-    color: #FFF;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: 10px;
+    color: #fff;
 }
 
 #exportBtn:hover {
     background-color: #7ccf95;
 }
 
+/* =========================
+   Tables
+   ========================= */
 .table-wrapper {
     overflow-x: auto;
-}
-
-th:first-child {
-    white-space: nowrap;
-}
-
-th, td {
-    word-break: break-word;
-    max-width: 400px;
-}
-
-.infobox {
-    background-color: #e0f0ff;
-    border: 1px solid #aad;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
-ul { margin: 0; padding-left: 20px; }
-
-.table-wrapper {
     margin-top: 20px;
-    overflow-x: auto;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     background: #fff;
@@ -145,6 +140,10 @@ thead {
     background-color: #f8f9fa;
 }
 
+th:first-child {
+    white-space: nowrap;
+}
+
 th, td {
     padding: 15px;
     text-align: left;
@@ -157,6 +156,25 @@ tbody tr:nth-child(even) {
     background-color: #f6f6f6;
 }
 
+/* =========================
+   Info box
+   ========================= */
+.infobox {
+    background-color: #e0f0ff;
+    border: 1px solid #aad;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* =========================
+   Animations
+   ========================= */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -166,6 +184,9 @@ tbody tr:nth-child(even) {
     animation: fadeIn 0.5s ease;
 }
 
+/* =========================
+   Footer
+   ========================= */
 .footer {
     text-align: center;
     font-size: 9px;
@@ -173,6 +194,14 @@ tbody tr:nth-child(even) {
     margin-top: 40px;
 }
 
+.footer a {
+    color: #777;
+    text-decoration: none;
+}
+
+/* =========================
+   Tooltip
+   ========================= */
 .tooltip {
     position: relative;
     display: inline-block;
@@ -182,7 +211,7 @@ tbody tr:nth-child(even) {
 .tooltip .tooltip-text {
     display: none;
     position: absolute;
-    top: -45%; 
+    top: -45%;
     left: 110%;
     padding: 12px;
     background-color: #8EAFDA;
@@ -190,7 +219,7 @@ tbody tr:nth-child(even) {
     font-size: 12px;
     line-height: 1.4;
     border-radius: 6px;
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
     max-width: 1200px;
     min-width: 600px;
     white-space: normal;
@@ -201,118 +230,134 @@ tbody tr:nth-child(even) {
 }
 
 .tooltip:hover .tooltip-text {
-    display: block; 
+    display: block;
 }
 
 .tooltip-text a {
     color: #fff;
     text-decoration: none;
-    pointer-events: auto;
 }
-
 
 .tooltip-text a:hover {
     text-decoration: none;
 }
 
-.table-wrapper {
-    overflow: visible;
-}
-
-
-.footer a {
-    color: #777;
-    text-decoration: none;
-}
-
-
-/* Linkstijl voor DNS-record types */
+/* =========================
+   Record links
+   ========================= */
 .record-link {
     font-weight: bold;
     color: black;
     text-decoration: none;
 }
 
+/* =========================
+   Bulk button
+   ========================= */
+.bulk-btn {
+    background-color: #ffbc6a;
+    color: #fff;
+}
 
-/* Bulk button */
-.bulk-btn{
-    background-color:#ffbc6a;
-    color:#fff;
+.bulk-btn:hover {
+    filter: brightness(0.95);
 }
-.bulk-btn:hover{ filter:brightness(0.95); }
 
-/* Bulk modal */
-.modal{
-    position:fixed;
-    left:0; top:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.45);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-    padding:16px;
+/* =========================
+   Bulk modal
+   ========================= */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
 }
-.modal-content{
-    width:min(820px, 100%);
-    background:#fff;
-    border-radius:12px;
-    padding:18px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+.modal-content {
+    width: min(820px, 100%);
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
-.modal-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
-.modal-close{
-    border:none;
-    background:transparent;
-    font-size:20px;
-    cursor:pointer;
-    padding:6px 10px;
-    border-radius:8px;
+
+.modal-close {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
 }
-.modal-close:hover{ background:#f2f2f2; }
-.modal-hint{ margin:10px 0 10px 0; color:#666; }
-.bulk-textarea{
-    width:100%;
-    min-height:220px;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:10px;
-    resize:vertical;
+
+.modal-close:hover {
+    background: #f2f2f2;
+}
+
+.modal-hint {
+    margin: 10px 0;
+    color: #666;
+}
+
+.bulk-textarea {
+    width: 100%;
+    min-height: 220px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    resize: vertical;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size:14px;
-    line-height:1.35;
-    box-sizing:border-box;
+    font-size: 14px;
+    line-height: 1.35;
+    box-sizing: border-box;
 }
-.modal-actions{
-    display:flex;
-    justify-content:flex-end;
-    margin-top:12px;
-    gap:10px;
-}
-.bulk-run-btn{
-    background:#ffbc6a;
-    color:#fff;
-    border:none;
-    padding:10px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:600;
-}
-.bulk-run-btn:disabled{ opacity:0.6; cursor:not-allowed; }
 
-/* Bulk table */
-.table-wrapper{
-    overflow-x:auto;
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+    gap: 10px;
 }
-#bulkTable td, #bulkTable th{
-    white-space:nowrap;
+
+.bulk-run-btn {
+    background: #ffbc6a;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
 }
-#bulkTable td:last-child, #bulkTable th:last-child{
-    white-space:normal;
-    min-width:260px;
+
+.bulk-run-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================
+   Bulk table
+   ========================= */
+#bulkTable td,
+#bulkTable th {
+    white-space: nowrap;
+}
+
+#bulkTable td:last-child,
+#bulkTable th:last-child {
+    white-space: normal;
+    min-width: 260px;
 }
