@@ -354,14 +354,17 @@ async function exportReport() {
     if (exportBtn.disabled) return;
 
     let table = null;
-    let label = "";
     let filename = "";
+    let label = "";
+    let count = 0;
+    let templateFile = "export-template-single.html";
 
     if (currentMode === "bulk") {
         table = document.querySelector("#bulkTable");
-        const count = document.querySelectorAll("#bulkTable tbody tr").length;
-        label = `Bulk (${count} domains)`;
+        count = document.querySelectorAll("#bulkTable tbody tr").length;
+        label = `Bulk export (${count} domeinen)`;
         filename = "bulk_dns_report.html";
+        templateFile = "export-template-bulk.html";
     } else {
         table = document.querySelector("#resultTable");
         const domain = normalizeDomain(document.getElementById("domainInput").value);
@@ -371,6 +374,7 @@ async function exportReport() {
         }
         label = domain;
         filename = domain + "_dns_report.html";
+        templateFile = "export-template-single.html";
     }
 
     let tableHTML = "";
@@ -380,9 +384,11 @@ async function exportReport() {
         tableHTML = clone.outerHTML;
     }
 
-    const template = await fetch("export-template.html").then((r) => r.text());
+    const template = await fetch(templateFile).then((r) => r.text());
+
     const filled = template
-        .replace("{{domain}}", label)
+        .replaceAll("{{domain}}", label)
+        .replaceAll("{{count}}", String(count))
         .replace("{{report_content}}", tableHTML);
 
     const blob = new Blob([filled], { type: "text/html;charset=utf-8;" });
@@ -396,3 +402,4 @@ async function exportReport() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
+

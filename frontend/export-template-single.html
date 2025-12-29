@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS MEGAtool rapport - {{domain}}</title>
+  <style>
+    body{font-family:Segoe UI,Arial,sans-serif;margin:24px;background:#f6f6f6;text-align:center}
+    .wrap{max-width:1100px;margin:0 auto;background:#fff;padding:24px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,.08)}
+    h1{margin:0 0 12px 0}
+    .meta{color:#666;margin-bottom:18px}
+    table{width:100%;border-collapse:collapse;margin:0 auto}
+    th,td{border:1px solid #ddd;padding:10px;vertical-align:top;text-align:center}
+    th{background:#f2f2f2}
+    .footer{color:#999;font-size:12px;margin-top:18px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>DNS MEGAtool rapport</h1>
+    <div class="meta"><strong>Domein:</strong> {{domain}}</div>
+    {{report_content}}
+    <div class="footer">Rapport gegenereerd met de DNS MEGAtool</div>
+  </div>
+</body>
+</html>
