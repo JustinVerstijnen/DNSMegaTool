@@ -7,6 +7,7 @@ A powerful, lightweight, efficient and open-source DNS checker and export tool d
 ## Features
 
 - **Query all common DNS record types**: MX, SPF, DKIM, DMARC, MTA-STS and DNSSEC
+- **Bulk domain lookup**: Past in your domains and let the tool bulk-lookup your domains to check mass domain status
 - **DNSSEC validation**: checks if DNSSEC is enabled and properly configured
 - **Export options**: save results to HTML
 - **Clean interface**: easy-to-read output even for bulk queries
