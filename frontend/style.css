@@ -19,9 +19,6 @@ body {
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
-/* =========================
-   Header
-   ========================= */
 .header {
     display: flex;
     align-items: center;
@@ -51,9 +48,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* =========================
-   Input (reference height)
-   ========================= */
 input[type="text"] {
     height: var(--control-height);
     padding: 0 10px;
@@ -65,9 +59,6 @@ input[type="text"] {
     line-height: normal;
 }
 
-/* =========================
-   Buttons (exact same outer height)
-   ========================= */
 button {
     height: var(--control-height);
     padding: 0 20px;
@@ -77,7 +68,7 @@ button {
     background-color: #8EAFDA;
     color: #fff;
 
-    border: 1px solid transparent; /* CRUCIAAL */
+    border: 1px solid transparent;
     border-radius: 4px;
     box-sizing: border-box;
 
@@ -87,7 +78,6 @@ button {
     gap: 8px;
 }
 
-/* Icons inside buttons */
 button svg {
     width: 16px;
     height: 16px;
@@ -95,9 +85,6 @@ button svg {
     flex-shrink: 0;
 }
 
-/* =========================
-   Spinner
-   ========================= */
 .spinner-container {
     position: relative;
     left: 50%;
@@ -121,9 +108,6 @@ button svg {
     100% { transform: rotate(360deg); }
 }
 
-/* =========================
-   Export button
-   ========================= */
 #exportBtn {
     background-color: #92dba5;
 }
@@ -132,9 +116,6 @@ button svg {
     background-color: #7ccf95;
 }
 
-/* =========================
-   Tables
-   ========================= */
 .table-wrapper {
     overflow-x: auto;
     margin-top: 20px;
@@ -170,9 +151,6 @@ tbody tr:nth-child(even) {
     background-color: #f6f6f6;
 }
 
-/* =========================
-   Info box
-   ========================= */
 .infobox {
     background-color: #e0f0ff;
     border: 1px solid #aad;
@@ -186,9 +164,6 @@ ul {
     padding-left: 20px;
 }
 
-/* =========================
-   Animation
-   ========================= */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -198,9 +173,6 @@ ul {
     animation: fadeIn 0.5s ease;
 }
 
-/* =========================
-   Footer
-   ========================= */
 .footer {
     text-align: center;
     font-size: 9px;
@@ -213,9 +185,6 @@ ul {
     text-decoration: none;
 }
 
-/* =========================
-   Tooltip
-   ========================= */
 .tooltip {
     position: relative;
     cursor: pointer;
@@ -246,18 +215,12 @@ ul {
     text-decoration: none;
 }
 
-/* =========================
-   Record links
-   ========================= */
 .record-link {
     font-weight: bold;
     color: black;
     text-decoration: none;
 }
 
-/* =========================
-   Bulk button
-   ========================= */
 -btn {
     background-color: #ffbc6a;
 }
@@ -266,9 +229,6 @@ ul {
     filter: brightness(0.95);
 }
 
-/* =========================
-   Bulk modal
-   ========================= */
 .modal {
     position: fixed;
     inset: 0;
@@ -339,9 +299,6 @@ ul {
     cursor: not-allowed;
 }
 
-/* =========================
-   Bulk table
-   ========================= */
 #bulkTable td,
 #bulkTable th {
     white-space: nowrap;
@@ -351,4 +308,25 @@ ul {
 #bulkTable th:last-child {
     white-space: normal;
     min-width: 260px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("https://justinverstijnen.nl/wp-content/uploads/2026/01/Tool_Background_Blurred.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.69;
+    z-index: -1;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.85);
 }
