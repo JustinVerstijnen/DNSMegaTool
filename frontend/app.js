@@ -199,7 +199,7 @@ async function checkDomain() {
         }
     } catch (e) {
         console.error(e);
-        alert("An error occurred. My apologies for the inconvenience.");
+        alert("The domain could not be found because of an error. The application is not responding or being updated. Please try again in a few minutes.");
     } finally {
         loader.style.display = "none";
         checkBtn.disabled = false;
