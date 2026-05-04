@@ -25,12 +25,6 @@ The main features of this tool are:
 - Correct your incorrect configured records
 - Cache or save the information in any way, refreshing means a new lookup
 
-## Changelog/new features
-
-New features to this tool are added when needed or if the tool is broken.
-
-Feature request can be done by submitting issues into GitHub.
-
 ## Technical Architecture
 
 - **Languages** : HTML, CSS, Javascript, Python
@@ -38,6 +32,12 @@ Feature request can be done by submitting issues into GitHub.
 - **Runtime model** : Serverless
 - **Architecture** : Stateless HTTP API
 - **Dependencies** : Python, DNS, additional networking libraries
+
+## Changelog/new features
+
+New features to this tool are added when needed or if the tool is broken.
+
+Feature request can be done by submitting issues into GitHub.
 
 ## Issues
 
@@ -47,6 +47,6 @@ At this moment, this tool has no known issues.
 
 ## License
 
-This project is licensed under the **GNU GPL v3.0**.
+This project is licensed under the **MIT license**. This means that the software is open source and can be used to run the tool yourself.
 
 Use at your own risk. No guarantees or official support are provided.
