@@ -25,6 +25,10 @@ The main features of this tool are:
 - Correct your incorrect configured records
 - Cache or save the information in any way, refreshing means a new lookup
 
+## Hosting
+
+This tool is currently hosted on Azure Static Web Apps. This runs in the West Europe region and configuration changes are pushed to Azure Static Web Apps by using the default GitHub Action.
+
 ## Technical Architecture
 
 - **Languages** : HTML, CSS, Javascript, Python
