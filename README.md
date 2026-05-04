@@ -1,18 +1,62 @@
 # DNSMegaTool
 
-A powerful, lightweight, efficient and open-source DNS checker and export tool developed by Justin Verstijnen.
+DNSMegaTool is a lightweight and web-based domain DNS lookup and security inspection tool created by Justin Verstijnen. This tool has the focus on email security and scores your domain based on the configuration of those DNS records.
 
 ---
 
-## Features
+## Main features
 
-- **Query all common DNS record types**: MX, SPF, DKIM, DMARC, MTA-STS and DNSSEC
-- **Bulk domain lookup**: Past in your domains and let the tool bulk-lookup your domains to check mass domain status
-- **DNSSEC validation**: checks if DNSSEC is enabled and properly configured
-- **Export options**: save results to HTML
-- **Clean interface**: easy-to-read output even for bulk queries
-- **Open-source**: free to use, modify, and integrate
-- **Confetti**: 100% Email security grants you with some confetti over the screen.
+The main features of this tool are:
 
+- Lookup your domains' email security
+	- MX
+	- SPF
+	- DKIM
+	- DMARC
+	- MTA-STS
+	- DNSSEC
+- Checks the actual configuration
+- Scores you from 1-6 based on configuration and used policies
+- Confetti party if scoring 6/6
+	- Try the domain _justinverstijnen.nl_ for a demo
+- WHOIS information about your domain
+- Displays actual NS servers
 
+### What the tool doesn't do
 
+- Correct your incorrect configured records
+- Cache or save the information in any way, refreshing means a new lookup
+
+---
+
+## Changelog/new features
+
+New features to this tool are added when needed or if the tool is broken.
+
+Feature request can be done by submitting issues into GitHub.
+
+---
+
+## Technical Architecture
+
+- **Languages** : HTML, CSS, Javascript, Python
+- **Platform** : Azure Static Web Apps
+- **Runtime model** : Serverless
+- **Architecture** : Stateless HTTP API
+- **Dependencies** : Python, DNS, additional networking libraries
+
+---
+
+## Issues
+
+Its possible to submit any issues using the GitHub issues system.
+
+At this moment, this tool has no known issues.
+
+---
+
+## License
+
+This project is licensed under the **GNU GPL v3.0**.
+
+Use at your own risk. No guarantees or official support are provided.
