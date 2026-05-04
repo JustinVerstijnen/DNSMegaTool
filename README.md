@@ -2,8 +2,6 @@
 
 DNSMegaTool is a lightweight and web-based domain DNS lookup and security inspection tool created by Justin Verstijnen. This tool has the focus on email security and scores your domain based on the configuration of those DNS records.
 
----
-
 ## Main features
 
 The main features of this tool are:
@@ -27,15 +25,11 @@ The main features of this tool are:
 - Correct your incorrect configured records
 - Cache or save the information in any way, refreshing means a new lookup
 
----
-
 ## Changelog/new features
 
 New features to this tool are added when needed or if the tool is broken.
 
 Feature request can be done by submitting issues into GitHub.
-
----
 
 ## Technical Architecture
 
@@ -45,15 +39,11 @@ Feature request can be done by submitting issues into GitHub.
 - **Architecture** : Stateless HTTP API
 - **Dependencies** : Python, DNS, additional networking libraries
 
----
-
 ## Issues
 
 Its possible to submit any issues using the GitHub issues system.
 
 At this moment, this tool has no known issues.
-
----
 
 ## License
 
