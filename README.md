@@ -43,6 +43,10 @@ New features to this tool are added when needed or if the tool is broken.
 
 Feature request can be done by submitting issues into GitHub.
 
+- Advisories/warnings about current records
+- TLS-RPT lookup check
+- Microsoft 365 DANE over MTA-STS functionality
+
 ## Issues
 
 Its possible to submit any issues using the GitHub issues system.
