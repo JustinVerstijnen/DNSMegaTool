@@ -48,6 +48,7 @@ Feature request can be done by submitting issues into GitHub.
 - Microsoft 365 DANE over MTA-STS functionality
 - SSL validity on MX host
 - Tooltips per record
+- Research possibility of email header check with sending email/API
 
 ## Issues
 
