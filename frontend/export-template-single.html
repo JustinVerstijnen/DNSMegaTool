@@ -19,13 +19,18 @@
       border-radius:10px;
       box-shadow:0 0 15px rgba(0,0,0,.08)
     }
+    .brand-logo{
+      width:54px;
+      height:54px;
+      margin-bottom:10px
+    }
     h1{margin:0 0 12px 0}
     .meta{color:#666;margin-bottom:18px}
     table{
       width:100%;
       border-collapse:collapse;
       margin:0 auto;
-      table-layout:auto
+      table-layout:fixed
     }
     th,td{
       border:1px solid #ddd;
@@ -34,11 +39,83 @@
       word-break:break-word;
       overflow-wrap:anywhere
     }
+    #resultTable th:first-child,
+    #resultTable td:first-child{width:120px}
+    #resultTable th:last-child,
+    #resultTable td:last-child{width:76px}
     th{
       background:#f2f2f2;
       text-align:center
     }
     td{text-align:left}
+    .record-type{font-weight:700}
+    .row-success{background:#eef8f1}
+    .row-warning{background:#fff7e6}
+    .row-error{background:#fdeeee}
+    td:has(.status-icon){text-align:center}
+    .status-icon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      position:relative;
+      cursor:help
+    }
+    .status-icon svg{
+      width:18px;
+      height:18px;
+      fill:currentColor
+    }
+    .status-success{color:#18803a;background:#e6f5eb}
+    .status-warning{color:#9a6700;background:#fff3cd}
+    .status-error{color:#b42318;background:#fde8e7}
+    .status-success .tooltip-text{background:#18803a}
+    .status-warning .tooltip-text{background:#9a6700}
+    .status-error .tooltip-text{background:#b42318}
+    .tooltip{position:relative;cursor:pointer}
+    .tooltip .tooltip-text{
+      display:block;
+      position:absolute;
+      top:50%;
+      left:calc(100% + 12px);
+      transform:translateY(-50%);
+      padding:12px;
+      background:#7090B2;
+      color:#fff;
+      font-size:12px;
+      border-radius:6px;
+      box-shadow:0 0 8px rgba(0,0,0,.3);
+      min-width:220px;
+      max-width:min(360px, calc(100vw - 48px));
+      line-height:1.45;
+      white-space:pre-line;
+      text-align:left;
+      z-index:50000;
+      opacity:0;
+      pointer-events:none;
+      visibility:hidden;
+      transition:opacity .75s ease, visibility 0s linear .75s
+    }
+    .record-tooltip-text a{
+      display:block;
+      margin-top:8px;
+      font-weight:700;
+      text-decoration:underline
+    }
+    .status-icon .status-tooltip-text{
+      right:calc(100% + 12px);
+      left:auto
+    }
+    .status-tooltip-text{font-weight:700}
+    .tooltip:hover .tooltip-text,
+    .tooltip .tooltip-text:hover{
+      opacity:1;
+      pointer-events:auto;
+      visibility:visible;
+      transition-delay:0s
+    }
 
     /* Footer styling */
     .footer{
@@ -59,6 +136,9 @@
 </head>
 <body>
   <div class="wrap">
+    <a href="https://justinverstijnen.nl" target="_blank" rel="noopener">
+      <img class="brand-logo" src="https://sajvwebsiteblobstorage.blob.core.windows.net/blog/tools-2375/logo.svg" alt="Justin Verstijnen logo">
+    </a>
     <h1>DNS MEGAtool report</h1>
     <div class="meta"><strong>Domain:</strong> {{domain}}</div>
     {{report_content}}

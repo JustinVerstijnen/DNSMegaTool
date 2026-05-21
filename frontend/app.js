@@ -1,6 +1,29 @@
 let isLoading = false;
 let currentMode = "single"; // "single" | "bulk"
 
+const recordDescriptions = {
+    "MX": "Mail Exchange records tells the internet where the server of your domain is.",
+    "SPF": "Sender Policy Framework lists which servers are trusted to send email for this domain.",
+    "DKIM": "DomainKeys Identified Mail uses cryptographic signatures so receivers can verify email was authorized by the sender.",
+    "DMARC": "Domain-based Message Authentication, Reporting and Conformance tells receivers what to do when SPF or DKIM checks fail.",
+    "TLS-RPT": "SMTP TLS Reporting publishes where mail providers should send reports about encrypted mail delivery problems.",
+    "MTA-STS": "Mail Transfer Agent Strict Transport Security tells mail servers to require encrypted SMTP delivery for this domain.",
+    "DNSSEC": "Domain Name System Security Extensions add signed DNS data so resolvers can detect forged DNS answers.",
+    "DANE": "DNS-based Authentication of Named Entities publishes TLSA records so SMTP TLS certificates can be validated through DNSSEC.",
+    "MX SSL": "Checks the SSL certificate of the MX server of your domain."
+};
+
+const recordDocumentationLinks = {
+    "MX": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#what-is-a-mx-record",
+    "SPF": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#spf---sender-policy-framework",
+    "DKIM": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dkim---domain-keys-identified-mail",
+    "DMARC": "https://justinverstijnen.nl/enhance-email-security-with-spf-dkim-dmarc/#dmarc---domain-based-message-authentication-reporting-and-conformance",
+    "DANE": "https://justinverstijnen.nl/configure-dnssec-and-smtp-dane-with-exchange-online-microsoft-365/",
+    "MTA-STS": "https://justinverstijnen.nl/what-is-mta-sts-and-how-to-protect-your-email-flow/"
+};
+
+const recordOrder = ["MX", "MX SSL", "SPF", "DKIM", "DMARC", "TLS-RPT", "DNSSEC", "DANE", "MTA-STS"];
+
 document.addEventListener("DOMContentLoaded", function () {
     const domainInput = document.getElementById("domainInput");
     const checkBtn = document.getElementById("checkBtn");
@@ -84,6 +107,8 @@ async function checkDomain() {
     isLoading = true;
     currentMode = "single";
 
+    document.querySelector(".container")?.classList.remove("bulk-mode");
+
     const checkBtn = document.getElementById("checkBtn");
     const bulkBtn = document.getElementById("bulkBtn");
     const exportBtn = document.getElementById("exportBtn");
@@ -123,40 +148,34 @@ async function checkDomain() {
         const data = await response.json();
 
         // Fill the table
-        for (const [type, record] of Object.entries(data)) {
-            if (type === "NS" || type === "WHOIS") continue;
+        for (const type of recordOrder) {
+            const record = data[type];
+            if (!record || record.skipped) continue;
+            record.type = type;
 
             const row = document.createElement("tr");
+            row.className = `status-row row-${getStatusLevel(record)}`;
             const typeCell = document.createElement("td");
-            typeCell.textContent = type;
+            typeCell.appendChild(createRecordTypeLabel(type));
 
             const statusCell = document.createElement("td");
-            statusCell.textContent = record.status ? "✅" : "❌";
+            statusCell.appendChild(createStatusIcon(record));
 
             const valueCell = document.createElement("td");
-            if (Array.isArray(record.value)) {
-                const list = document.createElement("ul");
-                record.value.forEach((val) => {
-                    const li = document.createElement("li");
-                    li.textContent = val;
-                    list.appendChild(li);
-                });
-                valueCell.appendChild(list);
-            } else {
-                valueCell.textContent = record.value;
-            }
+            appendRecordDetails(valueCell, record);
 
             row.appendChild(typeCell);
-            row.appendChild(statusCell);
             row.appendChild(valueCell);
+            row.appendChild(statusCell);
             tbody.appendChild(row);
         }
 
         // Confetti if all green
         let allGreen = true;
-        for (const [type, record] of Object.entries(data)) {
-            if (type === "NS" || type === "WHOIS") continue;
-            if (!record.status) {
+        for (const type of recordOrder) {
+            const record = data[type];
+            if (!record || record.skipped) continue;
+            if (!record.status || getStatusLevel(record) !== "success") {
                 allGreen = false;
                 break;
             }
@@ -178,21 +197,21 @@ async function checkDomain() {
             extraInfo.appendChild(nsBox);
         }
 
-        // Extra info: WHOIS (API returns registrar/creation_date or error)
+        // Extra info: WHOIS (API returns registrar/contact/date fields or error)
         if (data.WHOIS) {
             const whoisBox = document.createElement("div");
             whoisBox.className = "infobox";
 
+            const whoisTitle = document.createElement("h3");
+            whoisTitle.textContent = `WHOIS Information for ${domain}:`;
+            whoisBox.appendChild(whoisTitle);
+
             if (data.WHOIS.error) {
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3><p>${data.WHOIS.error}</p>`;
+                const errorText = document.createElement("p");
+                errorText.textContent = data.WHOIS.error;
+                whoisBox.appendChild(errorText);
             } else {
-                const registrar = data.WHOIS.registrar || "Not found";
-                const creation = data.WHOIS.creation_date || "Not found";
-                whoisBox.innerHTML = `<h3>WHOIS Information for ${domain}:</h3>
-                <ul>
-                    <li>Registrar: ${registrar}</li>
-                    <li>Date of Registration: ${creation}</li>
-                </ul>`;
+                whoisBox.appendChild(createWhoisList(data.WHOIS));
             }
 
             extraInfo.appendChild(whoisBox);
@@ -211,13 +230,204 @@ async function checkDomain() {
     }
 }
 
-function statusIcon(status) {
-    return status ? "✅" : "❌";
+function getStatusLevel(record) {
+    if (!record) return "error";
+    if (record.level) return record.level;
+    return record.status ? "success" : "error";
+}
+
+function createRecordTypeLabel(type) {
+    const wrapper = document.createElement("span");
+    wrapper.className = "record-type tooltip";
+
+    const label = document.createElement("span");
+    label.textContent = type;
+    wrapper.appendChild(label);
+
+    const description = recordDescriptions[type];
+    if (description) {
+        const tooltip = document.createElement("span");
+        tooltip.className = "tooltip-text record-tooltip-text";
+        const descriptionText = document.createElement("span");
+        descriptionText.textContent = description;
+        tooltip.appendChild(descriptionText);
+
+        const documentationLink = recordDocumentationLinks[type];
+        if (documentationLink) {
+            const link = document.createElement("a");
+            link.href = documentationLink;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent = "📖 Read more";
+            tooltip.appendChild(link);
+        }
+
+        wrapper.appendChild(tooltip);
+    }
+
+    return wrapper;
+}
+
+function createStatusIcon(record) {
+    const level = getStatusLevel(record);
+    const span = document.createElement("span");
+    span.className = `status-icon status-${level} tooltip`;
+
+    const icons = {
+        success: {
+            label: "Passed",
+            svg: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.6 7.6a1 1 0 0 1-1.4 0L3.3 9.9a1 1 0 1 1 1.4-1.4l3.7 3.7 6.9-6.9a1 1 0 0 1 1.4 0Z"/></svg>'
+        },
+        warning: {
+            label: "Warning",
+            svg: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9.1 3.2a1 1 0 0 1 1.8 0l7 12.5A1 1 0 0 1 17 17H3a1 1 0 0 1-.9-1.5l7-12.3ZM10 7a1 1 0 0 0-1 1v3a1 1 0 1 0 2 0V8a1 1 0 0 0-1-1Zm0 7.8a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg>'
+        },
+        error: {
+            label: "Failed",
+            svg: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.3 4a1 1 0 0 0-1.4 1.4L8.6 10l-4.7 4.6A1 1 0 1 0 5.3 16l4.6-4.7 4.7 4.7a1 1 0 0 0 1.4-1.4L11.3 10 16 5.4A1 1 0 0 0 14.6 4L9.9 8.6 5.3 4Z"/></svg>'
+        }
+    };
+
+    const icon = icons[level] || icons.error;
+    span.innerHTML = icon.svg;
+    span.setAttribute("role", "img");
+    span.setAttribute("aria-label", icon.label);
+    span.title = icon.label;
+
+    const tooltipText = getStatusTooltipText(record, icon.label);
+    if (tooltipText) {
+        const tooltip = document.createElement("span");
+        tooltip.className = "tooltip-text status-tooltip-text";
+        tooltip.textContent = tooltipText;
+        span.appendChild(tooltip);
+    }
+
+    return span;
 }
 
 function formatValueForTitle(value) {
     if (Array.isArray(value)) return value.join("\n");
     return (value ?? "").toString();
+}
+
+function getStatusTooltipText(record, fallbackLabel) {
+    if (!record) return "No data";
+    if (record.type === "DANE") return record.status ? fallbackLabel : "The MX record does not support DANE.";
+    if (record.advisories?.length) return record.advisories.join("\n");
+    if (record.status === false) return formatValueForTitle(record.value);
+    if (record.skipped) return formatValueForTitle(record.value);
+    return fallbackLabel;
+}
+
+function createValueNode(value) {
+    const text = String(value ?? "");
+    if (/^https?:\/\//i.test(text)) {
+        const link = document.createElement("a");
+        link.href = text;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = text;
+        return link;
+    }
+    return document.createTextNode(text);
+}
+
+function appendRecordDetails(cell, record) {
+    const value = record?.value;
+    if (Array.isArray(value)) {
+        const list = document.createElement("ul");
+        value.forEach((val) => {
+            const li = document.createElement("li");
+            li.appendChild(createValueNode(val));
+            list.appendChild(li);
+        });
+        cell.appendChild(list);
+    } else {
+        cell.appendChild(createValueNode(value));
+    }
+
+}
+
+function formatWhoisLabel(key) {
+    const labels = {
+        domain_name: "Domain name",
+        registrar: "Registrar",
+        whois_server: "WHOIS server",
+        creation_date: "Date of registration",
+        updated_date: "Last updated",
+        expiration_date: "Expiration date",
+        name: "Contact name",
+        organization: "Organization",
+        address: "Address",
+        city: "City",
+        state: "State/Province",
+        zipcode: "Postal code",
+        country: "Country",
+        emails: "Email",
+        phone: "Phone",
+        administrative_contact: "Administrative contact",
+        status: "Domain status"
+    };
+    return labels[key] || key.replaceAll("_", " ");
+}
+
+function formatWhoisValue(value) {
+    if (Array.isArray(value)) {
+        return value.map(formatWhoisValue).join("; ");
+    }
+    if (value && typeof value === "object") {
+        return Object.entries(value)
+            .map(([key, val]) => `${formatWhoisLabel(key)}: ${formatWhoisValue(val)}`)
+            .join(", ");
+    }
+    return String(value);
+}
+
+function appendValue(target, value) {
+    target.appendChild(document.createTextNode(formatWhoisValue(value)));
+}
+
+function createWhoisList(whoisData) {
+    const list = document.createElement("ul");
+    const order = [
+        "domain_name",
+        "registrar",
+        "whois_server",
+        "creation_date",
+        "updated_date",
+        "expiration_date",
+        "name",
+        "organization",
+        "address",
+        "city",
+        "state",
+        "zipcode",
+        "country",
+        "emails",
+        "phone",
+        "administrative_contact",
+        "status"
+    ];
+
+    for (const key of order) {
+        const value = whoisData[key];
+        if (!value || (Array.isArray(value) && value.length === 0)) continue;
+
+        const item = document.createElement("li");
+        const label = document.createElement("strong");
+        label.textContent = `${formatWhoisLabel(key)}: `;
+        item.appendChild(label);
+        appendValue(item, value);
+        list.appendChild(item);
+    }
+
+    if (!list.children.length) {
+        const item = document.createElement("li");
+        item.textContent = "No public WHOIS details found.";
+        list.appendChild(item);
+    }
+
+    return list;
 }
 
 async function runBulkLookup() {
@@ -258,6 +468,7 @@ async function runBulkLookup() {
 
     isLoading = true;
     currentMode = "bulk";
+    document.querySelector(".container")?.classList.add("bulk-mode");
 
     checkBtn.disabled = true;
     if (bulkBtn) bulkBtn.disabled = true;
@@ -282,7 +493,7 @@ async function runBulkLookup() {
         bulkProgressText.textContent = `0/${uniqueDomains.length} processed...`;
     }
 
-    const recordCols = ["MX", "SPF", "DKIM", "DMARC", "MTA-STS", "DNSSEC"];
+    const recordCols = recordOrder;
 
     try {
         for (let i = 0; i < uniqueDomains.length; i++) {
@@ -305,10 +516,12 @@ async function runBulkLookup() {
             for (const col of recordCols) {
                 const cell = document.createElement("td");
                 if (data && data[col]) {
-                    cell.textContent = statusIcon(!!data[col].status);
-                    cell.title = formatValueForTitle(data[col].value);
+                    data[col].type = col;
+                    cell.appendChild(createStatusIcon(data[col]));
+                    const advisories = data[col].advisories?.length ? `\n\nAdvisories:\n${data[col].advisories.join("\n")}` : "";
+                    cell.title = formatValueForTitle(data[col].value) + advisories;
                 } else {
-                    cell.textContent = "❌";
+                    cell.appendChild(createStatusIcon({ status: false }));
                     cell.title = "No data";
                 }
                 row.appendChild(cell);
@@ -380,7 +593,6 @@ async function exportReport() {
     let tableHTML = "";
     if (table) {
         const clone = table.cloneNode(true);
-        clone.querySelectorAll(".tooltip").forEach((el) => el.remove());
         tableHTML = clone.outerHTML;
     }
 
@@ -402,4 +614,3 @@ async function exportReport() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 }
-

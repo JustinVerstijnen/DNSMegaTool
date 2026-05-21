@@ -19,6 +19,10 @@ body {
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
+.container.bulk-mode {
+    max-width: 1250px;
+}
+
 .header {
     display: flex;
     align-items: center;
@@ -116,8 +120,18 @@ button svg {
     background-color: #7ccf95;
 }
 
+.bulk-btn,
+.bulk-run-btn {
+    background-color: #ffbc6a;
+}
+
+.bulk-btn:hover,
+.bulk-run-btn:hover {
+    background-color: #f0a957;
+}
+
 .table-wrapper {
-    overflow-x: auto;
+    overflow-x: visible;
     margin-top: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -126,6 +140,7 @@ button svg {
 
 table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 10px;
@@ -140,14 +155,92 @@ th:first-child {
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px;
     text-align: left;
     vertical-align: top;
     word-break: break-word;
     max-width: 600px;
 }
 
-tbody tr:nth-child(even) {
+#resultTable th:first-child,
+#resultTable td:first-child {
+    width: 120px;
+}
+
+#resultTable th:last-child,
+#resultTable td:last-child {
+    width: 76px;
+}
+
+#resultTable td:nth-child(2) {
+    overflow-wrap: anywhere;
+}
+
+th {
+    text-align: center;
+}
+
+td:has(.status-icon) {
+    text-align: center;
+}
+
+.row-success {
+    background-color: #eef8f1;
+}
+
+.row-warning {
+    background-color: #fff7e6;
+}
+
+.row-error {
+    background-color: #fdeeee;
+}
+
+tbody tr.row-success:nth-child(even) {
+    background-color: #e5f4ea;
+}
+
+tbody tr.row-warning:nth-child(even) {
+    background-color: #fff0d1;
+}
+
+tbody tr.row-error:nth-child(even) {
+    background-color: #fbe4e4;
+}
+
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    vertical-align: middle;
+    cursor: help;
+}
+
+.status-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.status-success {
+    color: #18803a;
+    background: #e6f5eb;
+}
+
+.status-warning {
+    color: #9a6700;
+    background: #fff3cd;
+}
+
+.status-error {
+    color: #b42318;
+    background: #fde8e7;
+}
+
+tbody tr:nth-child(even):not(.status-row) {
     background-color: #f6f6f6;
 }
 
@@ -191,23 +284,79 @@ ul {
 }
 
 .tooltip .tooltip-text {
-    display: none;
+    display: block;
     position: absolute;
     top: -45%;
     left: 110%;
     padding: 12px;
-    background-color: #8EAFDA;
+    background-color: #7090B2;
     color: #fff;
     font-size: 12px;
     border-radius: 6px;
     box-shadow: 0 0 8px rgba(0,0,0,0.3);
-    min-width: 600px;
-    max-width: 1200px;
+    min-width: 220px;
+    max-width: min(360px, calc(100vw - 48px));
     z-index: 50000;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.75s ease, visibility 0s linear 0.75s;
 }
 
-.tooltip:hover .tooltip-text {
+.status-success .tooltip-text {
+    background-color: #18803a;
+}
+
+.status-warning .tooltip-text {
+    background-color: #9a6700;
+}
+
+.status-error .tooltip-text {
+    background-color: #b42318;
+}
+
+.record-type {
+    color: #111827;
+    font-weight: 700;
+}
+
+.record-type .record-tooltip-text {
+    top: 50%;
+    left: calc(100% + 12px);
+    transform: translateY(-50%);
+    width: min(300px, calc(100vw - 48px));
+    min-width: min(300px, calc(100vw - 48px));
+    max-width: min(300px, calc(100vw - 48px));
+    line-height: 1.45;
+    white-space: normal;
+}
+
+.record-tooltip-text a {
     display: block;
+    margin-top: 8px;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.status-icon .status-tooltip-text {
+    top: 50%;
+    right: calc(100% + 12px);
+    left: auto;
+    transform: translateY(-50%);
+    min-width: 220px;
+    max-width: min(360px, calc(100vw - 48px));
+    line-height: 1.45;
+    white-space: pre-line;
+    text-align: left;
+    font-weight: 700;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip .tooltip-text:hover {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    transition-delay: 0s;
 }
 
 .tooltip-text a {
@@ -286,7 +435,6 @@ ul {
 }
 
 .bulk-run-btn {
-    background: #ffbc6a;
     color: #fff;
     border: none;
     padding: 10px 14px;
@@ -302,6 +450,16 @@ ul {
 #bulkTable td,
 #bulkTable th {
     white-space: nowrap;
+}
+
+#bulkTable {
+    table-layout: auto;
+}
+
+#bulkTable th:first-child,
+#bulkTable td:first-child {
+    min-width: 220px;
+    text-align: left;
 }
 
 #bulkTable td:last-child,

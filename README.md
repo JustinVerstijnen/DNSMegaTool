@@ -11,11 +11,16 @@ The main features of this tool are:
 	- SPF
 	- DKIM
 	- DMARC
+	- TLS-RPT
 	- MTA-STS
 	- DNSSEC
+	- DANE
+	- MX SSL certificate validity
 - Checks the actual configuration
-- Scores you from 1-6 based on configuration and used policies
-- Confetti party if scoring 6/6
+- Shows how many days are left on the MX SSL certificate
+- Shows advisories for weak or inconsistent mail security configuration
+- Scores you based on configuration and used policies
+- Confetti party if all checks pass
 	- Try the domain _justinverstijnen.nl_ for a demo
 - WHOIS information about your domain
 - Displays actual NS servers
@@ -44,9 +49,6 @@ New features to this tool are added when needed or if the tool is broken.
 Feature request can be done by submitting issues into GitHub.
 
 - Advisories/warnings about current records
-- TLS-RPT lookup check
-- Microsoft 365 DANE over MTA-STS functionality
-- SSL validity on MX host
 - Tooltips per record
 - Research possibility of email header check with sending email/API
 
